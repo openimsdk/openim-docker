@@ -155,7 +155,7 @@ services:
   prometheus:
     image: prom/prometheus
     volumes:
-      - ./.docker-compose_cfg/prometheus-compose.yml:/etc/prometheus/prometheus.yml
+      - ./openim-server/.docker-compose_cfg/prometheus-compose.yml:/etc/prometheus/prometheus.yml
     container_name: prometheus
     #    ports:
     #    - 9091:9091
@@ -167,9 +167,9 @@ services:
   grafana:
     image: grafana/grafana
     volumes:
-      - ./.docker-compose_cfg/datasource-compose.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
-      - ./.docker-compose_cfg/grafana.ini:/etc/grafana/grafana.ini
-      - ./.docker-compose_cfg/node-exporter-full_rev1.json:/var/lib/grafana/dashboards/node-exporter-full_rev1.json
+      - ./openim-server/.docker-compose_cfg/datasource-compose.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
+      - ./openim-server/.docker-compose_cfg/grafana.ini:/etc/grafana/grafana.ini
+      - ./openim-server/.docker-compose_cfg/node-exporter-full_rev1.json:/var/lib/grafana/dashboards/node-exporter-full_rev1.json
     container_name: grafana
     depends_on:
       - prometheus
