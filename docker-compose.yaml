@@ -100,8 +100,8 @@ services:
 
   openim-server:
     # image: ghcr.io/openimsdk/openim-server:release-v3.2
-    image: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-server:release-v3.2
-    # image: openim/openim-server:release-v3.2
+    # image: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-server:release-v3.2
+    image: openim/openim-server:release-v3.2
 #    build: .
     container_name: openim-server
     volumes:
@@ -125,8 +125,8 @@ services:
 
   openim-chat:
     # image: ghcr.io/openimsdk/openim-chat:release-v1.2
-    image: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-chat:release-v1.2
-    # image: openim/openim-chat:release-v1.2
+    # image: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-chat:release-v1.2
+    image: openim/openim-chat:docker pull ghcr.io/openimsdk/openim-chat:main
     container_name: openim-chat
     healthcheck:
       test: ["CMD-SHELL", "./scripts/check-all.sh"]
