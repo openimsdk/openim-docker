@@ -67,14 +67,13 @@ To ensure you get the latest version of the image, please refer to the following
 **Clone the repository:**
 
 ```
-bashCopy codegit clone https://github.com/openim-sigs/openim-docker openim/openim-docker && export openim=$(pwd)/openim && cd $openim/openim-docker
+git clone https://github.com/openim-sigs/openim-docker openim/openim-docker && export openim=$(pwd)/openim && cd $openim/openim-docker
 sudo docker compose up -d
 ```
 
 **Default launch option:**
 
 ```
-bashCopy code
 docker-compose up -d
 ```
 
