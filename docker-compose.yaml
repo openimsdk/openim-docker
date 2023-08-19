@@ -128,11 +128,11 @@ services:
     image: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-server:release-v1.2
     # image: openim/openim-server:release-v1.2
     container_name: openim-chat
-    # healthcheck:
-    #   test: ["CMD-SHELL", "./scripts/check-all.sh"]
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 5
+    healthcheck:
+      test: ["CMD-SHELL", "./scripts/check-all.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     volumes:
       - ./openim-chat/logs:/openim/openim-chat/logs
       - ./openim-chat/config:/openim/openim-chat/config
