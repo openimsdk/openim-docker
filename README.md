@@ -1,10 +1,13 @@
-# OpenIM Docker Deployment Guide
+# OpenIM Docker Deployment
 
-Welcome to the world of OpenIM Docker! To make it easier for you to deploy OpenIM, we offer a stable and convenient Docker solution. With just Docker and Docker Compose, you can easily launch or manage the entire service.
+OpenIM Docker provides a stable OpenIM build and deployment solution. With various deployment options available, Docker and Docker Compose simplify the entire process.
 
-## A Glimpse at the Project Structure
 
-```bashOpenIM Docker Deployment
+
+## Directory Structure
+
+```
+bashCopy codeOpenIM Docker Deployment
 │
 ├── 📁 **build/**
 │   ├── 📄 Dockerfile-server
@@ -32,92 +35,152 @@ Welcome to the world of OpenIM Docker! To make it easier for you to deploy OpenI
     └── 📄 full-openim-server-and-chat.yml
 ```
 
-- `build/`: Files required for Docker builds reside here.
-- `openim-server/`: Everything you need to deploy the OpenIM service can be found here.
-- `openim-chat/`: This is where the OpenIM chat service is deployed.
-- `env/`: The home of environment variables that Docker-compose needs.
-- `example/`: Want real Docker-compose examples? Look no further!
+- `build/`: Used for building Docker images.
+- `openim-server/`: Used for deploying openim-server.
+- `openim-chat/`: Used for deploying openim-chat.
+- `env/`: Contains Docker-compose environment variable files.
+- `example/`: Contains various Docker-compose examples.
 
-Next, we'll delve into the operational guide detailing how to use these files.
+### Project Structure Notes
 
-### How to Use OpenIM Docker
+- For changes to `openim-server` and `openim-chat`, please contribute at https://github.com/OpenIMSDK/Open-IM-Server/ and https://github.com/OpenIMSDK/chat respectively.
+- To synchronize scripts and configuration files of the two projects, we use automation tools. You only need to ensure that the files are synchronized with the original repository.
+- For environment variable files and Docker-compose examples, make changes under the `env/` and `example/` directories.
 
-#### 1. Acquire the Image
+## How to Use OpenIM Docker
 
-First, choose one of the following platforms to download the Docker image:
+#### 1. Obtain Images
+
+You can obtain Docker images from the following three sources:
 
 - [GitHub Packages](https://github.com/orgs/OpenIMSDK/packages?repo_name=Open-IM-Server)
-- Alibaba Cloud
+- AliCloud (阿里云)
 - Docker Hub
 
-To ensure that you download the latest image, please refer to these two documents:
+To ensure you get the latest version of the image, please refer to the following documents:
 
-- [openim version introduction](https://github.com/OpenIMSDK/Open-IM-Server/blob/main/docs/conversions/version.md)
-- [openim image selection guide](https://github.com/OpenIMSDK/Open-IM-Server/blob/main/docs/conversions/images.md)
+- [OpenIM Version Design](https://github.com/OpenIMSDK/Open-IM-Server/blob/main/docs/conversions/version.md)
+- [OpenIM Image Strategy](https://github.com/OpenIMSDK/Open-IM-Server/blob/main/docs/conversions/images.md)
 
-#### 2. Launch the Service with Docker-compose
+#### 2. Using Docker-compose
 
-**One-click launch:**
+**Clone the repository:**
 
-```bash
+```
+bashCopy codegit clone https://github.com/openim-sigs/openim-docker openim/openim-docker && export openim=$(pwd)/openim && cd $openim/openim-docker
+sudo docker compose up -d
+```
+
+**Default launch option:**
+
+```
+bashCopy code
 docker-compose up -d
 ```
 
-**Customized launches based on needs:**
+> **Note**: If image pulling is slow, you can choose the image from AliCloud. Both openim-server and openim-chat use the same image, just modify the image in the docker-compose.yml.
 
-- **Launch basic environment only**:
+```
+bashCopy code# image: ghcr.io/openimsdk/openim-server:latest
+image: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-server:latest
+# image: openim/openim-server:latest
+```
 
-  ```
-  bashCopy code
-  docker-compose -f basic-openim-server-dependency.yml up -d
-  ```
+**Custom Start-Up**
 
-- **Launch OpenIM Server only**:
+Based on your requirements, choose the appropriate Docker-compose file to start:
 
-  ```
-  bashCopy code
-  docker-compose -f only-openim-server.yml up -d
-  ```
-
-- **Launch both OpenIM Server and chat functionality**:
+- **Basic Environment Dependency**:
 
   ```
-  bashCopy code
-  docker-compose -f full-openim-server-and-chat.yml up -d
+  docker-compose -f example/basic-openim-server-dependency.yml up -d
   ```
 
-**Check operational status**
+- **Only OpenIM Server**:
 
-To confirm all services are up and running:
+  
+  docker-compose -f example/only-openim-server.yml up -d
+  ```
+
+- **Both OpenIM Server and Chat**:
+
+  ```
+  docker-compose -f example/full-openim-server-and-chat.yml up -d
+  ```
+
+**Mounting:**
+
+In the Docker Compose file, the "volumes" keyword defines named volumes. Named volumes are a storage concept in Docker that allows you to create persistent storage for a container. This means that even if the container is deleted, the data stored on that volume will not be lost.
+
+For easy management, we use named volumes. These volumes have the same name as the services. For instance, the openim-server service uses the openim-server named volume, and the openim-chat service uses the openim-chat named volume.
+
+View all volumes:
+
+```bash
+docker volume ls
+```
+
+View a specific volume:
+
+```bash
+docker volume inspect <volume-name>
+```
+
+Delete a named volume:
+
+```bash
+docker volume rm <volume-name>
+```
+
+Delete unused volumes:
+
+```bash
+docker volume prune
+```
+
+**Customizing Your Image**
+
+For easy customization, we provide basic images of various distributions and architectures. The repository address is https://github.com/openim-sigs/openim-base-image, for easy customization.
+
+**Test Running Status**
+
+To see if all services have started, you can use:
 
 ```bash
 docker-compose ps
 ```
 
-If a particular service isn't running, you can inspect its logs, for instance:
+If you find a container that hasn't started, you can view the logs of the specific service to find out the reason. For example, to view the logs of OpenIM Server:
 
 ```bash
 docker-compose logs openim-server
 ```
 
-**Shut down the service**
+**Stop**
 
-To stop all services run by Docker-compose:
+To stop all services running by Docker-compose:
 
 ```bash
 docker-compose down
 ```
 
-When using a specific `docker-compose` file, remember to specify it in the `down` command.
+If you used a specific `docker-compose` file, make sure to specify it in the `down` command as well.
 
-#### 3. A Little Tip
+#### 3. Tips
 
-Please ensure that both your Docker and Docker Compose are updated to the latest versions for the best compatibility and performance.
+Ensure your Docker and Docker Compose are up-to-date to guarantee the best compatibility and performance.
 
-## Contribute Your Strength
+## Contribution
 
-If you're interested in our project, we warmly welcome you to participate and contribute to it! Please refer to [CONTRIBUTING.md](https://github.com/openim-sigs/openim-docker/tree/main/CONTRIBUTING.md) for more details.
+- Fork this repository to your GitHub account.
+- Clone the forked repository to your local environment.
+- Create a new branch and name it after your contribution.
+- Make changes where needed.
+- Commit your changes and push them to your fork.
+- Create a new Pull Request on GitHub.
+
+We encourage community contributions and improvements to this project. For the specific contribution process, please refer to [CONTRIBUTING.md](https://chat.openai.com/CONTRIBUTING.md).
 
 ## License
 
-This project is licensed under the MIT license. For specific content, please check [LICENSE](https://github.com/openim-sigs/openim-docker/tree/main/LICENSE).
+This project uses the MIT license. For details, please refer to [LICENSE](https://chat.openai.com/LICENSE).

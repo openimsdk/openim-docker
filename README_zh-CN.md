@@ -97,13 +97,13 @@ image: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-server:latest
   docker-compose -f example/basic-openim-server-dependency.yml up -d
   ```
 
-- **仅 OpenIM Server**：
+- **仅部署 OpenIM Server**：
 
   ```bash
   docker-compose -f example/only-openim-server.yml up -d
   ```
 
-- **OpenIM Server 和 Chat**：
+- **部署 OpenIM Server 和 Chat**：
 
   ```bash
   docker-compose -f example/full-openim-server-and-chat.yml up -d
