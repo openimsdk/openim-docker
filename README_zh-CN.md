@@ -2,6 +2,13 @@
 
 OpenIM Docker 提供了一个稳定的 OpenIM 构建和部署解决方案，有非常多的部署方案提供选择，使用 Docker 和 Docker Compose 简化了整个过程。
 
+<p align="center">
+    <a href="./README.md"><b> English </b></a> •
+    <a href="./README-zh_CN.md"><b> 简体中文 </b></a>
+</p>
+
+</p>
+
 ## 目录结构
 
 ```bash

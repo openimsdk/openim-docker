@@ -2,7 +2,12 @@
 
 OpenIM Docker provides a stable OpenIM build and deployment solution. With various deployment options available, Docker and Docker Compose simplify the entire process.
 
+<p align="center">
+    <a href="./README.md"><b> English </b></a> •
+    <a href="./README-zh_CN.md"><b> 简体中文 </b></a>
+</p>
 
+</p>
 
 ## Directory Structure
 
@@ -68,7 +73,6 @@ To ensure you get the latest version of the image, please refer to the following
 
 ```
 git clone https://github.com/openim-sigs/openim-docker openim/openim-docker && export openim=$(pwd)/openim && cd $openim/openim-docker
-sudo docker compose up -d
 ```
 
 **Default launch option:**
