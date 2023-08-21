@@ -91,19 +91,19 @@ Based on your requirements, choose the appropriate Docker-compose file to start:
 
 - **Basic Environment Dependency**:
 
-  ```
+  ```bash
   docker-compose -f example/basic-openim-server-dependency.yml up -d
   ```
 
 - **Only OpenIM Server**:
 
-  
+  ```bash
   docker-compose -f example/only-openim-server.yml up -d
   ```
 
 - **Both OpenIM Server and Chat**:
 
-  ```
+  ```bash
   docker-compose -f example/full-openim-server-and-chat.yml up -d
   ```
 
