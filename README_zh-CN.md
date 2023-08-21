@@ -68,7 +68,6 @@ OpenIM Docker Deployment
 
 ```bash
 git clone https://github.com/openim-sigs/openim-docker openim/openim-docker && export openim=$(pwd)/openim && cd $openim/openim-docker
-sudo docker compose up -d
 ```
 
 **默认启动选择：**
