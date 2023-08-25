@@ -4,7 +4,7 @@ OpenIM Docker provides a stable OpenIM build and deployment solution. With vario
 
 <p align="center">
     <a href="./README.md"><b> English </b></a> •
-    <a href="./README-zh_CN.md"><b> 简体中文 </b></a>
+    <a href="./README_zh-CN."><b> 简体中文 </b></a>
 </p>
 
 </p>
