@@ -19,16 +19,12 @@ OpenIM Docker Deployment
 │   └── 📄 Dockerfile-chat
 │
 ├── 📁 **openim-server/**
-│   ├── 📄 docker-compose.yml
-│   └── 📁 **configs/**
-│       ├── 📄 server-config.yaml
-│       └── 📄 other-config.yaml
+│   ├── 📁 release-v*.*/
+│   └── 📁 main/
 │
 ├── 📁 **openim-chat/**
-│   ├── 📄 docker-compose.yml
-│   └── 📁 **configs/**
-│       ├── 📄 chat-config.yaml
-│       └── 📄 other-config.yaml
+│   ├── 📁 release-v*.*/
+│   └── 📁 main/
 │
 ├── 📁 **env/**
 │   ├── 📄 openim-server.env
@@ -43,8 +39,8 @@ OpenIM Docker Deployment
 - `build/`：用于构建 Docker 镜像。
 - `openim-server/`：用于部署 openim-server。
 - `openim-chat/`：用于部署 openim-chat。
-- `env/`：存放 Docker-compose 的环境变量文件。
-- `example/`：包含各种 Docker-compose 示例。
+- `env/`：存放 Docker-compose 的环境变量文件。(暂时不需要)
+- `example/`：包含各种 Docker-compose 示例，提供特性部署方案。
 
 
 ### 项目结构说明
@@ -76,6 +72,24 @@ OpenIM Docker Deployment
 ```bash
 git clone https://github.com/openim-sigs/openim-docker openim/openim-docker && export openim=$(pwd)/openim && cd $openim/openim-docker
 ```
+
+**修改配置文件：**
+
+```bash
+# cat .env
+# 修改用户名
+USER=root
+# 修改密码
+PASSWORD=openIM123
+# 修改 MINIO_ENDPOINT
+MINIO_ENDPOINT=http://127.0.0.1:10005
+API_URL=http://127.0.0.1:10002
+DATA_DIR=./
+# 修改版本，支持 main,tag,release-* 分支
+CHAT_BRANCH=release-v1.2
+SERVER_BRANCH=release-v3.2
+```
+
 
 **默认启动选择：**
 

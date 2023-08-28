@@ -99,15 +99,15 @@ services:
     command: minio server /data --console-address ':9090'
 
   openim-server:
-    # build: .
-    image: ghcr.io/openimsdk/openim-server:release-v3.2
-    # image: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-server:release-v3.2
-    # image: openim/openim-server:release-v3.2
+    # image: ghcr.io/openimsdk/openim-server:${SERVER_BRANCH}
+    # image: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-server:${SERVER_BRANCH}
+    image: openim/openim-server:${SERVER_BRANCH}
+#    build: .
     container_name: openim-server
     volumes:
-      - ./openim-server/logs:/openim/openim-server/logs
-      - ./openim-server/config:/openim/openim-server/config
-      - ./openim-server/scripts:/openim/openim-server/scripts
+      - ./openim-server/${SERVER_BRANCH}/logs:/openim/openim-server/logs
+      - ./openim-server/${SERVER_BRANCH}/config:/openim/openim-server/config
+      - ./openim-server/${SERVER_BRANCH}/scripts:/openim/openim-server/scripts
     restart: always
     depends_on:
       - zookeeper
@@ -124,9 +124,9 @@ services:
         max-file: "2"
 
   openim-chat:
-    image: ghcr.io/openimsdk/openim-chat:release-v1.2
-    # image: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-chat:release-v1.2
-    # image: openim/openim-chat:release-v1.2
+    # image: ghcr.io/openimsdk/openim-chat:${CHAT_BRANCH}
+    # image: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-chat:${CHAT_BRANCH}
+    image: ghcr.io/openimsdk/openim-chat:${CHAT_BRANCH}
     container_name: openim-chat
     healthcheck:
       test: ["CMD-SHELL", "./scripts/check-all.sh"]
@@ -134,9 +134,9 @@ services:
       timeout: 10s
       retries: 5
     volumes:
-      - ./openim-chat/logs:/openim/openim-chat/logs
-      - ./openim-chat/config:/openim/openim-chat/config
-      - ./openim-chat/scripts:/openim/openim-chat/scripts
+      - ./openim-chat/${CHAT_BRANCH}/logs:/openim/openim-chat/logs
+      - ./openim-chat/${CHAT_BRANCH}/config:/openim/openim-chat/config
+      - ./openim-chat/${CHAT_BRANCH}/scripts:/openim/openim-chat/scripts
     restart: always
     user: root:root
     depends_on:
