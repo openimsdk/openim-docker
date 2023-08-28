@@ -104,6 +104,11 @@ services:
     image: openim/openim-server:${SERVER_BRANCH}
 #    build: .
     container_name: openim-server
+    healthcheck:
+      test: ["CMD-SHELL", "./openim-server/${SERVER_BRANCH}/scripts"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     volumes:
       - ./openim-server/${SERVER_BRANCH}/logs:/openim/openim-server/logs
       - ./openim-server/${SERVER_BRANCH}/config:/openim/openim-server/config
@@ -129,7 +134,7 @@ services:
     image: ghcr.io/openimsdk/openim-chat:${CHAT_BRANCH}
     container_name: openim-chat
     healthcheck:
-      test: ["CMD-SHELL", "./scripts/check-all.sh"]
+      test: ["CMD-SHELL", "./openim-chat/${CHAT_BRANCH}/scripts"]
       interval: 30s
       timeout: 10s
       retries: 5
