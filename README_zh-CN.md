@@ -86,17 +86,18 @@ make install
 1. 推荐使用环境变量：
 
 ```bash
-export PASSWORD="openIM123" # 设置密码
-export USER="root" # 设置用户名
+export PASSWORD="openIM123" # 设置密码，默认是 openIM123
+export USER="root" # 设置用户名，默认是 root
 # 选择 chat 版本 和 server 版本https://github.com/OpenIMSDK/Open-IM-Server/blob/main/docs/conversions/images.md, eg: main, release-v*.*
-export CHAT_BRANCH="release-v1.2"
-export SERVER_BRANCH="release-v3.2"
+export CHAT_BRANCH="release-v1.2"   # 设置 chat 版本，默认是 main（不稳定）
+export SERVER_BRANCH="release-v3.2" # 设置 server 版本，默认是 main（不稳定）
 # ...... 其他环境变量
 # MONGO_USERNAME: 设置 MongoDB 用户名
 # MONGO_PASSWORD: 设置 MongoDB 密码
 # MONGO_DATABASE: 设置 MongoDB 数据库名
 # MINIO_ENDPOINT: 设置 MinIO 服务地址
-# API_URL: 设置 OpenIM Server API 地址
+# API_URL: 内网环境下，设置 OpenIM Server API 地址
+export API_URL="http://127.0.0.1"
 ```
 
 需要更新配置：
