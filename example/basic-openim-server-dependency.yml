@@ -42,7 +42,7 @@ services:
       - 16379:6379
     container_name: redis
     volumes:
-      - redis_data:/data:/data
+      - redis_data:/data
       - redis_config:/usr/local/redis/config/redis.conf
     environment:
       TZ: Asia/Shanghai

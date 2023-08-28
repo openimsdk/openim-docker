@@ -4,7 +4,7 @@ OpenIM Docker provides a stable OpenIM build and deployment solution. With vario
 
 <p align="center">
     <a href="./README.md"><b> English </b></a> •
-    <a href="./README-zh_CN.md"><b> 简体中文 </b></a>
+    <a href="./README_zh-CN.md"><b> 简体中文 </b></a>
 </p>
 
 </p>
@@ -72,7 +72,7 @@ To ensure you get the latest version of the image, please refer to the following
 **Clone the repository:**
 
 ```
-git clone https://github.com/openim-sigs/openim-docker openim/openim-docker && export openim=$(pwd)/openim && cd $openim/openim-docker
+git clone https://github.com/OpenIMSDK/openim-docker openim/openim-docker && export openim=$(pwd)/openim && cd $openim/openim-docker
 ```
 
 **Default launch option:**
@@ -143,7 +143,7 @@ docker volume prune
 
 **Customizing Your Image**
 
-For easy customization, we provide basic images of various distributions and architectures. The repository address is https://github.com/openim-sigs/openim-base-image, for easy customization.
+For easy customization, we provide basic images of various distributions and architectures. The repository address is https://github.com/OpenIMSDK/openim-base-image, for easy customization.
 
 **Test Running Status**
 
