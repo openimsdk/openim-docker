@@ -2,7 +2,7 @@
 
 OpenIM Docker offers a stable solution for building and deploying OpenIM. There are many deployment options available, and the process is simplified using Docker and Docker Compose.
 
-<p align="center">     <a href="./README.md"><b> English </b></a> •     <a href="./README-zh_CN.md"><b> 简体中文 </b></a> </p>
+<p align="center">     <a href="./README.md"><b> English </b></a> •     <a href="./README_zh-CN.md"><b> 简体中文 </b></a> </p>
 
 ## Directory Structure
 
