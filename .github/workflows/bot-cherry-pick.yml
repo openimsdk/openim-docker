@@ -1,0 +1,33 @@
+# Copyright © 2023 OpenIM open source community. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Github Rebot for Cherry Pick On Comment
+on:
+  issue_comment:
+    types: [created]
+jobs:
+  cherry-pick:
+    name: Cherry Pick
+    if: github.event.issue.pull_request != '' && contains(github.event.comment.body, '/cherry-pick') && github.event.comment.user.login=='kubbot'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the latest code
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.BOT_GITHUB_TOKEN }}
+          fetch-depth: 0 # otherwise, you will fail to push refs to dest repo
+      - name: Automatic Cherry Pick
+        uses: vendoo/gha-cherry-pick@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
