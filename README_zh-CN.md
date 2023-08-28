@@ -75,20 +75,30 @@ git clone https://github.com/openim-sigs/openim-docker openim/openim-docker && e
 
 **修改配置文件：**
 
+通过三种方式来修改配置文件：
+
+1. 推荐使用环境变量：
 ```bash
-# cat .env
-# 修改用户名
-USER=root
-# 修改密码
-PASSWORD=openIM123
-# 修改 MINIO_ENDPOINT
-MINIO_ENDPOINT=http://127.0.0.1:10005
-API_URL=http://127.0.0.1:10002
-DATA_DIR=./
-# 修改版本，支持 main,release,release-v3.2 分支...
-CHAT_BRANCH=release
-SERVER_BRANCH=release
+export PASSWORD="openIM123" # 设置密码
+export USER="root" # 设置用户名
+# 选择 chat 版本 和 server 版本https://github.com/OpenIMSDK/Open-IM-Server/blob/main/docs/conversions/images.md, eg: main, release-v*.*
+export CHAT_BRANCH="release-v1.2"
+export SERVER_BRANCH="release-v3.2"
+# ...... 其他环境变量
+# MONGO_USERNAME: 设置 MongoDB 用户名
+# MONGO_PASSWORD: 设置 MongoDB 密码
+# MONGO_DATABASE: 设置 MongoDB 数据库名
+# MINIO_ENDPOINT: 设置 MinIO 服务地址
+# API_URL: 设置 OpenIM Server API 地址
 ```
+
+2. 修改自动化脚本：
+
+```bash
+scripts/install/environment.sh
+```
+
+3. 修改 config 文件（但是重新使用 make init 生成配置后会覆盖）
 
 
 **默认启动选择：**

@@ -11,7 +11,7 @@ all: tidy gen add-copyright verify lint cover restart
 # ==============================================================================
 # Build set
 
-ROOT_PACKAGE=github.com/OpenIMSDK/Open-IM-Server
+ROOT_PACKAGE=github.com/OpenIMSDK/openim-docker
 # TODO: This is version control for the future https://github.com/OpenIMSDK/Open-IM-Server/issues/574
 VERSION_PACKAGE=github.com/OpenIMSDK/Open-IM-Server/pkg/version
 
@@ -20,7 +20,6 @@ VERSION_PACKAGE=github.com/OpenIMSDK/Open-IM-Server/pkg/version
 
 include scripts/make-rules/common.mk	# make sure include common.mk at the first include line
 include scripts/make-rules/golang.mk
-include scripts/make-rules/image.mk
 include scripts/make-rules/copyright.mk
 include scripts/make-rules/gen.mk
 include scripts/make-rules/dependencies.mk
@@ -165,26 +164,6 @@ imports:
 clean:
 	@$(MAKE) go.clean
 
-## image: Build docker images for host arch. ✨
-.PHONY: image
-image:
-	@$(MAKE) image.build
-
-## image.multiarch: Build docker images for multiple platforms. See option PLATFORMS. ✨
-.PHONY: image.multiarch
-image.multiarch:
-	@$(MAKE) image.build.multiarch
-
-## push: Build docker images for host arch and push images to registry. ✨
-.PHONY: push
-push:
-	@$(MAKE) image.push
-
-## push.multiarch: Build docker images for multiple platforms and push images to registry. ✨
-.PHONY: push.multiarch
-push.multiarch:
-	@$(MAKE) image.push.multiarch
-
 ## tools: Install dependent tools. ✨
 .PHONY: tools
 tools:
@@ -232,5 +211,5 @@ help: Makefile
 
 ## help-all: Show all help details info. ✨
 .PHONY: help-all
-help-all: go.help copyright.help tools.help image.help dependencies.help gen.help release.help swagger.help help
+help-all: go.help copyright.help tools.help dependencies.help gen.help release.help swagger.help help
 	$(call makeallhelp)

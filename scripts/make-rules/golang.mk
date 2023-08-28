@@ -44,34 +44,6 @@ ifeq ($(origin GOBIN), undefined)
 	GOBIN := $(GOPATH)/bin
 endif
 
-# COMMANDS is Specify all files under ${ROOT_DIR}/cmd/ and ${ROOT_DIR}/tools/ except those ending in.md
-COMMANDS ?= $(filter-out %.md, $(wildcard ${ROOT_DIR}/cmd/* ${ROOT_DIR}/tools/* ${ROOT_DIR}/cmd/openim-rpc/*))
-ifeq (${COMMANDS},)
-  $(error Could not determine COMMANDS, set ROOT_DIR or run in source dir)
-endif
-
-# BINS is the name of each file in ${COMMANDS}, excluding the directory path
-# If there are no files in ${COMMANDS}, or if all files end in.md, ${BINS} will be empty
-BINS ?= $(foreach cmd,${COMMANDS},$(notdir ${cmd}))
-ifeq (${BINS},)
-  $(error Could not determine BINS, set ROOT_DIR or run in source dir)
-endif
-
-ifeq ($(OS),Windows_NT)
-  NULL :=
-  SPACE := $(NULL) $(NULL)
-  ROOT_DIR := $(subst $(SPACE),\$(SPACE),$(shell cd))
-else
-  ROOT_DIR := $(shell pwd)
-endif
-
-ifeq ($(strip $(COMMANDS)),)
-  $(error Could not determine COMMANDS, set ROOT_DIR or run in source dir)
-endif
-ifeq ($(strip $(BINS)),)
-  $(error Could not determine BINS, set ROOT_DIR or run in source dir)
-endif
-
 # TODO: EXCLUDE_TESTS variable, which contains the name of the package to be excluded from the test
 EXCLUDE_TESTS=github.com/OpenIMSDK/Open-IM-Server/test github.com/OpenIMSDK/Open-IM-Server/pkg/log github.com/OpenIMSDK/Open-IM-Server/db github.com/OpenIMSDK/Open-IM-Server/scripts github.com/OpenIMSDK/Open-IM-Server/config
 

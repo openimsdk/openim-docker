@@ -40,6 +40,9 @@ function def() {
 def "API_URL" "http://${IP}:10002"
 def "DATA_DIR" "${OPENIM_ROOT}"
 
+def "CHAT_BRANCH" "main"
+def "SERVER_BRANCH" "main"
+
 # 设置统一的用户名，方便记忆
 def "USER" "root"
 
