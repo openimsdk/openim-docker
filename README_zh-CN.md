@@ -73,6 +73,12 @@ OpenIM Docker Deployment
 git clone https://github.com/openim-sigs/openim-docker openim/openim-docker && export openim=$(pwd)/openim && cd $openim/openim-docker
 ```
 
+**默认一键启动：**
+
+```bash
+make install
+```
+
 **修改配置文件：**
 
 通过三种方式来修改配置文件：
@@ -92,7 +98,8 @@ export SERVER_BRANCH="release-v3.2"
 # MINIO_ENDPOINT: 设置 MinIO 服务地址
 # API_URL: 设置 OpenIM Server API 地址
 ```
-接下来，使用 `make init` 更新配置项
+
+需要更新配置：
 
 ```bash
 make init
@@ -104,6 +111,12 @@ make init
 scripts/install/environment.sh
 ```
 
+需要更新配置：
+
+```bash
+make init
+```
+
 3. 修改 `config.yaml` 以及 `.env` 文件（但是重新使用 make init 生成配置后会覆盖）
 
 
@@ -111,10 +124,8 @@ scripts/install/environment.sh
 
 ```bash
 docker-compose up -d
-
-# 或者使用 make:
-make install
 ```
+
 
 > **Note**:
 > 拉取镜像很慢，可以选择阿里云的镜像。对于 openim-server 以及 openim-chat 是通用的，只需要修改 docker-compose.yml 中的 image 即可。
