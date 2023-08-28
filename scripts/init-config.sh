@@ -32,7 +32,7 @@ readonly ENV_FILE=${ENV_FILE:-"${OPENIM_ROOT}/scripts/install/environment.sh"}
 # (en: Defines an associative array where the keys are the template files and the values are the corresponding output files.)
 declare -A TEMPLATES=(
   ["${OPENIM_ROOT}/templates/env_template.yaml"]="${OPENIM_ROOT}/.env;${OPENIM_ROOT}/example/.env"
-  ["${OPENIM_ROOT}/templates/openim.yaml"]="${OPENIM_ROOT}/openim-server/main/config/config.yaml"
+  ["${OPENIM_ROOT}/templates/openim.yaml"]="${OPENIM_ROOT}/openim-server/main/config/config.yaml;${OPENIM_ROOT}/openim-server/release-v3.2/config/config.yaml;"
 )
 
 for template in "${!TEMPLATES[@]}"; do
