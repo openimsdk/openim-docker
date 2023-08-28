@@ -1,34 +1,25 @@
 # OpenIM Docker Deployment
 
-OpenIM Docker provides a stable OpenIM build and deployment solution. With various deployment options available, Docker and Docker Compose simplify the entire process.
+OpenIM Docker offers a stable solution for building and deploying OpenIM. There are many deployment options available, and the process is simplified using Docker and Docker Compose.
 
-<p align="center">
-    <a href="./README.md"><b> English </b></a> •
-    <a href="./README_zh-CN.md"><b> 简体中文 </b></a>
-</p>
-
-</p>
+<p align="center">     <a href="./README.md"><b> English </b></a> •     <a href="./README-zh_CN.md"><b> Simplified Chinese </b></a> </p>
 
 ## Directory Structure
 
 ```
-bashCopy codeOpenIM Docker Deployment
+OpenIM Docker Deployment
 │
 ├── 📁 **build/**
 │   ├── 📄 Dockerfile-server
 │   └── 📄 Dockerfile-chat
 │
 ├── 📁 **openim-server/**
-│   ├── 📄 docker-compose.yml
-│   └── 📁 **configs/**
-│       ├── 📄 server-config.yaml
-│       └── 📄 other-config.yaml
+│   ├── 📁 release-v*.*/
+│   └── 📁 main/
 │
 ├── 📁 **openim-chat/**
-│   ├── 📄 docker-compose.yml
-│   └── 📁 **configs/**
-│       ├── 📄 chat-config.yaml
-│       └── 📄 other-config.yaml
+│   ├── 📁 release-v*.*/
+│   └── 📁 main/
 │
 ├── 📁 **env/**
 │   ├── 📄 openim-server.env
@@ -40,45 +31,77 @@ bashCopy codeOpenIM Docker Deployment
     └── 📄 full-openim-server-and-chat.yml
 ```
 
-- `build/`: Used for building Docker images.
-- `openim-server/`: Used for deploying openim-server.
-- `openim-chat/`: Used for deploying openim-chat.
-- `env/`: Contains Docker-compose environment variable files.
-- `example/`: Contains various Docker-compose examples.
+- `build/`: For building Docker images.
+- `openim-server/`: For deploying openim-server.
+- `openim-chat/`: For deploying openim-chat.
+- `env/`: Contains environment variable files for Docker-compose. (Not needed for now)
+- `example/`: Contains various Docker-compose examples, offering feature deployment schemes.
 
-### Project Structure Notes
+### Project Structure Explanation
 
-- For changes to `openim-server` and `openim-chat`, please contribute at https://github.com/OpenIMSDK/Open-IM-Server/ and https://github.com/OpenIMSDK/chat respectively.
-- To synchronize scripts and configuration files of the two projects, we use automation tools. You only need to ensure that the files are synchronized with the original repository.
-- For environment variable files and Docker-compose examples, make changes under the `env/` and `example/` directories.
+- For changes to `openim-server` and `openim-chat`, please contribute separately at https://github.com/OpenIMSDK/Open-IM-Server/ and https://github.com/OpenIMSDK/chat.
+- To synchronize scripts and configuration files of the two projects, we use automation tools. Just ensure that the files are synchronized with the original repository.
+- For environment variable files and Docker-compose examples, make changes under `env/` and `example/`.
 
 ## How to Use OpenIM Docker
 
-#### 1. Obtain Images
+#### 1. Get the Image
 
-You can obtain Docker images from the following three sources:
+You can get the Docker image from three sources:
 
 - [GitHub Packages](https://github.com/orgs/OpenIMSDK/packages?repo_name=Open-IM-Server)
-- AliCloud (阿里云)
+- Alibaba Cloud
 - Docker Hub
 
-To ensure you get the latest version of the image, please refer to the following documents:
+To ensure you get the latest version of the image, refer to the following documents:
 
-- [OpenIM Version Design](https://github.com/OpenIMSDK/Open-IM-Server/blob/main/docs/conversions/version.md)
-- [OpenIM Image Strategy](https://github.com/OpenIMSDK/Open-IM-Server/blob/main/docs/conversions/images.md)
+- [OpenIM version design](https://github.com/OpenIMSDK/Open-IM-Server/blob/main/docs/conversions/version.md)
+- [OpenIM image strategy](https://github.com/OpenIMSDK/Open-IM-Server/blob/main/docs/conversions/images.md)
 
 #### 2. Using Docker-compose
 
 **Clone the repository:**
 
 ```
-git clone https://github.com/OpenIMSDK/openim-docker openim/openim-docker && export openim=$(pwd)/openim && cd $openim/openim-docker
+git clone https://github.com/openim-sigs/openim-docker openim/openim-docker && export openim=$(pwd)/openim && cd $openim/openim-docker
 ```
 
-**Default launch option:**
+**Modify the configuration files:**
+
+Three ways to modify the configuration:
+
+1. Recommended using environment variables:
+
+```
+export PASSWORD="openIM123" # Set password
+export USER="root" # Set username
+# Choose chat version and server version https://github.com/OpenIMSDK/Open-IM-Server/blob/main/docs/conversions/images.md, eg: main, release-v*.*
+export CHAT_BRANCH="release-v1.2"
+export SERVER_BRANCH="release-v3.2"
+# ...... Other environment variables
+```
+
+Next, update the configuration using `make init`:
+
+```
+make init
+```
+
+1. Modify the automation script:
+
+```
+scripts/install/environment.sh
+```
+
+1. Modify `config.yaml` and `.env` files (but will be overwritten when using `make init` again).
+
+**Default start option:**
 
 ```
 docker-compose up -d
+
+# Or use make:
+make install
 ```
 
 > **Note**: If image pulling is slow, you can choose the image from AliCloud. Both openim-server and openim-chat use the same image, just modify the image in the docker-compose.yml.

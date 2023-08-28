@@ -78,6 +78,7 @@ git clone https://github.com/openim-sigs/openim-docker openim/openim-docker && e
 通过三种方式来修改配置文件：
 
 1. 推荐使用环境变量：
+
 ```bash
 export PASSWORD="openIM123" # 设置密码
 export USER="root" # 设置用户名
@@ -91,6 +92,11 @@ export SERVER_BRANCH="release-v3.2"
 # MINIO_ENDPOINT: 设置 MinIO 服务地址
 # API_URL: 设置 OpenIM Server API 地址
 ```
+接下来，使用 `make init` 更新配置项
+
+```bash
+make init
+```
 
 2. 修改自动化脚本：
 
@@ -98,13 +104,16 @@ export SERVER_BRANCH="release-v3.2"
 scripts/install/environment.sh
 ```
 
-3. 修改 config 文件（但是重新使用 make init 生成配置后会覆盖）
+3. 修改 `config.yaml` 以及 `.env` 文件（但是重新使用 make init 生成配置后会覆盖）
 
 
 **默认启动选择：**
 
 ```bash
 docker-compose up -d
+
+# 或者使用 make:
+make install
 ```
 
 > **Note**:
