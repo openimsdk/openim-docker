@@ -85,9 +85,9 @@ PASSWORD=openIM123
 MINIO_ENDPOINT=http://127.0.0.1:10005
 API_URL=http://127.0.0.1:10002
 DATA_DIR=./
-# 修改版本，支持 main,tag,release-* 分支
-CHAT_BRANCH=release-v1.2
-SERVER_BRANCH=release-v3.2
+# 修改版本，支持 main,release,release-v3.2 分支...
+CHAT_BRANCH=release
+SERVER_BRANCH=release
 ```
 
 
