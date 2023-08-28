@@ -104,10 +104,16 @@ docker-compose up -d
 make install
 ```
 
+**examine：**
+```bash
+make check
+```
+
+
 > **Note**: If image pulling is slow, you can choose the image from AliCloud. Both openim-server and openim-chat use the same image, just modify the image in the docker-compose.yml.
 
 ```
-bashCopy code# image: ghcr.io/openimsdk/openim-server:latest
+# image: ghcr.io/openimsdk/openim-server:latest
 image: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-server:latest
 # image: openim/openim-server:latest
 ```
