@@ -268,7 +268,7 @@ openim::util::check_ports() {
     # Iterate over each given port.
     for port in "$@"; do
         # Use the `lsof` command to find process information related to the given port.
-        local info=$(lsof -i :$port -n -P | grep LISTEN || true)
+        local info=$(ss -ltn | grep $port || true)
         
         # If there's no process information, it means the process associated with the port is not running.
         if [[ -z $info ]]; then
@@ -394,7 +394,7 @@ openim::util::stop_services_on_ports() {
     # Iterate over each given port.
     for port in "$@"; do
         # Use the `lsof` command to find process information related to the given port.
-        info=$(lsof -i :$port -n -P | grep LISTEN || true)
+        info=$(ss -ltn | grep $port || true)
                 
         # If there's process information, it means the process associated with the port is running.
         if [[ -n $info ]]; then

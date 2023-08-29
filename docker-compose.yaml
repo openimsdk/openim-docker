@@ -104,15 +104,17 @@ services:
     image: openim/openim-server:${SERVER_BRANCH}
 #    build: .
     container_name: openim-server
+    port:
+      - "10001-10002:10001-10002"
     healthcheck:
-      test: ["CMD-SHELL", "./openim-server/${SERVER_BRANCH}/scripts"]
+      test: ["CMD-SHELL", "${DATA_DIR}/openim-server/${SERVER_BRANCH}/scripts"]
       interval: 30s
       timeout: 10s
       retries: 5
     volumes:
-      - ./openim-server/${SERVER_BRANCH}/logs:/openim/openim-server/logs
-      - ./openim-server/${SERVER_BRANCH}/config:/openim/openim-server/config
-      - ./openim-server/${SERVER_BRANCH}/scripts:/openim/openim-server/scripts
+      - ${DATA_DIR}/openim-server/${SERVER_BRANCH}/logs:/openim/openim-server/logs
+      - ${DATA_DIR}/openim-server/${SERVER_BRANCH}/config:/openim/openim-server/config
+      - ${DATA_DIR}/openim-server/${SERVER_BRANCH}/scripts:/openim/openim-server/scripts
     restart: always
     depends_on:
       - zookeeper
@@ -134,14 +136,16 @@ services:
     image: ghcr.io/openimsdk/openim-chat:${CHAT_BRANCH}
     container_name: openim-chat
     healthcheck:
-      test: ["CMD-SHELL", "./openim-chat/${CHAT_BRANCH}/scripts"]
+      test: ["CMD-SHELL", "${DATA_DIR}/openim-chat/${CHAT_BRANCH}/scripts"]
       interval: 30s
       timeout: 10s
       retries: 5
+    port:
+      - "10008-10009:10008-10009"
     volumes:
-      - ./openim-chat/${CHAT_BRANCH}/logs:/openim/openim-chat/logs
-      - ./openim-chat/${CHAT_BRANCH}/config:/openim/openim-chat/config
-      - ./openim-chat/${CHAT_BRANCH}/scripts:/openim/openim-chat/scripts
+      - ${DATA_DIR}/openim-chat/${CHAT_BRANCH}/logs:/openim/openim-chat/logs
+      - ${DATA_DIR}/openim-chat/${CHAT_BRANCH}/config:/openim/openim-chat/config
+      - ${DATA_DIR}/openim-chat/${CHAT_BRANCH}/scripts:/openim/openim-chat/scripts
     restart: always
     user: root:root
     depends_on:
