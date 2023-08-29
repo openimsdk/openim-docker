@@ -125,6 +125,49 @@ go.check-component:
 	@echo "===========> Checking openim component"
 	@$(ROOT_DIR)/scripts/install/openim-tools.sh openim::tools::pre-start
 
+## go.build.verify: Verify that a suitable version of Go exists
+.PHONY: go.build.verify
+go.build.verify:
+ifneq ($(shell $(GO) version | grep -q -E '\bgo($(GO_SUPPORTED_VERSIONS))\b' && echo 0 || echo 1), 0)
+	$(error unsupported go version. Please make install one of the following supported version: '$(GO_SUPPORTED_VERSIONS)')
+endif
+
+.PHONY: go.build.%
+go.build.%:
+	$(eval COMMAND := $(word 2,$(subst ., ,$*)))
+	$(eval PLATFORM := $(word 1,$(subst ., ,$*)))
+	$(eval OS := $(word 1,$(subst _, ,$(PLATFORM))))
+	$(eval ARCH := $(word 2,$(subst _, ,$(PLATFORM))))
+	@echo "=====> COMMAND=$(COMMAND)"
+	@echo "=====> PLATFORM=$(PLATFORM)"
+	@echo "===========> Building binary $(COMMAND) $(VERSION) for $(OS)_$(ARCH)"
+	@mkdir -p $(BIN_DIR)/platforms/$(OS)/$(ARCH)
+	@if [ "$(COMMAND)" == "openim-sdk-core" ]; then \
+		echo "===========> DEBUG: OpenIM-SDK-Core It is no longer supported for openim-server $(COMMAND)"; \
+	elif [ -d $(ROOT_DIR)/cmd/openim-rpc/$(COMMAND) ]; then \
+		CGO_ENABLED=0 GOOS=$(OS) GOARCH=$(ARCH) $(GO) build $(GO_BUILD_FLAGS) -o \
+		$(BIN_DIR)/platforms/$(OS)/$(ARCH)/$(COMMAND)$(GO_OUT_EXT) $(ROOT_DIR)/cmd/openim-rpc/$(COMMAND)/main.go; \
+	else \
+		if [ -f $(ROOT_DIR)/cmd/$(COMMAND)/main.go ]; then \
+			CGO_ENABLED=0 GOOS=$(OS) GOARCH=$(ARCH) $(GO) build $(GO_BUILD_FLAGS) -o \
+			$(BIN_DIR)/platforms/$(OS)/$(ARCH)/$(COMMAND)$(GO_OUT_EXT) $(ROOT_DIR)/cmd/$(COMMAND)/main.go; \
+		elif [ -f $(ROOT_DIR)/tools/$(COMMAND)/$(COMMAND).go ]; then \
+			CGO_ENABLED=0 GOOS=$(OS) GOARCH=$(ARCH) $(GO) build $(GO_BUILD_FLAGS) -o \
+			$(BIN_TOOLS_DIR)/$(OS)/$(ARCH)/$(COMMAND)$(GO_OUT_EXT) $(ROOT_DIR)/tools/$(COMMAND)/$(COMMAND).go; \
+			chmod +x $(BIN_TOOLS_DIR)/$(OS)/$(ARCH)/$(COMMAND)$(GO_OUT_EXT); \
+		fi \
+	fi
+
+## go.install: Install deployment openim
+.PHONY: go.install
+go.install:
+	@echo "===========> Installing deployment openim"
+	@$(ROOT_DIR)/scripts/install-im-server.sh
+
+## go.multiarch: Build multi-arch binaries
+.PHONY: go.build.multiarch
+go.build.multiarch: go.build.verify $(foreach p,$(PLATFORMS),$(addprefix go.build., $(addprefix $(p)., $(BINS))))
+
 ## go.lint: Run golangci to lint source codes
 .PHONY: go.lint
 go.lint: tools.verify.golangci-lint
