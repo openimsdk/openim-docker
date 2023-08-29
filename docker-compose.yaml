@@ -104,7 +104,7 @@ services:
     image: openim/openim-server:${SERVER_BRANCH}
 #    build: .
     container_name: openim-server
-    port:
+    ports:
       - "10001-10002:10001-10002"
     healthcheck:
       test: ["CMD-SHELL", "${DATA_DIR}/openim-server/${SERVER_BRANCH}/scripts"]
@@ -140,7 +140,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-    port:
+    ports:
       - "10008-10009:10008-10009"
     volumes:
       - ${DATA_DIR}/openim-chat/${CHAT_BRANCH}/logs:/openim/openim-chat/logs
