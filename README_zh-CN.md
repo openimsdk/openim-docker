@@ -97,7 +97,7 @@ export SERVER_BRANCH="release-v3.2" # 设置 server 版本，默认是 main（�
 # MONGO_DATABASE: 设置 MongoDB 数据库名
 # MINIO_ENDPOINT: 设置 MinIO 服务地址
 # API_URL: 内网环境下，设置 OpenIM Server API 地址
-export API_URL="http://127.0.0.1"
+export API_URL="http://127.0.0.1:10002"
 ```
 
 需要更新配置：
