@@ -89,8 +89,8 @@ make install
 export PASSWORD="openIM123" # 设置密码，默认是 openIM123
 export USER="root" # 设置用户名，默认是 root
 # 选择 chat 版本 和 server 版本https://github.com/OpenIMSDK/Open-IM-Server/blob/main/docs/conversions/images.md, eg: main, release-v*.*
-export CHAT_BRANCH="release-v1.2"   # 设置 chat 版本，默认是 main（不稳定）
-export SERVER_BRANCH="release-v3.2" # 设置 server 版本，默认是 main（不稳定）
+export CHAT_BRANCH="main"   # 设置 chat 版本，默认是 main（不稳定）
+export SERVER_BRANCH="main" # 设置 server 版本，默认是 main（不稳定）
 # ...... 其他环境变量
 # MONGO_USERNAME: 设置 MongoDB 用户名
 # MONGO_PASSWORD: 设置 MongoDB 密码
