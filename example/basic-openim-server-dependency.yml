@@ -1,4 +1,3 @@
-#fixme  Clone openIM Server project before using docker-compose,project address：https://github.com/OpenIMSDK/Open-IM-Server.git
 version: "3"
 services:
   mysql:
@@ -8,7 +7,7 @@ services:
       - 23306:33060
     container_name: mysql
     volumes:
-      - mysql_data_57:/var/lib/mysql
+      - ${DATA_DIR}/components/mysql/data:/var/lib/mysql
       - /etc/localtime:/etc/localtime
     environment:
       MYSQL_ROOT_PASSWORD: ${PASSWORD}
@@ -21,9 +20,9 @@ services:
     container_name: mongo
     command: --wiredTigerCacheSizeGB 1 --auth
     volumes:
-      - mongo_db:/data/db
-      - mongo_logs:/data/logs
-      - mongo_config:/etc/mongo
+      - ${DATA_DIR}/components/mongodb/data/db:/data/db
+      - ${DATA_DIR}/components/mongodb/data/logs:/data/logs
+      - ${DATA_DIR}/components/mongodb/data/conf:/etc/mongo
       - ./scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro
     environment:
       - TZ=Asia/Shanghai
@@ -42,8 +41,9 @@ services:
       - 16379:6379
     container_name: redis
     volumes:
-      - redis_data:/data
-      - redis_config:/usr/local/redis/config/redis.conf
+      - ${DATA_DIR}/components/redis/data:/data
+      #redis config file
+      - ${DATA_DIR}/components/redis/config/redis.conf:/usr/local/redis/config/redis.conf
     environment:
       TZ: Asia/Shanghai
     restart: always
@@ -89,20 +89,40 @@ services:
       - 9090:9090
     container_name: minio
     volumes:
-      - minio_data:/data
-      - minio_config:/root/.minio
+      - ${DATA_DIR}/components/mnt/data:/data
+      - ${DATA_DIR}/components/mnt/config:/root/.minio
     environment:
       MINIO_ROOT_USER: ${USER}
       MINIO_ROOT_PASSWORD: ${PASSWORD}
     restart: always
     command: minio server /data --console-address ':9090'
 
-volumes:
-  mysql_data_57:
-  mongo_db:
-  mongo_logs:
-  mongo_config:
-  redis_data:
-  redis_config:
-  minio_data:
-  minio_config:
+  openim-server:
+    image: ghcr.io/openimsdk/openim-server:main
+    # image: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-server:main
+    # image: openim/openim-server:main
+    container_name: openim-server
+    # healthcheck:
+    #   test: ["CMD-SHELL", "./scripts/check-all.sh"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 5
+    volumes:
+      - ./logs:/openim/openim-server/logs
+      - ./config:/openim/openim-server/config
+      - ./scripts:/openim/openim-server/scripts
+    restart: always
+    depends_on:
+      - zookeeper
+      - kafka
+      - mysql
+      - mongodb
+      - redis
+      - minio
+    network_mode: "host"
+    logging:
+      driver: json-file
+      options:
+        max-size: "1g"
+        max-file: "2"
+
