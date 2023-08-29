@@ -76,8 +76,8 @@ Three ways to modify the configuration:
 export PASSWORD="openIM123" # Set password
 export USER="root" # Set username
 # Choose chat version and server version https://github.com/OpenIMSDK/Open-IM-Server/blob/main/docs/conversions/images.md, eg: main, release-v*.*
-export CHAT_BRANCH="release-v1.2"
-export SERVER_BRANCH="release-v3.2"
+export CHAT_BRANCH="main"
+export SERVER_BRANCH="main"
 #... Other environment variables
 # MONGO_USERNAME: This sets the MongoDB username
 # MONGO_PASSWORD: Set the MongoDB password
