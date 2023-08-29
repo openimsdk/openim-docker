@@ -78,7 +78,13 @@ export USER="root" # Set username
 # Choose chat version and server version https://github.com/OpenIMSDK/Open-IM-Server/blob/main/docs/conversions/images.md, eg: main, release-v*.*
 export CHAT_BRANCH="release-v1.2"
 export SERVER_BRANCH="release-v3.2"
-# ...... Other environment variables
+#... Other environment variables
+# MONGO_USERNAME: This sets the MongoDB username
+# MONGO_PASSWORD: Set the MongoDB password
+# MONGO_DATABASE: Sets the MongoDB database name
+# MINIO_ENDPOINT: set the MinIO service address
+# API_URL: under network environment, set OpenIM Server API address
+export API_URL="http://127.0.0.1:10002"
 ```
 
 Next, update the configuration using `make init`:
