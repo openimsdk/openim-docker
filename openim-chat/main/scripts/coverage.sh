@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 # Copyright © 2023 OpenIM. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,25 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This script is stop all openim service
-# 
-# Usage: `scripts/stop.sh`.
-# Encapsulated as: `make stop`.
+# http://stackoverflow.com/a/21142256/2055281
 
-set -o errexit
-set -o nounset
-set -o pipefail
+echo "mode: atomic" > coverage.txt
 
-OPENIM_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
-
-source "${OPENIM_ROOT}/scripts/install/common.sh"
-
-openim::log::info "\n# Begin to stop all openim service"
-
-echo "++ Ready to stop port: ${OPENIM_SERVER_PORT_LISTARIES[@]}"
-
-openim::util::stop_services_on_ports ${OPENIM_SERVER_PORT_LISTARIES[@]}
-
-echo -e "\n++ Stop all processes in the path ${OPENIM_OUTPUT_HOSTBIN}"
-
-openim::util::stop_services_with_name "${OPENIM_OUTPUT_HOSTBIN}"
+for d in $(find ./* -maxdepth 10 -type d); do
+    if ls $d/*.go &> /dev/null; then
+        go test  -coverprofile=profile.out -covermode=atomic $d
+        if [ -f profile.out ]; then
+            cat profile.out | grep -v "mode: " >> /tmp/coverage.txt
+            rm profile.out
+        fi
+    fi
+done

@@ -13,25 +13,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This script is stop all openim service
-# 
-# Usage: `scripts/stop.sh`.
-# Encapsulated as: `make stop`.
+
+# This script verifies whether codes follow golang convention.
+# Usage: `scripts/verify-pkg-names.sh`.
 
 set -o errexit
 set -o nounset
 set -o pipefail
 
 OPENIM_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
+source "${OPENIM_ROOT}/scripts/lib/init.sh"
 
-source "${OPENIM_ROOT}/scripts/install/common.sh"
+openim::golang::verify_go_version
 
-openim::log::info "\n# Begin to stop all openim service"
-
-echo "++ Ready to stop port: ${OPENIM_SERVER_PORT_LISTARIES[@]}"
-
-openim::util::stop_services_on_ports ${OPENIM_SERVER_PORT_LISTARIES[@]}
-
-echo -e "\n++ Stop all processes in the path ${OPENIM_OUTPUT_HOSTBIN}"
-
-openim::util::stop_services_with_name "${OPENIM_OUTPUT_HOSTBIN}"
+cd "${OPENIM_ROOT}"
+if git --no-pager grep -E $'^(import |\t)[a-z]+[A-Z_][a-zA-Z]* "[^"]+"$' -- '**/*.go' ':(exclude)vendor/*' ':(exclude)**/*.pb.go'; then
+  openim::log::error "Some package aliases break go conventions."
+  echo "To fix these errors, do not use capitalized or underlined characters"
+  echo "in pkg aliases. Refer to https://blog.golang.org/package-names for more info."
+  exit 1
+fi

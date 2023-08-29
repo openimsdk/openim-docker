@@ -13,25 +13,37 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This script is stop all openim service
-# 
-# Usage: `scripts/stop.sh`.
-# Encapsulated as: `make stop`.
 
+# Common utilities, variables and checks for all build scripts.
 set -o errexit
 set -o nounset
 set -o pipefail
 
 OPENIM_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
+source "${OPENIM_ROOT}/scripts/lib/init.sh"
 
-source "${OPENIM_ROOT}/scripts/install/common.sh"
+trap 'openim::util::onCtrlC' INT
 
-openim::log::info "\n# Begin to stop all openim service"
+chmod +x "${OPENIM_ROOT}"/scripts/*.sh
+"${OPENIM_ROOT}"/scripts/init-config.sh
 
-echo "++ Ready to stop port: ${OPENIM_SERVER_PORT_LISTARIES[@]}"
+openim::util::ensure_docker_daemon_connectivity
 
-openim::util::stop_services_on_ports ${OPENIM_SERVER_PORT_LISTARIES[@]}
+DOCKER_COMPOSE_COMMAND=
+# Check if docker-compose command is available
+if command -v docker compose &> /dev/null
+then
+    openim::log::info "docker compose command is available"
+    DOCKER_COMPOSE_COMMAND="docker compose"
+else
+    DOCKER_COMPOSE_COMMAND="docker-compose"
+fi
 
-echo -e "\n++ Stop all processes in the path ${OPENIM_OUTPUT_HOSTBIN}"
+pushd "${OPENIM_ROOT}"
 
-openim::util::stop_services_with_name "${OPENIM_OUTPUT_HOSTBIN}"
+${DOCKER_COMPOSE_COMMAND} up -d
+sleep 60
+${DOCKER_COMPOSE_COMMAND} logs
+${DOCKER_COMPOSE_COMMAND} ps
+
+popd

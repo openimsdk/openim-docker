@@ -13,25 +13,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This script is stop all openim service
-# 
-# Usage: `scripts/stop.sh`.
-# Encapsulated as: `make stop`.
 
 set -o errexit
 set -o nounset
 set -o pipefail
 
 OPENIM_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
+source "${OPENIM_ROOT}/hack/lib/init.sh"
 
-source "${OPENIM_ROOT}/scripts/install/common.sh"
+kube::golang::setup_env
 
-openim::log::info "\n# Begin to stop all openim service"
+cd "${OPENIM_ROOT}"
 
-echo "++ Ready to stop port: ${OPENIM_SERVER_PORT_LISTARIES[@]}"
+find_files() {
+  find . -not \( \
+      \( \
+        -wholename './output' \
+        -o -wholename './.git' \
+        -o -wholename './_output' \
+        -o -wholename './_gopath' \
+        -o -wholename './release' \
+        -o -wholename './target' \
+        -o -wholename '*/vendor/*' \
+      \) -prune \
+    \) -name 'OWNERS*'
+}
 
-openim::util::stop_services_on_ports ${OPENIM_SERVER_PORT_LISTARIES[@]}
-
-echo -e "\n++ Stop all processes in the path ${OPENIM_OUTPUT_HOSTBIN}"
-
-openim::util::stop_services_with_name "${OPENIM_OUTPUT_HOSTBIN}"
+export GO111MODULE=on
+find_files | xargs go run tools/yamlfmt/main.go

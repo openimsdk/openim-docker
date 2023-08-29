@@ -13,25 +13,37 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This script is stop all openim service
-# 
-# Usage: `scripts/stop.sh`.
-# Encapsulated as: `make stop`.
+
+# This file is not intended to be run automatically. It is meant to be run
+# immediately before exporting docs. We do not want to check these documents in
+# by default.
 
 set -o errexit
 set -o nounset
 set -o pipefail
 
 OPENIM_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
+source "${OPENIM_ROOT}/hack/lib/init.sh"
 
-source "${OPENIM_ROOT}/scripts/install/common.sh"
+openim::golang::setup_env
 
-openim::log::info "\n# Begin to stop all openim service"
+BINS=(
+	cmd/gendocs
+	cmd/genopenimdocs
+	cmd/genman
+	cmd/genyaml
+)
+make -C "${OPENIM_ROOT}" WHAT="${BINS[*]}"
 
-echo "++ Ready to stop port: ${OPENIM_SERVER_PORT_LISTARIES[@]}"
+openim::util::ensure-temp-dir
 
-openim::util::stop_services_on_ports ${OPENIM_SERVER_PORT_LISTARIES[@]}
+openim::util::gen-docs "${OPENIM_TEMP}"
 
-echo -e "\n++ Stop all processes in the path ${OPENIM_OUTPUT_HOSTBIN}"
+# remove all of the old docs
+openim::util::remove-gen-docs
 
-openim::util::stop_services_with_name "${OPENIM_OUTPUT_HOSTBIN}"
+# Copy fresh docs into the repo.
+# the shopt is so that we get docs/.generated_docs from the glob.
+shopt -s dotglob
+cp -af "${OPENIM_TEMP}"/* "${OPENIM_ROOT}"
+shopt -u dotglob

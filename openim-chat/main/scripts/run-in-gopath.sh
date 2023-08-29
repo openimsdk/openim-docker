@@ -13,25 +13,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This script is stop all openim service
-# 
-# Usage: `scripts/stop.sh`.
-# Encapsulated as: `make stop`.
+
+# This script sets up a temporary openim GOPATH and runs an arbitrary
+# command under it. Go tooling requires that the current directory be under
+# GOPATH or else it fails to find some things, such as the vendor directory for
+# the project.
+# Usage: `scripts/run-in-gopath.sh <command>`.
 
 set -o errexit
 set -o nounset
 set -o pipefail
 
 OPENIM_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
+source "${OPENIM_ROOT}/scripts/lib/init.sh"
 
-source "${OPENIM_ROOT}/scripts/install/common.sh"
+# This sets up a clean GOPATH and makes sure we are currently in it.
+openim::golang::setup_env
 
-openim::log::info "\n# Begin to stop all openim service"
-
-echo "++ Ready to stop port: ${OPENIM_SERVER_PORT_LISTARIES[@]}"
-
-openim::util::stop_services_on_ports ${OPENIM_SERVER_PORT_LISTARIES[@]}
-
-echo -e "\n++ Stop all processes in the path ${OPENIM_OUTPUT_HOSTBIN}"
-
-openim::util::stop_services_with_name "${OPENIM_OUTPUT_HOSTBIN}"
+# Run the user-provided command.
+"${@}"
