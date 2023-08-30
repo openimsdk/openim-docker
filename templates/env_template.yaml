@@ -32,6 +32,7 @@ DATA_DIR=${DATA_DIR}
 # ============ Component Extension Configuration ==========
 # Address or hostname for the ZooKeeper service (often used in distributed systems for maintaining configuration information)
 ZOOKEEPER_ADDRESS=${ZOOKEEPER_ADDRESS}
+ZOOKEEPER_PORT=${ZOOKEEPER_PORT}
 
 # Port on which MySQL database service is running
 MYSQL_PORT=${MYSQL_PORT}
