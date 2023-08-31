@@ -3,7 +3,10 @@ version: '3'
 
 networks:
   openim-network:
-    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: '128.8.0.0/16'
 
 services:
   mysql:
@@ -18,7 +21,9 @@ services:
       MYSQL_ROOT_PASSWORD: "${MYSQL_PASSWORD}"
     restart: always
     networks:
-      - openim-network
+      openim-network:
+        ipv4_address: 128.8.0.2
+      
 
   mongodb:
     image: mongo:6.0.2
@@ -39,7 +44,8 @@ services:
       - MONGO_INITDB_DATABASE=${MONGO_DATABASE}
     restart: always
     networks:
-      - openim-network
+      openim-network:
+        ipv4_address: 128.8.0.3
 
   redis:
     image: redis:7.0.0
@@ -56,21 +62,24 @@ services:
       net.core.somaxconn: 1024
     command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
     networks:
-      - openim-network
+      openim-network:
+        ipv4_address: 128.8.0.4
 
-  # zookeeper:
-  #   image: bitnami/zookeeper:3.8
-  #   ports:
-  #     - "${ZOOKEEPER_PORT}:2181"
-  #   container_name: zookeeper
-  #   volumes:
-  #     - "/etc/localtime:/etc/localtime"
-  #   environment:
-  #     - ALLOW_ANONYMOUS_LOGIN=yes
-  #     - TZ="Asia/Shanghai"
-  #   restart: always
-  #   networks:
-  #     - openim-network
+  zookeeper:
+    image: bitnami/zookeeper:3.8
+    ports:
+      - "${ZOOKEEPER_PORT}:2181"
+    container_name: zookeeper
+    volumes:
+      - "/etc/localtime:/etc/localtime"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+      - TZ="Asia/Shanghai"
+    restart: always
+    networks:
+      openim-network:
+        ipv4_address: 128.8.0.10
+
   # kafka:
   #   image: bitnami/kafka:3.4
   #   container_name: kafka
@@ -93,8 +102,6 @@ services:
     restart: always
     ports:
       - "${KAFKA_PORT}:9092"
-    networks:
-      - openim-network
     environment:
       - KAFKA_CFG_NODE_ID=0
       - TZ=Asia/Shanghai
@@ -104,6 +111,9 @@ services:
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
       - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+    networks:
+      openim-network:
+        ipv4_address: 128.8.0.5
 
   minio:
     image: minio/minio
@@ -120,7 +130,8 @@ services:
     restart: always
     command: minio server /data --console-address ':9090'
     networks:
-      - openim-network
+      openim-network:
+        ipv4_address: 128.8.0.6
 
   openim-web:
     image: ghcr.io/openimsdk/openim-web:latest
@@ -132,7 +143,8 @@ services:
     ports:
       - "${OPENIM_WEB_PPRT}:11001"
     networks:
-      - openim-network
+      openim-network:
+        ipv4_address: 128.8.0.7
 
   openim-server:
     # image: ghcr.io/openimsdk/openim-server:${SERVER_BRANCH}
@@ -140,6 +152,7 @@ services:
     # image: openim/openim-server:${SERVER_BRANCH}
 #    build: .
     container_name: openim-server
+    hostname: openim-server
     ports:
       - 10001:10001
       - 10002:10002
@@ -165,7 +178,8 @@ services:
         max-size: "1g"
         max-file: "2"
     networks:
-      - openim-network
+      openim-network:
+        ipv4_address: 128.8.0.8
 
   openim-chat:
     # image: ghcr.io/openimsdk/openim-chat:${CHAT_BRANCH}
@@ -198,7 +212,8 @@ services:
         max-size: "1g"
         max-file: "2"
     networks:
-      - openim-network
+      openim-network:
+        ipv4_address: 128.8.0.9
 
   prometheus:
     image: prom/prometheus
@@ -211,7 +226,8 @@ services:
       - openim-server
     command: --web.listen-address=:9091 --config.file="/etc/prometheus/prometheus.yml"
     networks:
-      - openim-network
+      openim-network:
+        ipv4_address: 128.8.0.10
 
   grafana:
     image: grafana/grafana
@@ -223,7 +239,8 @@ services:
     depends_on:
       - prometheus
     networks:
-      - openim-network
+      openim-network:
+        ipv4_address: 128.8.0.11
 
   # node-exporter:
   #   image: quay.io/prometheus/node-exporter

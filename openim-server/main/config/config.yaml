@@ -42,9 +42,9 @@ zookeeper:
 # Log level: 1=slient, 2=error, 3=warn, 4=info
 # Slow query threshold in milliseconds
 mysql:
-  address: [ 127.0.0.1:13306 ]
+  address: [ 127.0.0.1:13307 ]
   username: root
-  password: openIM123asdfgji124
+  password: openIM123
   database: openIM_v3
   maxOpenConn: 1000
   maxIdleConn: 100
@@ -64,7 +64,7 @@ mongo:
   address: [ 127.0.0.1:37017 ]
   database: openIM_v3
   username: root
-  password: openIM123asdfgji124
+  password: openIM123
   maxPoolSize: 100
 
 ###################### Redis configuration information ######################
@@ -74,7 +74,7 @@ mongo:
 redis:
   address: [ 127.0.0.1:16379 ]
   username: ''
-  password: openIM123asdfgji124
+  password: openIM123
 
 ###################### Kafka configuration information ######################
 # Kafka configuration
@@ -132,14 +132,14 @@ api:
 # minio.signEndpoint is minio public network address
 object:
   enable: "minio"
-  apiURL: "http://192.168.2.28:10002"
+  apiURL: "http://14.153.6.114:10002"
   minio:
     bucket: "openim"
     endpoint: "http://127.0.0.1:10005"
     accessKeyID: "root"
-    secretAccessKey: "openIM123asdfgji124"
+    secretAccessKey: "openIM123"
     sessionToken: ''
-    signEndpoint: "http://192.168.2.28:10005"
+    signEndpoint: "http://14.153.6.114:10005"
   cos:
     bucketURL: https://temp-1252357374.cos.ap-chengdu.myqcloud.com
     secretID: ''
@@ -275,7 +275,7 @@ chatRecordsClearTime: "0 2 * * 3"
 msgDestructTime: "0 2 * * *"
 
 # Secret key
-secret: openIM123asdfgji124
+secret: openIM123
 
 # Token policy
 #
