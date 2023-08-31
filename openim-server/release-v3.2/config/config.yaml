@@ -44,7 +44,7 @@ zookeeper:
 mysql:
   address: [ 127.0.0.1:13306 ]
   username: root
-  password: openIM123asdfgji124
+  password: openIM123
   database: openIM_v3
   maxOpenConn: 1000
   maxIdleConn: 100
@@ -64,7 +64,7 @@ mongo:
   address: [ 127.0.0.1:37017 ]
   database: openIM_v3
   username: root
-  password: openIM123asdfgji124
+  password: openIM123
   maxPoolSize: 100
 
 ###################### Redis configuration information ######################
@@ -74,7 +74,7 @@ mongo:
 redis:
   address: [ 127.0.0.1:16379 ]
   username: ''
-  password: openIM123asdfgji124
+  password: openIM123
 
 ###################### Kafka configuration information ######################
 # Kafka configuration
@@ -137,7 +137,7 @@ object:
     bucket: "openim"
     endpoint: "http://127.0.0.1:10005"
     accessKeyID: "root"
-    secretAccessKey: "openIM123asdfgji124"
+    secretAccessKey: "openIM123"
     sessionToken: ''
     signEndpoint: "http://14.153.6.114:10005"
   cos:
@@ -275,7 +275,7 @@ chatRecordsClearTime: "0 2 * * 3"
 msgDestructTime: "0 2 * * *"
 
 # Secret key
-secret: openIM123asdfgji124
+secret: openIM123
 
 # Token policy
 #

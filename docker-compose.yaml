@@ -1,10 +1,6 @@
 #fixme  Clone openIM Server project before using docker-compose,project address：https://github.com/OpenIMSDK/Open-IM-Server.git
 version: '3'
 
-networks:
-  mynetwork:
-    driver: bridge
-
 services:
   mysql:
     image: mysql:5.7
@@ -17,8 +13,6 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: "${MYSQL_PASSWORD}"
     restart: always
-    networks:
-      - mynetwork
 
   mongodb:
     image: mongo:6.0.2
@@ -38,8 +32,6 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
       - MONGO_INITDB_DATABASE=${MONGO_DATABASE}
     restart: always
-    networks:
-      - mynetwork
 
   redis:
     image: redis:7.0.0
@@ -55,25 +47,21 @@ services:
     sysctls:
       net.core.somaxconn: 1024
     command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
-    networks:
-      - mynetwork
 
   zookeeper:
-    image: bitnami/zookeeper:3.8
+    image: wurstmeister/zookeeper
     ports:
       - "${ZOOKEEPER_PORT}:2181"
     container_name: zookeeper
     volumes:
       - "/etc/localtime:/etc/localtime"
     environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
-      - TZ="Asia/Shanghai"
+      TZ: Asia/Shanghai
     restart: always
-    networks:
-      - mynetwork
+    network_mode: "host"
 
   kafka:
-    image: bitnami/kafka:3.4
+    image: wurstmeister/kafka
     container_name: kafka
     restart: always
     ports:
@@ -82,7 +70,6 @@ services:
       TZ: Asia/Shanghai
       KAFKA_BROKER_ID: 0
       KAFKA_ZOOKEEPER_CONNECT: "${ZOOKEEPER_ADDRESS}:${ZOOKEEPER_PORT}"
-      KAFKA_CFG_ZOOKEEPER_CONNECT: "zookeeper:${ZOOKEEPER_PORT}"
       KAFKA_CREATE_TOPICS: "${KAFKA_LATESTMSG_REDIS_TOPIC}:8:1,${KAFKA_MSG_PUSH_TOPIC}:8:1,${KAFKA_OFFLINEMSG_MONGO_TOPIC}:8:1"
       KAFKA_ADVERTISED_LISTENERS: INSIDE://${KAFKA_ADDR}:${KAFKA_PORT},OUTSIDE://CHANGE_TO_YOUR_EXTERNAL_IP:${KAFKA_PORT}
       KAFKA_LISTENERS: INSIDE://:9092,OUTSIDE://:9093
@@ -90,8 +77,7 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
     depends_on:
       - zookeeper
-    networks:
-      - mynetwork
+    network_mode: "host"
 
   minio:
     image: minio/minio
@@ -107,8 +93,6 @@ services:
       MINIO_ROOT_PASSWORD: "${MINIO_SECRET_KEY}"
     restart: always
     command: minio server /data --console-address ':9090'
-    networks:
-      - mynetwork
 
   openim-web:
     image: ghcr.io/openimsdk/openim-web:latest
@@ -119,13 +103,11 @@ services:
     restart: always
     ports:
       - "${OPENIM_WEB_PPRT}:11001"
-    networks:
-      - mynetwork
 
   openim-server:
     # image: ghcr.io/openimsdk/openim-server:${SERVER_BRANCH}
-    image: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-server:${SERVER_BRANCH}
-    # image: openim/openim-server:${SERVER_BRANCH}
+    # image: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-server:${SERVER_BRANCH}
+    image: openim/openim-server:${SERVER_BRANCH}
 #    build: .
     container_name: openim-server
     ports:
@@ -148,18 +130,17 @@ services:
       - mongodb
       - redis
       - minio
+    network_mode: "host"
     logging:
       driver: json-file
       options:
         max-size: "1g"
         max-file: "2"
-    networks:
-      - mynetwork
 
   openim-chat:
     # image: ghcr.io/openimsdk/openim-chat:${CHAT_BRANCH}
-    image: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-chat:${CHAT_BRANCH}
-    # image: ghcr.io/openimsdk/openim-chat:${CHAT_BRANCH}
+    # image: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-chat:${CHAT_BRANCH}
+    image: ghcr.io/openimsdk/openim-chat:${CHAT_BRANCH}
     container_name: openim-chat
     healthcheck:
       test: ["CMD", "/openim/openim-chat/scripts/check_all.sh"]
@@ -181,13 +162,12 @@ services:
       - redis
       - minio
       - openim-server
+    network_mode: "host"
     logging:
       driver: json-file
       options:
         max-size: "1g"
         max-file: "2"
-    networks:
-      - mynetwork
 
   prometheus:
     image: prom/prometheus
@@ -199,8 +179,7 @@ services:
     depends_on:
       - openim-server
     command: --web.listen-address=:9091 --config.file="/etc/prometheus/prometheus.yml"
-    networks:
-      - mynetwork
+    network_mode: "host"
 
   grafana:
     image: grafana/grafana
@@ -211,8 +190,7 @@ services:
     container_name: grafana
     depends_on:
       - prometheus
-    networks:
-      - mynetwork
+    network_mode: "host"
 
   # node-exporter:
   #   image: quay.io/prometheus/node-exporter
