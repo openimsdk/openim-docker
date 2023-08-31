@@ -118,6 +118,7 @@ def "OBJECT_APIURL" "http://${IP}:10002" # 对象的API地址
 def "MINIO_BUCKET" "openim"              # MinIO的存储桶名称
 def "MINIO_PORT" "10005"                 # MinIO的端口
 # MinIO的端点URL
+def MINIO_ADDRESS "${MINIO_ADDRESS}"
 readonly MINIO_ENDPOINT=${MINIO_ENDPOINT:-"http://127.0.0.1:${MINIO_PORT}"}
 def "MINIO_ACCESS_KEY" "${USER}"                                                  # MinIO的访问密钥ID
 def "MINIO_SECRET_KEY" "${PASSWORD}"                                              # MinIO的密钥

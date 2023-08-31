@@ -1,12 +1,24 @@
 #fixme  Clone openIM Server project before using docker-compose,project address：https://github.com/OpenIMSDK/Open-IM-Server.git
 version: '3'
 
+# export MYSQL_ADDRESS=172.28.0.2
+# export MONGO_ADDRESS=172.28.0.3
+# export REDIS_ADDRESS=172.28.0.4
+# export ZOOKEEPER_ADDRESS=172.28.0.5
+# export MYSQL_PORT=3306
+# export MONGO_PORT=27017
+# export REDIS_PORT=6379
+# export ZOOKEEPER_PORT=2181
+# export MINIO_PORT=9000
+
 networks:
-  openim-network:
+  my_network:
+    driver: bridge
     ipam:
       driver: default
       config:
-        - subnet: '128.8.0.0/16'
+        - subnet: 172.28.0.0/16
+        - gateway: 172.28.0.1
 
 services:
   mysql:
@@ -21,9 +33,10 @@ services:
       MYSQL_ROOT_PASSWORD: "${MYSQL_PASSWORD}"
     restart: always
     networks:
-      openim-network:
-        ipv4_address: 128.8.0.2
-      
+      my_network:
+        ipv4_address: 172.28.0.2
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   mongodb:
     image: mongo:6.0.2
@@ -35,7 +48,7 @@ services:
       - "${DATA_DIR}/components/mongodb/data/db:/data/db"
       - "${DATA_DIR}/components/mongodb/data/logs:/data/logs"
       - "${DATA_DIR}/components/mongodb/data/conf:/etc/mongo"
-      - "./scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro"
+      - "${DATA_DIR}/scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro"
     environment:
       - TZ=Asia/Shanghai
       - wiredTigerCacheSizeGB=1
@@ -44,8 +57,8 @@ services:
       - MONGO_INITDB_DATABASE=${MONGO_DATABASE}
     restart: always
     networks:
-      openim-network:
-        ipv4_address: 128.8.0.3
+      my_network:
+        ipv4_address: 172.28.0.3
 
   redis:
     image: redis:7.0.0
@@ -62,39 +75,23 @@ services:
       net.core.somaxconn: 1024
     command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
     networks:
-      openim-network:
-        ipv4_address: 128.8.0.4
+      my_network:
+        ipv4_address: 172.28.0.4
 
   zookeeper:
-    image: bitnami/zookeeper:3.8
-    ports:
+   image: bitnami/zookeeper:3.8
+   ports:
       - "${ZOOKEEPER_PORT}:2181"
-    container_name: zookeeper
-    volumes:
-      - "/etc/localtime:/etc/localtime"
-    environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
-      - TZ="Asia/Shanghai"
-    restart: always
-    networks:
-      openim-network:
-        ipv4_address: 128.8.0.10
-
-  # kafka:
-  #   image: bitnami/kafka:3.4
-  #   container_name: kafka
-  #   restart: always
-
-  #   environment:
-  #     TZ: Asia/Shanghai
-  #     KAFKA_BROKER_ID: 0
-  #     KAFKA_ZOOKEEPER_CONNECT: "${ZOOKEEPER_ADDRESS}:${ZOOKEEPER_PORT}"
-  #     KAFKA_CFG_ZOOKEEPER_CONNECT: "zookeeper:${ZOOKEEPER_PORT}"
-  #     
-  #     KAFKA_ADVERTISED_LISTENERS: INSIDE://${KAFKA_ADDR}:${KAFKA_PORT},OUTSIDE://CHANGE_TO_YOUR_EXTERNAL_IP:${KAFKA_PORT}
-  #     KAFKA_LISTENERS: INSIDE://:9092,OUTSIDE://:9093
-  #     KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT"
-  #     KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+   container_name: zookeeper
+  volumes:
+     - "/etc/localtime:/etc/localtime"
+  environment:
+     - ALLOW_ANONYMOUS_LOGIN=yes
+     - TZ="Asia/Shanghai"
+  restart: always
+  networks:
+      my_network:
+        ipv4_address: 172.28.0.5
 
   kafka:
     image: 'bitnami/kafka:latest'
@@ -102,18 +99,23 @@ services:
     restart: always
     ports:
       - "${KAFKA_PORT}:9092"
+    volumes:
+      - ./scripts/create_topic.sh:/opt/bitnami/kafka/create_topic.sh
+    command: >
+      bash -c "
+      /opt/bitnami/scripts/kafka/run.sh & sleep 30; /opt/bitnami/kafka/create_topic.sh; wait
+      "
     environment:
-      - KAFKA_CFG_NODE_ID=0
-      - TZ=Asia/Shanghai
-      - KAFKA_CFG_PROCESS_ROLES=controller,broker
-      - KAFKA_CREATE_TOPICS="${KAFKA_LATESTMSG_REDIS_TOPIC}:8:1,${KAFKA_MSG_PUSH_TOPIC}:8:1,${KAFKA_OFFLINEMSG_MONGO_TOPIC}:8:1"
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
-      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+       - KAFKA_CFG_NODE_ID=0
+       - TZ=Asia/Shanghai
+       - KAFKA_CFG_PROCESS_ROLES=controller,broker
+       - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+       - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
     networks:
-      openim-network:
-        ipv4_address: 128.8.0.5
+      my_network:
+        ipv4_address: 172.28.0.6
 
   minio:
     image: minio/minio
@@ -130,8 +132,8 @@ services:
     restart: always
     command: minio server /data --console-address ':9090'
     networks:
-      openim-network:
-        ipv4_address: 128.8.0.6
+      my_network:
+        ipv4_address: 172.28.0.7
 
   openim-web:
     image: ghcr.io/openimsdk/openim-web:latest
@@ -143,8 +145,8 @@ services:
     ports:
       - "${OPENIM_WEB_PPRT}:11001"
     networks:
-      openim-network:
-        ipv4_address: 128.8.0.7
+      my_network:
+        ipv4_address: 172.28.0.8
 
   openim-server:
     # image: ghcr.io/openimsdk/openim-server:${SERVER_BRANCH}
@@ -178,8 +180,8 @@ services:
         max-size: "1g"
         max-file: "2"
     networks:
-      openim-network:
-        ipv4_address: 128.8.0.8
+      my_network:
+        ipv4_address: 172.28.0.9
 
   openim-chat:
     # image: ghcr.io/openimsdk/openim-chat:${CHAT_BRANCH}
@@ -212,13 +214,13 @@ services:
         max-size: "1g"
         max-file: "2"
     networks:
-      openim-network:
-        ipv4_address: 128.8.0.9
+      my_network:
+        ipv4_address: 172.28.0.10
 
   prometheus:
     image: prom/prometheus
     volumes:
-      - ./openim-server/${SERVER_BRANCH}/.docker-compose_cfg/prometheus-compose.yml:/etc/prometheus/prometheus.yml
+      - ${DATA_DIR}/openim-server/${SERVER_BRANCH}/.docker-compose_cfg/prometheus-compose.yml:/etc/prometheus/prometheus.yml
     container_name: prometheus
     #    ports:
     #    - 9091:9091
@@ -226,21 +228,21 @@ services:
       - openim-server
     command: --web.listen-address=:9091 --config.file="/etc/prometheus/prometheus.yml"
     networks:
-      openim-network:
-        ipv4_address: 128.8.0.10
+      my_network:
+        ipv4_address: 172.28.0.11
 
   grafana:
     image: grafana/grafana
     volumes:
-      - ./openim-server/${SERVER_BRANCH}/.docker-compose_cfg/datasource-compose.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
-      - ./openim-server/${SERVER_BRANCH}/.docker-compose_cfg/grafana.ini:/etc/grafana/grafana.ini
-      - ./openim-server/${SERVER_BRANCH}/.docker-compose_cfg/node-exporter-full_rev1.json:/var/lib/grafana/dashboards/node-exporter-full_rev1.json
+      - ${DATA_DIR}/openim-server/${SERVER_BRANCH}/.docker-compose_cfg/datasource-compose.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
+      - ${DATA_DIR}/openim-server/${SERVER_BRANCH}/.docker-compose_cfg/grafana.ini:/etc/grafana/grafana.ini
+      - ${DATA_DIR}/openim-server/${SERVER_BRANCH}/.docker-compose_cfg/node-exporter-full_rev1.json:/var/lib/grafana/dashboards/node-exporter-full_rev1.json
     container_name: grafana
     depends_on:
       - prometheus
     networks:
-      openim-network:
-        ipv4_address: 128.8.0.11
+      my_network:
+        ipv4_address: 172.28.0.12
 
   # node-exporter:
   #   image: quay.io/prometheus/node-exporter
