@@ -101,7 +101,7 @@ def "OPENIM_ADMIN_API_PORT" "10009"      # OpenIM Admin API端口
 
 ###################### Zookeeper 配置信息 ######################
 def "ZOOKEEPER_SCHEMA" "openim"          # Zookeeper的模式
-def "ZOOKEEPER_PORT" "2181"              # Zookeeper的端口
+def "ZOOKEEPER_PORT" "12181"              # Zookeeper的端口
 def "ZOOKEEPER_ADDRESS" "127.0.0.1"      # Zookeeper的地址
 def "ZOOKEEPER_USERNAME" ""              # Zookeeper的用户名
 def "ZOOKEEPER_PASSWORD" ""              # Zookeeper的密码

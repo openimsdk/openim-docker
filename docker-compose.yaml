@@ -1,6 +1,13 @@
 #fixme  Clone openIM Server project before using docker-compose,project address：https://github.com/OpenIMSDK/Open-IM-Server.git
 version: '3'
 
+# export OPENIM_SERVER_ADDRESS=172.28.0.1
+# export MYSQL_ADDRESS=172.28.0.1
+# export ZOOKEEPER_ADDRESS=172.28.0.1
+# export MONGO_ADDRESS=172.28.0.1
+# export REDIS_ADDRESS=172.28.0.1
+# export MINIO_ADDRESS=172.28.0.1
+# export KAFKA_ADDRESS=172.28.0.1
 networks:
   openim-server:
     driver: bridge
@@ -8,6 +15,7 @@ networks:
       driver: default
       config:
         - subnet: '${DOCKER_BRIDGE_SUBNET}'
+          gateway: '${DOCKER_BRIDGE_GATEWAY}'
 
 services:
   mysql:
@@ -24,8 +32,6 @@ services:
     networks:
       openim-server:
         ipv4_address: ${MYSQL_NETWORK_ADDRESS}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
 
   mongodb:
     image: mongo:6.0.2
