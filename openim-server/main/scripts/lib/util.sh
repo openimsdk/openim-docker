@@ -257,6 +257,13 @@ openim::util::host_arch() {
 # User:
 # openim::util::check_ports 8080 8081 8082
 # The function returns a status of 1 if any of the processes is not running.
+# The `openim::util::check_ports` function analyzes the state of processes based on given ports.
+# It accepts multiple ports as arguments and prints:
+# 1. The state of the process (whether it's running or not).
+# 2. The start time of the process if it's running.
+# User:
+# openim::util::check_ports 8080 8081 8082
+# The function returns a status of 1 if any of the processes is not running.
 openim::util::check_ports() {
     # An array to collect ports of processes that are not running.
     local not_started=()
@@ -281,7 +288,12 @@ openim::util::check_ports() {
             local fd=$(echo $details | awk '{print $3}')
             
             # Get the start time of the process using the PID
-            local start_time=$(ps -p $pid -o lstart=)
+            if [[ -z $pid ]]; then
+                local start_time="N/A"
+            else
+                # Get the start time of the process using the PID
+                local start_time=$(ps -p $pid -o lstart=)
+            fi
             
             started+=("Port $port - Command: $command, PID: $pid, FD: $fd, Started: $start_time")
         fi
