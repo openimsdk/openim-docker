@@ -24,11 +24,16 @@ OPENIM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
 LOCAL_OUTPUT_ROOT=""${OPENIM_ROOT}"/${OUT_DIR:-_output}"
 source "${OPENIM_ROOT}/scripts/lib/init.sh"
 
-#TODO
+#TODO: Access to the IP networks outside, or you want to use the IP network
 # IP=http://127.0.0.1
 if [ -z "${IP}" ]; then
 	IP=$(openim::util::get_server_ip)
 fi
+
+# config.gateway custom bridge modes
+# if [ -z "{IP_GATEWAY}" ] then
+#     IP_GATEWAY=$(openim::util::get_local_ip)
+# fi
 
 function def() {
 	local var_name="$1"
@@ -62,7 +67,7 @@ mkdir -p ${INSTALL_DIR}
 def "ENV_FILE" ""${OPENIM_ROOT}"/scripts/install/environment.sh"
 
 ###################### Docker compose ###################
-# OPENIM AND CHAT 
+# OPENIM AND CHAT
 def "CHAT_BRANCH" "main"
 def "SERVER_BRANCH" "main"
 
@@ -75,10 +80,20 @@ def "OPENIM_LOG_DIR" "/var/log/openim"
 def "CA_FILE" "${OPENIM_CONFIG_DIR}/cert/ca.pem"
 
 def "OPNEIM_CONFIG" ""${OPENIM_ROOT}"/config"
+def "OPENIM_SERVER_ADDRESS" "127.0.0.1" # OpenIM服务地址
 
-# OpenIM Web 
-def "OPENIM_WEB_DIST_PATH" "/app/dist"
-def "OPENIM_WEB_PPRT" "11001"
+# OpenIM Websocket端口
+readonly OPENIM_WS_PORT=${OPENIM_WS_PORT:-'10001'}
+
+# OpenIM API端口
+readonly API_OPENIM_PORT=${API_OPENIM_PORT:-'10002'}
+def "API_LISTEN_IP" "0.0.0.0" # API的监听IP
+
+###################### openim-chat 配置信息 ######################
+def "OPENIM_CHAT_DATA_DIR" "./openim-chat/${CHAT_BRANCH}"
+def "OPENIM_CHAT_ADDRESS" "127.0.0.1"    # OpenIM服务地址
+def "OPENIM_CHAT_API_PORT" "10008"       # OpenIM API端口
+def "OPENIM_ADMIN_API_PORT" "10009"      # OpenIM Admin API端口
 
 # TODO 注意： 一般的配置都可以使用 def 函数来定义，如果是包含特殊字符，比如说:
 # TODO readonly MSG_DESTRUCT_TIME=${MSG_DESTRUCT_TIME:-'0 2 * * *'}
@@ -118,8 +133,8 @@ def "OBJECT_APIURL" "http://${IP}:10002" # 对象的API地址
 def "MINIO_BUCKET" "openim"              # MinIO的存储桶名称
 def "MINIO_PORT" "10005"                 # MinIO的端口
 # MinIO的端点URL
-def MINIO_ADDRESS "${MINIO_ADDRESS}"
-readonly MINIO_ENDPOINT=${MINIO_ENDPOINT:-"http://127.0.0.1:${MINIO_PORT}"}
+def MINIO_ADDRESS "127.0.0.1"
+readonly MINIO_ENDPOINT=${MINIO_ENDPOINT:-"http://${MINIO_ADDRESS}:${MINIO_PORT}"}
 def "MINIO_ACCESS_KEY" "${USER}"                                                  # MinIO的访问密钥ID
 def "MINIO_SECRET_KEY" "${PASSWORD}"                                              # MinIO的密钥
 def "MINIO_SESSION_TOKEN"                                                         # MinIO的会话令牌
@@ -145,7 +160,7 @@ def "REDIS_PASSWORD" "${PASSWORD}"                          # Redis的密码
 def "KAFKA_USERNAME"                                        # `Kafka` 的用户名
 def "KAFKA_PASSWORD"                                        # `Kafka` 的密码
 def "KAFKA_PORT" "9092"                                     # `Kafka` 的端口
-def "KAFKA_ADDR" "127.0.0.1"                                # `Kafka` 的地址
+def "KAFKA_ADDRESS" "127.0.0.1"                             # `Kafka` 的地址
 def "KAFKA_LATESTMSG_REDIS_TOPIC" "latestMsgToRedis"        # `Kafka` 的最新消息到Redis的主题
 def "KAFKA_OFFLINEMSG_MONGO_TOPIC" "offlineMsgToMongoMysql" # `Kafka` 的离线消息到Mongo的主题
 def "KAFKA_MSG_PUSH_TOPIC" "msgToPush"                      # `Kafka` 的消息到推送的主题
@@ -154,14 +169,22 @@ def "KAFKA_CONSUMERGROUPID_MONGO" "mongo"                   # `Kafka` 的消费�
 def "KAFKA_CONSUMERGROUPID_MYSQL" "mysql"                   # `Kafka` 的消费组ID到MySql
 def "KAFKA_CONSUMERGROUPID_PUSH" "push"                     # `Kafka` 的消费组ID到推送
 
-###################### RPC 配置信息 ######################
-def "RPC_REGISTER_IP"         # RPC的注册IP
-def "RPC_LISTEN_IP" "0.0.0.0" # RPC的监听IP
+###################### openim-web 配置信息 ######################
+def "OPENIM_WEB_PORT" "11001"          # openim-web的端口
+def "OPENIM_WEB_ADDRESS" "127.0.0.1"   # openim-web的地址
+def "OPENIM_WEB_DIST_PATH" "/app/dist" # openim-web的dist路径
 
-###################### API 配置信息 ######################
-# API的开放端口, 只能设置一个端口
-readonly API_OPENIM_PORT=${API_OPENIM_PORT:-'10002'}
-def "API_LISTEN_IP" "0.0.0.0" # API的监听IP
+###################### RPC 配置信息 ######################
+def "RPC_REGISTER_IP"                # RPC的注册IP
+def "RPC_LISTEN_IP" "0.0.0.0"        # RPC的监听IP
+
+###################### prometheus 配置 ######################
+def "PROMETHEUS_PORT" "19090"         # Prometheus的端口
+def "PROMETHEUS_ADDRESS" "127.0.0.1" # Prometheus的地址
+
+###################### Grafana 配置信息 ######################
+def "GRAFANA_PORT" "3000"         # Grafana的端口
+def "GRAFANA_ADDRESS" "127.0.0.1" # Grafana的地址
 
 ###################### RPC Port Configuration Variables ######################
 # For launching multiple programs, just fill in multiple ports separated by commas
@@ -208,8 +231,6 @@ def "LOG_IS_JSON" "false"                           # 日志是否为JSON格式
 def "LOG_WITH_STACK" "false"                        # 日志是否带有堆栈信息
 
 ###################### Variables definition ######################
-# OpenIM WS端口
-readonly OPENIM_WS_PORT=${OPENIM_WS_PORT:-'10001'}
 def "WEBSOCKET_MAX_CONN_NUM" "100000" # Websocket最大连接数
 def "WEBSOCKET_MAX_MSG_LEN" "4096"    # Websocket最大消息长度
 def "WEBSOCKET_TIMEOUT" "10"          # Websocket超时
@@ -438,3 +459,40 @@ def "CONFIG_USER_CLIENT_CERTIFICATE" "${HOME}/.openim/cert/admin.pem"
 def "CONFIG_USER_CLIENT_KEY" "${HOME}/.openim/cert/admin-key.pem"
 def "CONFIG_SERVER_ADDRESS" "${OPENIM_APISERVER_HOST}:${OPENIM_APISERVER_SECURE_BIND_PORT}"
 def "CONFIG_SERVER_CERTIFICATE_AUTHORITY" "${CA_FILE}"
+
+###################### OpenIM Docker Network ######################
+# 设置 Docker 网络的网段
+readonly DOCKER_BRIDGE_SUBNET=${DOCKER_BRIDGE_SUBNET:-'172.28.0.0/16'}
+
+IP_PREFIX=$(echo $DOCKER_BRIDGE_SUBNET | cut -d '/' -f 1)
+SUBNET=$(echo $DOCKER_BRIDGE_SUBNET | cut -d '/' -f 2)
+LAST_OCTET=$(echo $IP_PREFIX | cut -d '.' -f 4)
+
+generate_ip() {
+	local NEW_IP="$(echo $IP_PREFIX | cut -d '.' -f 1-3).$((LAST_OCTET++))"
+	echo $NEW_IP
+}
+LAST_OCTET=$((LAST_OCTET + 1))
+DOCKER_BRIDGE_GATEWAY=$(generate_ip)
+LAST_OCTET=$((LAST_OCTET + 1))
+MYSQL_NETWORK_ADDRESS=$(generate_ip)
+LAST_OCTET=$((LAST_OCTET + 1))
+MONGO_NETWORK_ADDRESS=$(generate_ip)
+LAST_OCTET=$((LAST_OCTET + 1))
+REDIS_NETWORK_ADDRESS=$(generate_ip)
+LAST_OCTET=$((LAST_OCTET + 1))
+KAFKA_NETWORK_ADDRESS=$(generate_ip)
+LAST_OCTET=$((LAST_OCTET + 1))
+ZOOKEEPER_NETWORK_ADDRESS=$(generate_ip)
+LAST_OCTET=$((LAST_OCTET + 1))
+MINIO_NETWORK_ADDRESS=$(generate_ip)
+LAST_OCTET=$((LAST_OCTET + 1))
+OPENIM_WEB_NETWORK_ADDRESS=$(generate_ip)
+LAST_OCTET=$((LAST_OCTET + 1))
+OPENIM_SERVER_NETWORK_ADDRESS=$(generate_ip)
+LAST_OCTET=$((LAST_OCTET + 1))
+OPENIM_CHAT_NETWORK_ADDRESS=$(generate_ip)
+LAST_OCTET=$((LAST_OCTET + 1))
+PROMETHEUS_NETWORK_ADDRESS=$(generate_ip)
+LAST_OCTET=$((LAST_OCTET + 1))
+GRAFANA_NETWORK_ADDRESS=$(generate_ip)

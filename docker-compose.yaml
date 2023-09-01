@@ -1,24 +1,13 @@
 #fixme  Clone openIM Server project before using docker-compose,project address：https://github.com/OpenIMSDK/Open-IM-Server.git
 version: '3'
 
-# export MYSQL_ADDRESS=172.28.0.2
-# export MONGO_ADDRESS=172.28.0.3
-# export REDIS_ADDRESS=172.28.0.4
-# export ZOOKEEPER_ADDRESS=172.28.0.5
-# export MYSQL_PORT=3306
-# export MONGO_PORT=27017
-# export REDIS_PORT=6379
-# export ZOOKEEPER_PORT=2181
-# export MINIO_PORT=9000
-
 networks:
-  my_network:
+  openim-server:
     driver: bridge
     ipam:
       driver: default
       config:
-        - subnet: 172.28.0.0/16
-        - gateway: 172.28.0.1
+        - subnet: '${DOCKER_BRIDGE_SUBNET}'
 
 services:
   mysql:
@@ -33,8 +22,8 @@ services:
       MYSQL_ROOT_PASSWORD: "${MYSQL_PASSWORD}"
     restart: always
     networks:
-      my_network:
-        ipv4_address: 172.28.0.2
+      openim-server:
+        ipv4_address: ${MYSQL_NETWORK_ADDRESS}
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
@@ -48,7 +37,7 @@ services:
       - "${DATA_DIR}/components/mongodb/data/db:/data/db"
       - "${DATA_DIR}/components/mongodb/data/logs:/data/logs"
       - "${DATA_DIR}/components/mongodb/data/conf:/etc/mongo"
-      - "${DATA_DIR}/scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro"
+      - ./openim-server/${SERVER_BRANCH}/scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro"
     environment:
       - TZ=Asia/Shanghai
       - wiredTigerCacheSizeGB=1
@@ -57,8 +46,8 @@ services:
       - MONGO_INITDB_DATABASE=${MONGO_DATABASE}
     restart: always
     networks:
-      my_network:
-        ipv4_address: 172.28.0.3
+      openim-server:
+        ipv4_address: ${MONGO_NETWORK_ADDRESS}
 
   redis:
     image: redis:7.0.0
@@ -75,23 +64,23 @@ services:
       net.core.somaxconn: 1024
     command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
     networks:
-      my_network:
-        ipv4_address: 172.28.0.4
+      openim-server:
+        ipv4_address: ${REDIS_NETWORK_ADDRESS}
 
   zookeeper:
    image: bitnami/zookeeper:3.8
    ports:
       - "${ZOOKEEPER_PORT}:2181"
    container_name: zookeeper
-  volumes:
+   volumes:
      - "/etc/localtime:/etc/localtime"
-  environment:
+   environment:
      - ALLOW_ANONYMOUS_LOGIN=yes
      - TZ="Asia/Shanghai"
-  restart: always
-  networks:
-      my_network:
-        ipv4_address: 172.28.0.5
+   restart: always
+   networks:
+      openim-server:
+        ipv4_address: ${ZOOKEEPER_NETWORK_ADDRESS}
 
   kafka:
     image: 'bitnami/kafka:latest'
@@ -100,7 +89,7 @@ services:
     ports:
       - "${KAFKA_PORT}:9092"
     volumes:
-      - ./scripts/create_topic.sh:/opt/bitnami/kafka/create_topic.sh
+      - ./openim-server/${SERVER_BRANCH}/scripts/create_topic.sh:/opt/bitnami/kafka/create_topic.sh
     command: >
       bash -c "
       /opt/bitnami/scripts/kafka/run.sh & sleep 30; /opt/bitnami/kafka/create_topic.sh; wait
@@ -108,14 +97,17 @@ services:
     environment:
        - KAFKA_CFG_NODE_ID=0
        - TZ=Asia/Shanghai
+       - KAFKA_ADVERTISED_LISTENERS="INSIDE://kafka:9093,OUTSIDE://host.docker.internal:9092"
        - KAFKA_CFG_PROCESS_ROLES=controller,broker
        - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+       - KAFKA_LISTENERS="INSIDE://0.0.0.0:9093,OUTSIDE://0.0.0.0:9092"
        - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
        - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
        - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+       - KAFKA_ZOOKEEPER_CONNECT="host.docker.internal:2181"
     networks:
-      my_network:
-        ipv4_address: 172.28.0.6
+      openim-server:
+        ipv4_address: ${KAFKA_NETWORK_ADDRESS}
 
   minio:
     image: minio/minio
@@ -132,21 +124,23 @@ services:
     restart: always
     command: minio server /data --console-address ':9090'
     networks:
-      my_network:
-        ipv4_address: 172.28.0.7
+      openim-server:
+        ipv4_address: ${MINIO_NETWORK_ADDRESS}
 
   openim-web:
     image: ghcr.io/openimsdk/openim-web:latest
     container_name: openim-web
     environment:
       - OPENIM_WEB_DIST_PATH=${OPENIM_WEB_DIST_PATH}
-      - OPENIM_WEB_PPRT=${OPENIM_WEB_PPRT}
+      - OPENIM_WEB_PORT=${OPENIM_WEB_PORT}
     restart: always
     ports:
-      - "${OPENIM_WEB_PPRT}:11001"
+      - "${OPENIM_WEB_PORT}:11001"
     networks:
-      my_network:
-        ipv4_address: 172.28.0.8
+      openim-server:
+        ipv4_address: ${OPENIM_WEB_NETWORK_ADDRESS}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   openim-server:
     # image: ghcr.io/openimsdk/openim-server:${SERVER_BRANCH}
@@ -154,19 +148,19 @@ services:
     # image: openim/openim-server:${SERVER_BRANCH}
 #    build: .
     container_name: openim-server
-    hostname: openim-server
     ports:
-      - 10001:10001
-      - 10002:10002
+      - ${OPENIM_WS_PORT}:10001
+      - ${API_OPENIM_PORT}:10002
     healthcheck:
       test: ["CMD", "/openim/openim-server/scripts/check-all.sh"]
       interval: 300s
       timeout: 10s
       retries: 5
     volumes:
-      - ${DATA_DIR}/openim-server/${SERVER_BRANCH}/logs:/openim/openim-server/logs
-      - ${DATA_DIR}/openim-server/${SERVER_BRANCH}/config:/openim/openim-server/config
-      - ${DATA_DIR}/openim-server/${SERVER_BRANCH}/scripts:/openim/openim-server/scripts
+      - /openim/openim-server/logs:/openim/openim-server/logs
+      - /openim/openim-server/_output:/openim/openim-server/_output
+      - ./openim-server/${SERVER_BRANCH}/config:/openim/openim-server/config
+      - ./openim-server/${SERVER_BRANCH}/scripts:/openim/openim-server/scripts
     restart: always
     depends_on:
       - kafka
@@ -180,8 +174,10 @@ services:
         max-size: "1g"
         max-file: "2"
     networks:
-      my_network:
-        ipv4_address: 172.28.0.9
+      openim-server:
+        ipv4_address: ${OPENIM_SERVER_NETWORK_ADDRESS}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   openim-chat:
     # image: ghcr.io/openimsdk/openim-chat:${CHAT_BRANCH}
@@ -194,12 +190,12 @@ services:
       timeout: 10s
       retries: 5
     ports:
-      - 10008:10008
-      - 10009:10009
+      - ${OPENIM_CHAT_API_PORT}:10008
+      - ${OPENIM_ADMIN_API_PORT}:10009
     volumes:
-      - ${DATA_DIR}/openim-chat/${CHAT_BRANCH}/logs:/openim/openim-chat/logs
-      - ${DATA_DIR}/openim-chat/${CHAT_BRANCH}/config:/openim/openim-chat/config
-      - ${DATA_DIR}/openim-chat/${CHAT_BRANCH}/scripts:/openim/openim-chat/scripts
+      - /openim/openim-chat/logs:/openim/openim-chat/logs
+      - ./openim-chat/${CHAT_BRANCH}/config:/openim/openim-chat/config
+      - ./openim-chat/${CHAT_BRANCH}/scripts:/openim/openim-chat/scripts
     restart: always
     user: root:root
     depends_on:
@@ -214,35 +210,39 @@ services:
         max-size: "1g"
         max-file: "2"
     networks:
-      my_network:
-        ipv4_address: 172.28.0.10
+      openim-server:
+        ipv4_address: ${OPENIM_CHAT_NETWORK_ADDRESS}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   prometheus:
     image: prom/prometheus
     volumes:
-      - ${DATA_DIR}/openim-server/${SERVER_BRANCH}/.docker-compose_cfg/prometheus-compose.yml:/etc/prometheus/prometheus.yml
+      - ./openim-server/${SERVER_BRANCH}/.docker-compose_cfg/prometheus-compose.yml:/etc/prometheus/prometheus.yml
     container_name: prometheus
-    #    ports:
-    #    - 9091:9091
+    ports:
+      - ${PROMETHEUS_PORT}:9091
     depends_on:
       - openim-server
     command: --web.listen-address=:9091 --config.file="/etc/prometheus/prometheus.yml"
     networks:
-      my_network:
-        ipv4_address: 172.28.0.11
+      openim-server:
+        ipv4_address: ${PROMETHEUS_NETWORK_ADDRESS}
 
   grafana:
     image: grafana/grafana
     volumes:
-      - ${DATA_DIR}/openim-server/${SERVER_BRANCH}/.docker-compose_cfg/datasource-compose.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
-      - ${DATA_DIR}/openim-server/${SERVER_BRANCH}/.docker-compose_cfg/grafana.ini:/etc/grafana/grafana.ini
-      - ${DATA_DIR}/openim-server/${SERVER_BRANCH}/.docker-compose_cfg/node-exporter-full_rev1.json:/var/lib/grafana/dashboards/node-exporter-full_rev1.json
+      - ./openim-server/${SERVER_BRANCH}/.docker-compose_cfg/datasource-compose.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
+      - ./openim-server/${SERVER_BRANCH}/.docker-compose_cfg/grafana.ini:/etc/grafana/grafana.ini
+      - ./openim-server/${SERVER_BRANCH}/.docker-compose_cfg/node-exporter-full_rev1.json:/var/lib/grafana/dashboards/node-exporter-full_rev1.json
     container_name: grafana
+    ports:
+      - ${GRAFANA_PORT}:3000
     depends_on:
       - prometheus
     networks:
-      my_network:
-        ipv4_address: 172.28.0.12
+      openim-server:
+        ipv4_address: ${GRAFANA_NETWORK_ADDRESS}
 
   # node-exporter:
   #   image: quay.io/prometheus/node-exporter
