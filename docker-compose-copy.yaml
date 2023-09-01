@@ -1,0 +1,250 @@
+#fixme  Clone openIM Server project before using docker-compose,project address：https://github.com/OpenIMSDK/Open-IM-Server.git
+version: '3'
+
+networks:
+  openim-network:
+    ipam:
+      driver: default
+      config:
+        - subnet: '128.8.0.0/16'
+
+services:
+  mysql:
+    image: mysql:5.7
+    ports:
+      - "${MYSQL_PORT}:3306"
+    container_name: mysql
+    volumes:
+      - "${DATA_DIR}/components/mysql/data:/var/lib/mysql"
+      - "/etc/localtime:/etc/localtime"
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_PASSWORD}"
+    restart: always
+    networks:
+      openim-network:
+        ipv4_address: 128.8.0.2
+      
+
+  mongodb:
+    image: mongo:6.0.2
+    ports:
+      - "${MONGO_PORT}:27017"
+    container_name: mongo
+    command: --wiredTigerCacheSizeGB 1 --auth
+    volumes:
+      - "${DATA_DIR}/components/mongodb/data/db:/data/db"
+      - "${DATA_DIR}/components/mongodb/data/logs:/data/logs"
+      - "${DATA_DIR}/components/mongodb/data/conf:/etc/mongo"
+      - "./scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro"
+    environment:
+      - TZ=Asia/Shanghai
+      - wiredTigerCacheSizeGB=1
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGO_DATABASE}
+    restart: always
+    networks:
+      openim-network:
+        ipv4_address: 128.8.0.3
+
+  redis:
+    image: redis:7.0.0
+    ports:
+      - "${REDIS_PORT}:6379"
+    container_name: redis
+    volumes:
+      - "${DATA_DIR}/components/redis/data:/data"
+      - "${DATA_DIR}/components/redis/config/redis.conf:/usr/local/redis/config/redis.conf"
+    environment:
+      TZ: Asia/Shanghai
+    restart: always
+    sysctls:
+      net.core.somaxconn: 1024
+    command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
+    networks:
+      openim-network:
+        ipv4_address: 128.8.0.4
+
+  zookeeper:
+    image: bitnami/zookeeper:3.8
+    ports:
+      - "${ZOOKEEPER_PORT}:2181"
+    container_name: zookeeper
+    volumes:
+      - "/etc/localtime:/etc/localtime"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+      - TZ="Asia/Shanghai"
+    restart: always
+    networks:
+      openim-network:
+        ipv4_address: 128.8.0.10
+
+  # kafka:
+  #   image: bitnami/kafka:3.4
+  #   container_name: kafka
+  #   restart: always
+
+  #   environment:
+  #     TZ: Asia/Shanghai
+  #     KAFKA_BROKER_ID: 0
+  #     KAFKA_ZOOKEEPER_CONNECT: "${ZOOKEEPER_ADDRESS}:${ZOOKEEPER_PORT}"
+  #     KAFKA_CFG_ZOOKEEPER_CONNECT: "zookeeper:${ZOOKEEPER_PORT}"
+  #     
+  #     KAFKA_ADVERTISED_LISTENERS: INSIDE://${KAFKA_ADDR}:${KAFKA_PORT},OUTSIDE://CHANGE_TO_YOUR_EXTERNAL_IP:${KAFKA_PORT}
+  #     KAFKA_LISTENERS: INSIDE://:9092,OUTSIDE://:9093
+  #     KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT"
+  #     KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+
+  kafka:
+    image: 'bitnami/kafka:latest'
+    container_name: kafka
+    restart: always
+    ports:
+      - "${KAFKA_PORT}:9092"
+    environment:
+      - KAFKA_CFG_NODE_ID=0
+      - TZ=Asia/Shanghai
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CREATE_TOPICS="${KAFKA_LATESTMSG_REDIS_TOPIC}:8:1,${KAFKA_MSG_PUSH_TOPIC}:8:1,${KAFKA_OFFLINEMSG_MONGO_TOPIC}:8:1"
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+    networks:
+      openim-network:
+        ipv4_address: 128.8.0.5
+
+  minio:
+    image: minio/minio
+    ports:
+      - "${MINIO_PORT}:9000"
+      - "9090:9090"
+    container_name: minio
+    volumes:
+      - "${DATA_DIR}/components/mnt/data:/data"
+      - "${DATA_DIR}/components/mnt/config:/root/.minio"
+    environment:
+      MINIO_ROOT_USER: "${MINIO_ACCESS_KEY}"
+      MINIO_ROOT_PASSWORD: "${MINIO_SECRET_KEY}"
+    restart: always
+    command: minio server /data --console-address ':9090'
+    networks:
+      openim-network:
+        ipv4_address: 128.8.0.6
+
+  openim-web:
+    image: ghcr.io/openimsdk/openim-web:latest
+    container_name: openim-web
+    environment:
+      - OPENIM_WEB_DIST_PATH=${OPENIM_WEB_DIST_PATH}
+      - OPENIM_WEB_PPRT=${OPENIM_WEB_PPRT}
+    restart: always
+    ports:
+      - "${OPENIM_WEB_PPRT}:11001"
+    networks:
+      openim-network:
+        ipv4_address: 128.8.0.7
+
+  openim-server:
+    # image: ghcr.io/openimsdk/openim-server:${SERVER_BRANCH}
+    image: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-server:${SERVER_BRANCH}
+    # image: openim/openim-server:${SERVER_BRANCH}
+#    build: .
+    container_name: openim-server
+    hostname: openim-server
+    ports:
+      - 10001:10001
+      - 10002:10002
+    healthcheck:
+      test: ["CMD", "/openim/openim-server/scripts/check-all.sh"]
+      interval: 300s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - ${DATA_DIR}/openim-server/${SERVER_BRANCH}/logs:/openim/openim-server/logs
+      - ${DATA_DIR}/openim-server/${SERVER_BRANCH}/config:/openim/openim-server/config
+      - ${DATA_DIR}/openim-server/${SERVER_BRANCH}/scripts:/openim/openim-server/scripts
+    restart: always
+    depends_on:
+      - kafka
+      - mysql
+      - mongodb
+      - redis
+      - minio
+    logging:
+      driver: json-file
+      options:
+        max-size: "1g"
+        max-file: "2"
+    networks:
+      openim-network:
+        ipv4_address: 128.8.0.8
+
+  openim-chat:
+    # image: ghcr.io/openimsdk/openim-chat:${CHAT_BRANCH}
+    image: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-chat:${CHAT_BRANCH}
+    # image: ghcr.io/openimsdk/openim-chat:${CHAT_BRANCH}
+    container_name: openim-chat
+    healthcheck:
+      test: ["CMD", "/openim/openim-chat/scripts/check_all.sh"]
+      interval: 300s
+      timeout: 10s
+      retries: 5
+    ports:
+      - 10008:10008
+      - 10009:10009
+    volumes:
+      - ${DATA_DIR}/openim-chat/${CHAT_BRANCH}/logs:/openim/openim-chat/logs
+      - ${DATA_DIR}/openim-chat/${CHAT_BRANCH}/config:/openim/openim-chat/config
+      - ${DATA_DIR}/openim-chat/${CHAT_BRANCH}/scripts:/openim/openim-chat/scripts
+    restart: always
+    user: root:root
+    depends_on:
+      - mysql
+      - mongodb
+      - redis
+      - minio
+      - openim-server
+    logging:
+      driver: json-file
+      options:
+        max-size: "1g"
+        max-file: "2"
+    networks:
+      openim-network:
+        ipv4_address: 128.8.0.9
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./openim-server/${SERVER_BRANCH}/.docker-compose_cfg/prometheus-compose.yml:/etc/prometheus/prometheus.yml
+    container_name: prometheus
+    #    ports:
+    #    - 9091:9091
+    depends_on:
+      - openim-server
+    command: --web.listen-address=:9091 --config.file="/etc/prometheus/prometheus.yml"
+    networks:
+      openim-network:
+        ipv4_address: 128.8.0.10
+
+  grafana:
+    image: grafana/grafana
+    volumes:
+      - ./openim-server/${SERVER_BRANCH}/.docker-compose_cfg/datasource-compose.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
+      - ./openim-server/${SERVER_BRANCH}/.docker-compose_cfg/grafana.ini:/etc/grafana/grafana.ini
+      - ./openim-server/${SERVER_BRANCH}/.docker-compose_cfg/node-exporter-full_rev1.json:/var/lib/grafana/dashboards/node-exporter-full_rev1.json
+    container_name: grafana
+    depends_on:
+      - prometheus
+    networks:
+      openim-network:
+        ipv4_address: 128.8.0.11
+
+  # node-exporter:
+  #   image: quay.io/prometheus/node-exporter
+  #   container_name: node-exporter
+  #   restart: always
+  #   ports:
+  #     - "9100:9100"
