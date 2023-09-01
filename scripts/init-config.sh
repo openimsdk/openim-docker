@@ -24,7 +24,7 @@ OPENIM_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 
 source "${OPENIM_ROOT}/scripts/lib/init.sh"
 
-# 定义一个配置文件数组，其中包含需要生成的配置文件的名称路径 
+# 定义一个配置文件数组，其中包含需要生成的配置文件的名称路径
 # (en: Define a profile array that contains the name path of the profile to be generated.)
 readonly ENV_FILE=${ENV_FILE:-"${OPENIM_ROOT}/scripts/install/environment.sh"}
 

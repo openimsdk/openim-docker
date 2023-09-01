@@ -26,8 +26,7 @@ if [ "$1" == "--print-screen" ]; then
     PRINT_SCREEN=1
 fi
 
-mkdir -p ${SCRIPTS_ROOT}/../logs/
-
+mkdir -p ${SCRIPTS_ROOT}/../logs
 # 如果没有设置 PRINT_SCREEN 标记，那么进行日志重定向
 if [ -z "$PRINT_SCREEN" ]; then
     exec > ${SCRIPTS_ROOT}/../logs/openIM.log 2>&1
