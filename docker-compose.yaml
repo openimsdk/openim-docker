@@ -1,13 +1,6 @@
 #fixme  Clone openIM Server project before using docker-compose,project address：https://github.com/OpenIMSDK/Open-IM-Server.git
 version: '3'
 
-# export OPENIM_SERVER_ADDRESS=172.28.0.1
-# export MYSQL_ADDRESS=172.28.0.1
-# export ZOOKEEPER_ADDRESS=172.28.0.1
-# export MONGO_ADDRESS=172.28.0.1
-# export REDIS_ADDRESS=172.28.0.1
-# export MINIO_ADDRESS=172.28.0.1
-# export KAFKA_ADDRESS=172.28.0.1
 networks:
   openim-server:
     driver: bridge
@@ -57,9 +50,9 @@ services:
 
   redis:
     image: redis:7.0.0
+    container_name: redis
     ports:
       - "${REDIS_PORT}:6379"
-    container_name: redis
     volumes:
       - "${DATA_DIR}/components/redis/data:/data"
       - "${DATA_DIR}/components/redis/config/redis.conf:/usr/local/redis/config/redis.conf"
@@ -75,9 +68,9 @@ services:
 
   zookeeper:
    image: bitnami/zookeeper:3.8
+   container_name: zookeeper
    ports:
       - "${ZOOKEEPER_PORT}:2181"
-   container_name: zookeeper
    volumes:
      - "/etc/localtime:/etc/localtime"
    environment:
