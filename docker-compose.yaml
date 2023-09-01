@@ -36,7 +36,7 @@ services:
       - "${DATA_DIR}/components/mongodb/data/db:/data/db"
       - "${DATA_DIR}/components/mongodb/data/logs:/data/logs"
       - "${DATA_DIR}/components/mongodb/data/conf:/etc/mongo"
-      - ./openim-server/${SERVER_BRANCH}/scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro"
+      - "./openim-server/${SERVER_BRANCH}/scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro"
     environment:
       - TZ=Asia/Shanghai
       - wiredTigerCacheSizeGB=1
