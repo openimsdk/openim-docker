@@ -74,7 +74,6 @@ def "SERVER_BRANCH" "main"
 ###################### OpenIM Docker Network ######################
 # 设置 Docker 网络的网段
 readonly DOCKER_BRIDGE_SUBNET=${DOCKER_BRIDGE_SUBNET:-'172.28.0.0/16'}
-
 IP_PREFIX=$(echo $DOCKER_BRIDGE_SUBNET | cut -d '/' -f 1)
 SUBNET=$(echo $DOCKER_BRIDGE_SUBNET | cut -d '/' -f 2)
 LAST_OCTET=$(echo $IP_PREFIX | cut -d '.' -f 4)
