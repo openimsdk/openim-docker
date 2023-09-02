@@ -44,16 +44,13 @@ echo "++++ status_file2: ${status_file2}"
 if [[ "$status_file1" == "M" && "$status_file2" != "M" ]]; then
     cp $file1_path $file2_path
     echo "$file1_path was copied over $file2_path because $file1_path has uncommitted changes."
-    env_file="$file1_path"
 elif [[ "$status_file1" != "M" && "$status_file2" == "M" ]]; then
     cp $file2_path $file1_path
     echo "$file2_path was copied over status_file1 because $file2_path has uncommitted changes."
-    env_file="$file2_path"
 elif [[ "$status_file1" == "M" && "$status_file2" == "M" ]]; then
     echo "Both files have uncommitted changes."
     echo "++++ file1_path: ${file1_path}"
     echo "++++ file2_path: ${file2_path}"
-    exit 0
 else
     echo "Both files have no uncommitted changes."
     commit_file1_data=$(git log -1 --pretty=format:"%ad" --date=short $file1_path | tr -d '-')
@@ -61,14 +58,11 @@ else
     if [[ "$commit_file1_data" > "$commit_file2_data" ]]; then
         cp $file1_path $file2_path
         echo "$file1_path was copied over $file2_path"
-        env_file="$file1_path"
     elif [[ "$commit_file1_data" < "$commit_file2_data" ]]; then
         cp $file2_path $file1_path
-        env_file="$file2_path"
         echo "$file2_path was copied over $file1_path"
     else
         echo "Both files were modified at the same time. No copying required."
-        env_file="$file2_path"
     fi
 fi
 
@@ -87,7 +81,7 @@ for template in "${!TEMPLATES[@]}"; do
   IFS=';' read -ra OUTPUT_FILES <<< "${TEMPLATES[$template]}"
   for output_file in "${OUTPUT_FILES[@]}"; do
     openim::log::info "⌚  Working with template file: ${template} to ${output_file}..."
-    "${OPENIM_ROOT}/scripts/genconfig.sh" "${env_file}" "${template}" > "${output_file}" || {
+    "${OPENIM_ROOT}/scripts/genconfig.sh" "${file1_path}" "${template}" > "${output_file}" || {
       openim::log::error "Error processing template file ${template}"
       exit 1
     }

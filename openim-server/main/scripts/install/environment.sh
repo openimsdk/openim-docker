@@ -42,7 +42,7 @@ function def() {
 }
 
 # app要能访问到此ip和端口或域名
-def "API_URL" "http://${IP}:10002"
+readonly API_URL=${API_URL:-"http://${IP}:10002"}
 
 # OpenIM Docker Compose 数据存储的默认路径
 def "DATA_DIR" "${OPENIM_ROOT}"
