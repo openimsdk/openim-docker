@@ -22,11 +22,47 @@ set -o pipefail
 
 OPENIM_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 
-source "${OPENIM_ROOT}/scripts/lib/init.sh"
+source "${OPENIM_ROOT}/scripts/install/common.sh"
 
-# 定义一个配置文件数组，其中包含需要生成的配置文件的名称路径
-# (en: Define a profile array that contains the name path of the profile to be generated.)
-readonly ENV_FILE=${ENV_FILE:-"${OPENIM_ROOT}/scripts/install/environment.sh"}
+openim::log::slack "The initialized version selected CHAT_BRANCH: ${CHAT_BRANCH}"
+openim::log::slack "The initialized version selected SERVER_BRANCH: ${SERVER_BRANCH}"
+
+openim::log::info "🤲 Get and overwrite the configuration file by diff"
+
+file1_path="${OPENIM_ROOT}/openim-server/${SERVER_BRANCH}/scripts/install/environment.sh"
+file2_path="${OPENIM_ROOT}/scripts/install/environment.sh"
+
+status_file1=$(git status --porcelain $file1_path | awk '{print $1}')
+status_file2=$(git status --porcelain $file2_path | awk '{print $1}')
+
+echo "++++ status_file1: ${status_file1}"
+echo "++++ status_file2: ${status_file2}"
+
+if [[ "$status_file1" == "M" && "$status_file2" != "M" ]]; then
+    cp $file1_path $file2_path
+    echo "$file1_path was copied over $file2_path because $file1_path has uncommitted changes."
+    env_file="$file1_path"
+elif [[ "$status_file1" != "M" && "$status_file2" == "M" ]]; then
+    cp $file2_path $file1_path
+    echo "$file2_path was copied over status_file1 because $file2_path has uncommitted changes."
+    env_file="$file2_path"
+elif [[ "$status_file1" == "M" && "$status_file2" == "M" ]]; then
+    echo "Both files have uncommitted changes."
+    commit_file1=$(git log -n 1 --pretty=format:"%cd" -- $file1_path)
+    commit_file2=$(git log -n 1 --pretty=format:"%cd" -- $file2_path)
+    if [[ "$commit_file1" > "$commit_file2" ]]; then
+        cp $file1_path $file2_path
+        echo "$file1_path was copied over $file2_path"
+        env_file="$file1_path"
+    elif [[ "$commit_file1" < "$commit_file2" ]]; then
+        cp $file2_path $file1_path
+        env_file="$file2_path"
+        echo "$file2_path was copied over $file1_path"
+    else
+        echo "Both files were modified at the same time. No copying required."
+        env_file="$file2_path"
+    fi
+fi
 
 # 定义关联数组，其中键是模板文件，值是对应的输出文件 
 # (en: Defines an associative array where the keys are the template files and the values are the corresponding output files.)
@@ -43,7 +79,7 @@ for template in "${!TEMPLATES[@]}"; do
   IFS=';' read -ra OUTPUT_FILES <<< "${TEMPLATES[$template]}"
   for output_file in "${OUTPUT_FILES[@]}"; do
     openim::log::info "⌚  Working with template file: ${template} to ${output_file}..."
-    "${OPENIM_ROOT}/scripts/genconfig.sh" "${ENV_FILE}" "${template}" > "${output_file}" || {
+    "${OPENIM_ROOT}/scripts/genconfig.sh" "${env_file}" "${template}" > "${output_file}" || {
       openim::log::error "Error processing template file ${template}"
       exit 1
     }

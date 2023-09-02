@@ -93,6 +93,7 @@ services:
       protocol: tcp
     volumes:
       - ./openim-server/${SERVER_BRANCH}/scripts/create_topic.sh:/opt/bitnami/kafka/create_topic.sh
+      - ${DATA_DIR}/components/kafka/data:/bitnami/kafka/data
     command: >
       bash -c "
       /opt/bitnami/scripts/kafka/run.sh & sleep 30; /opt/bitnami/kafka/create_topic.sh; wait
