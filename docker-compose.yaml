@@ -106,8 +106,6 @@ services:
     networks:
       openim-server:
         ipv4_address: ${KAFKA_NETWORK_ADDRESS}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
 
   minio:
     image: minio/minio
@@ -126,8 +124,6 @@ services:
     networks:
       openim-server:
         ipv4_address: ${MINIO_NETWORK_ADDRESS}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
 
   openim-web:
     image: ghcr.io/openimsdk/openim-web:latest
@@ -141,8 +137,6 @@ services:
     networks:
       openim-server:
         ipv4_address: ${OPENIM_WEB_NETWORK_ADDRESS}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
 
   openim-server:
     # image: ghcr.io/openimsdk/openim-server:${SERVER_BRANCH}
@@ -178,8 +172,6 @@ services:
     networks:
       openim-server:
         ipv4_address: ${OPENIM_SERVER_NETWORK_ADDRESS}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
 
   openim-chat:
     # image: ghcr.io/openimsdk/openim-chat:${CHAT_BRANCH}
@@ -215,8 +207,6 @@ services:
     networks:
       openim-server:
         ipv4_address: ${OPENIM_CHAT_NETWORK_ADDRESS}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
 
   prometheus:
     image: prom/prometheus
