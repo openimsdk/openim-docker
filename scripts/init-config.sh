@@ -24,13 +24,16 @@ OPENIM_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 
 source "${OPENIM_ROOT}/scripts/install/common.sh"
 
-openim::log::slack "The initialized version selected CHAT_BRANCH: ${CHAT_BRANCH}"
-openim::log::slack "The initialized version selected SERVER_BRANCH: ${SERVER_BRANCH}"
+echo "++ The initialized version selected CHAT_BRANCH: ${CHAT_BRANCH}"
+echo "++ The initialized version selected SERVER_BRANCH: ${SERVER_BRANCH}"
 
 openim::log::info "🤲 Get and overwrite the configuration file by diff"
 
 file1_path="${OPENIM_ROOT}/openim-server/${SERVER_BRANCH}/scripts/install/environment.sh"
 file2_path="${OPENIM_ROOT}/scripts/install/environment.sh"
+
+echo "++++ file1_path: ${file1_path}"
+echo "++++ file2_path: ${file2_path}"
 
 status_file1=$(git status --porcelain $file1_path | awk '{print $1}')
 status_file2=$(git status --porcelain $file2_path | awk '{print $1}')
@@ -48,13 +51,18 @@ elif [[ "$status_file1" != "M" && "$status_file2" == "M" ]]; then
     env_file="$file2_path"
 elif [[ "$status_file1" == "M" && "$status_file2" == "M" ]]; then
     echo "Both files have uncommitted changes."
-    commit_file1=$(git log -n 1 --pretty=format:"%cd" -- $file1_path)
-    commit_file2=$(git log -n 1 --pretty=format:"%cd" -- $file2_path)
-    if [[ "$commit_file1" > "$commit_file2" ]]; then
+    echo "++++ file1_path: ${file1_path}"
+    echo "++++ file2_path: ${file2_path}"
+    exit 0
+else
+    echo "Both files have no uncommitted changes."
+    commit_file1_data=$(git log -1 --pretty=format:"%ad" --date=short $file1_path | tr -d '-')
+    commit_file2_data=$(git log -1 --pretty=format:"%ad" --date=short $file2_path | tr -d '-')
+    if [[ "$commit_file1_data" > "$commit_file2_data" ]]; then
         cp $file1_path $file2_path
         echo "$file1_path was copied over $file2_path"
         env_file="$file1_path"
-    elif [[ "$commit_file1" < "$commit_file2" ]]; then
+    elif [[ "$commit_file1_data" < "$commit_file2_data" ]]; then
         cp $file2_path $file1_path
         env_file="$file2_path"
         echo "$file2_path was copied over $file1_path"
