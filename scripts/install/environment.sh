@@ -129,7 +129,16 @@ def "API_LISTEN_IP" "0.0.0.0" # API的监听IP
 def "OPENIM_CHAT_DATA_DIR" "./openim-chat/${CHAT_BRANCH}"
 def "OPENIM_CHAT_ADDRESS" "${DOCKER_BRIDGE_GATEWAY}"    # OpenIM服务地址
 def "OPENIM_CHAT_API_PORT" "10008"       # OpenIM API端口
+def "CHAT_API_LISTEN_IP" ""             # OpenIM API的监听IP
+
 def "OPENIM_ADMIN_API_PORT" "10009"      # OpenIM Admin API端口
+def "ADMIN_API_LISTEN_IP" ""             # OpenIM Admin API的监听IP
+
+def "OPENIM_ADMIN_PORT" "30200"          # OpenIM chat Admin端口
+def "OPENIM_CHAT_PORT" "30300"     # OpenIM chat Admin的监听IP
+
+def "OPENIM_ADMIN_NAME" "admin"          # openim-chat Admin用户名
+def "OPENIM_CHAT_NAME" "chat"      # openim-chat chat用户名
 
 # TODO 注意： 一般的配置都可以使用 def 函数来定义，如果是包含特殊字符，比如说:
 # TODO readonly MSG_DESTRUCT_TIME=${MSG_DESTRUCT_TIME:-'0 2 * * *'}

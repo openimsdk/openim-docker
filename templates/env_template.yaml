@@ -87,7 +87,7 @@ GRAFANA_NETWORK_ADDRESS=${GRAFANA_NETWORK_ADDRESS}
 # ----- ZooKeeper Configuration -----
 # Address or hostname for the ZooKeeper service.
 # Default: ZOOKEEPER_ADDRESS=172.28.0.1
-ZOOKEEPER_ADDRESS=${ZOOKEEPER_ADDRESS}
+ZOOKEEPER_ADDRESS=${ZOOKEEPER_NETWORK_ADDRESS}
 
 # Port for ZooKeeper service.
 # Default: ZOOKEEPER_PORT=12181
@@ -97,7 +97,7 @@ ZOOKEEPER_PORT=${ZOOKEEPER_PORT}
 
 # Address or hostname for the MySQL service.
 # Default: MYSQL_ADDRESS=172.28.0.1
-MYSQL_ADDRESS=${MYSQL_ADDRESS}
+MYSQL_ADDRESS=${MYSQL_NETWORK_ADDRESS}
 
 # Port on which MySQL database service is running.
 # Default: MYSQL_PORT=13306
@@ -110,7 +110,7 @@ MYSQL_PASSWORD=${MYSQL_PASSWORD}
 # ----- MongoDB Configuration -----
 # Address or hostname for the MongoDB service.
 # Default: MONGO_ADDRESS=172.28.0.1
-MONGO_ADDRESS=${MONGO_ADDRESS}
+MONGO_ADDRESS=${MONGO_NETWORK_ADDRESS}
 
 # Port on which MongoDB service is running.
 # Default: MONGO_PORT=37017
@@ -131,7 +131,7 @@ MONGO_DATABASE=${MONGO_DATABASE}
 # ----- Redis Configuration -----
 # Address or hostname for the Redis service.
 # Default: REDIS_ADDRESS=172.28.0.1
-REDIS_ADDRESS=${REDIS_ADDRESS}
+REDIS_ADDRESS=${REDIS_NETWORK_ADDRESS}
 
 # Port on which Redis in-memory data structure store is running.
 # Default: REDIS_PORT=16379
@@ -144,7 +144,7 @@ REDIS_PASSWORD=${REDIS_PASSWORD}
 # ----- Kafka Configuration -----
 # Address or hostname for the Kafka service.
 # Default: KAFKA_ADDRESS=172.28.0.1
-KAFKA_ADDRESS=${KAFKA_ADDRESS}
+KAFKA_ADDRESS=${KAFKA_NETWORK_ADDRESS}
 
 # Port on which Kafka distributed streaming platform is running.
 # Default: KAFKA_PORT=19092
@@ -165,7 +165,7 @@ KAFKA_OFFLINEMSG_MONGO_TOPIC=${KAFKA_OFFLINEMSG_MONGO_TOPIC}
 # ----- MinIO Configuration ----
 # Address or hostname for the MinIO object storage service.
 # Default: MINIO_ADDRESS=172.28.0.1
-MINIO_ADDRESS=${MINIO_ADDRESS}
+MINIO_ADDRESS=${MINIO_NETWORK_ADDRESS}
 
 # Port on which MinIO object storage service is running.
 # Default: MINIO_PORT=10005
@@ -182,7 +182,7 @@ MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
 # ----- Prometheus Configuration -----
 # Address or hostname for the Prometheus service.
 # Default: PROMETHEUS_ADDRESS=172.28.0.1
-PROMETHEUS_ADDRESS=${PROMETHEUS_ADDRESS}
+PROMETHEUS_ADDRESS=${PROMETHEUS_NETWORK_ADDRESS}
 
 # Port on which Prometheus service is running.
 # Default: PROMETHEUS_PORT=19090
@@ -191,7 +191,7 @@ PROMETHEUS_PORT=${PROMETHEUS_PORT}
 # ----- Grafana Configuration -----
 # Address or hostname for the Grafana service.
 # Default: GRAFANA_ADDRESS=172.28.0.1
-GRAFANA_ADDRESS=${GRAFANA_ADDRESS}
+GRAFANA_ADDRESS=${GRAFANA_NETWORK_ADDRESS}
 
 # Port on which Grafana service is running.
 # Default: GRAFANA_PORT=3000
@@ -211,7 +211,7 @@ OPENIM_WEB_PORT=${OPENIM_WEB_PORT}
 
 # Address or hostname for the OpenIM web service.
 # Default: OPENIM_WEB_ADDRESS=172.28.0.1
-OPENIM_WEB_ADDRESS=${OPENIM_WEB_ADDRESS}
+OPENIM_WEB_ADDRESS=${OPENIM_WEB_NETWORK_ADDRESS}
 
 
 # ======================================
@@ -220,7 +220,7 @@ OPENIM_WEB_ADDRESS=${OPENIM_WEB_ADDRESS}
 
 # Address or hostname for the OpenIM server.
 # Default: OPENIM_SERVER_ADDRESS=172.28.0.1
-OPENIM_SERVER_ADDRESS=${OPENIM_SERVER_ADDRESS}
+OPENIM_SERVER_ADDRESS=${OPENIM_SERVER_NETWORK_ADDRESS}
 
 # Port for the OpenIM WebSockets.
 # Default: OPENIM_WS_PORT=10001
@@ -241,7 +241,7 @@ CHAT_BRANCH=${CHAT_BRANCH}
 
 # Address or hostname for the OpenIM chat service.
 # Default: OPENIM_CHAT_ADDRESS=172.28.0.1
-OPENIM_CHAT_ADDRESS=${OPENIM_CHAT_ADDRESS}
+OPENIM_CHAT_ADDRESS=${OPENIM_CHAT_NETWORK_ADDRESS}
 
 # Port for the OpenIM chat API.
 # Default: OPENIM_CHAT_API_PORT=10008
