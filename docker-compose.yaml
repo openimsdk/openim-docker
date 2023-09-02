@@ -86,6 +86,7 @@ services:
   kafka:
     image: 'bitnami/kafka:latest'
     container_name: kafka
+    user: root
     restart: always
     ports:
     - target: 9092
@@ -93,7 +94,7 @@ services:
       protocol: tcp
     volumes:
       - ./openim-server/${SERVER_BRANCH}/scripts/create_topic.sh:/opt/bitnami/kafka/create_topic.sh
-      # - ${DATA_DIR}/components/kafka/data:/bitnami/kafka/data
+      - ${DATA_DIR}/components/kafka:/bitnami/kafka
     command: >
       bash -c "
       /opt/bitnami/scripts/kafka/run.sh & sleep 5; /opt/bitnami/kafka/create_topic.sh; wait
