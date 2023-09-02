@@ -116,7 +116,7 @@ def "OPENIM_LOG_DIR" "/var/log/openim"
 def "CA_FILE" "${OPENIM_CONFIG_DIR}/cert/ca.pem"
 
 def "OPNEIM_CONFIG" ""${OPENIM_ROOT}"/config"
-def "OPENIM_SERVER_ADDRESS" "${DOCKER_BRIDGE_GATEWAY}" # OpenIM服务地址
+def "OPENIM_SERVER_ADDRESS" "${OPENIM_SERVER_NETWORK_ADDRESS}" # OpenIM服务地址
 
 # OpenIM Websocket端口
 readonly OPENIM_WS_PORT=${OPENIM_WS_PORT:-'10001'}
@@ -127,59 +127,59 @@ def "API_LISTEN_IP" "0.0.0.0" # API的监听IP
 
 ###################### openim-chat 配置信息 ######################
 def "OPENIM_CHAT_DATA_DIR" "./openim-chat/${CHAT_BRANCH}"
-def "OPENIM_CHAT_ADDRESS" "${DOCKER_BRIDGE_GATEWAY}"    # OpenIM服务地址
-def "OPENIM_CHAT_API_PORT" "10008"       # OpenIM API端口
-def "CHAT_API_LISTEN_IP" ""             # OpenIM API的监听IP
+def "OPENIM_CHAT_ADDRESS" "${OPENIM_CHAT_NETWORK_ADDRESS}" # OpenIM服务地址
+def "OPENIM_CHAT_API_PORT" "10008"                   # OpenIM API端口
+def "CHAT_API_LISTEN_IP" ""                          # OpenIM API的监听IP
 
-def "OPENIM_ADMIN_API_PORT" "10009"      # OpenIM Admin API端口
-def "ADMIN_API_LISTEN_IP" ""             # OpenIM Admin API的监听IP
+def "OPENIM_ADMIN_API_PORT" "10009"                # OpenIM Admin API端口
+def "ADMIN_API_LISTEN_IP" ""                       # OpenIM Admin API的监听IP
 
-def "OPENIM_ADMIN_PORT" "30200"          # OpenIM chat Admin端口
-def "OPENIM_CHAT_PORT" "30300"     # OpenIM chat Admin的监听IP
+def "OPENIM_ADMIN_PORT" "30200"                    # OpenIM chat Admin端口
+def "OPENIM_CHAT_PORT" "30300"                     # OpenIM chat Admin的监听IP
 
-def "OPENIM_ADMIN_NAME" "admin"          # openim-chat Admin用户名
-def "OPENIM_CHAT_NAME" "chat"      # openim-chat chat用户名
+def "OPENIM_ADMIN_NAME" "admin"                    # openim-chat Admin用户名
+def "OPENIM_CHAT_NAME" "chat"                      # openim-chat chat用户名
 
 # TODO 注意： 一般的配置都可以使用 def 函数来定义，如果是包含特殊字符，比如说:
 # TODO readonly MSG_DESTRUCT_TIME=${MSG_DESTRUCT_TIME:-'0 2 * * *'}
 # TODO 使用 readonly 来定义合适，负责无法正常解析, 并且 yaml 模板需要加 "" 来包裹
 
 ###################### Zookeeper 配置信息 ######################
-def "ZOOKEEPER_SCHEMA" "openim"          # Zookeeper的模式
-def "ZOOKEEPER_PORT" "12181"              # Zookeeper的端口
-def "ZOOKEEPER_ADDRESS" "${DOCKER_BRIDGE_GATEWAY}"      # Zookeeper的地址
-def "ZOOKEEPER_USERNAME" ""              # Zookeeper的用户名
-def "ZOOKEEPER_PASSWORD" ""              # Zookeeper的密码
+def "ZOOKEEPER_SCHEMA" "openim"                    # Zookeeper的模式
+def "ZOOKEEPER_PORT" "12181"                       # Zookeeper的端口
+def "ZOOKEEPER_ADDRESS" "${ZOOKEEPER_NETWORK_ADDRESS}" # Zookeeper的地址
+def "ZOOKEEPER_USERNAME" ""                        # Zookeeper的用户名
+def "ZOOKEEPER_PASSWORD" ""                        # Zookeeper的密码
 
 ###################### MySQL 配置信息 ######################
-def "MYSQL_PORT" "13306"                 # MySQL的端口
-def "MYSQL_ADDRESS" "${DOCKER_BRIDGE_GATEWAY}"          # MySQL的地址
-def "MYSQL_USERNAME" "${USER}"           # MySQL的用户名
-def "MYSQL_PASSWORD" "${PASSWORD}"       # MySQL的密码
-def "MYSQL_DATABASE" "${DATABASE_NAME}"  # MySQL的数据库名
-def "MYSQL_MAX_OPEN_CONN" "1000"         # 最大打开的连接数
-def "MYSQL_MAX_IDLE_CONN" "100"          # 最大空闲连接数
-def "MYSQL_MAX_LIFETIME" "60"            # 连接可以重用的最大生命周期（秒）
-def "MYSQL_LOG_LEVEL" "4"                # 日志级别
-def "MYSQL_SLOW_THRESHOLD" "500"         # 慢查询阈值（毫秒）
+def "MYSQL_PORT" "13306"                       # MySQL的端口
+def "MYSQL_ADDRESS" "${MYSQL_NETWORK_ADDRESS}" # MySQL的地址
+def "MYSQL_USERNAME" "${USER}"                 # MySQL的用户名
+def "MYSQL_PASSWORD" "${PASSWORD}"             # MySQL的密码
+def "MYSQL_DATABASE" "${DATABASE_NAME}"        # MySQL的数据库名
+def "MYSQL_MAX_OPEN_CONN" "1000"               # 最大打开的连接数
+def "MYSQL_MAX_IDLE_CONN" "100"                # 最大空闲连接数
+def "MYSQL_MAX_LIFETIME" "60"                  # 连接可以重用的最大生命周期（秒）
+def "MYSQL_LOG_LEVEL" "4"                      # 日志级别
+def "MYSQL_SLOW_THRESHOLD" "500"               # 慢查询阈值（毫秒）
 
 ###################### MongoDB 配置信息 ######################
-def "MONGO_URI"                          # MongoDB的URI
-def "MONGO_PORT" "37017"                 # MongoDB的端口
-def "MONGO_ADDRESS" "${DOCKER_BRIDGE_GATEWAY}"          # MongoDB的地址
-def "MONGO_DATABASE" "${DATABASE_NAME}"  # MongoDB的数据库名
-def "MONGO_USERNAME" "${USER}"           # MongoDB的用户名
-def "MONGO_PASSWORD" "${PASSWORD}"       # MongoDB的密码
-def "MONGO_MAX_POOL_SIZE" "100"          # 最大连接池大小
+def "MONGO_URI"                                # MongoDB的URI
+def "MONGO_PORT" "37017"                       # MongoDB的端口
+def "MONGO_ADDRESS" "${MONGO_NETWORK_ADDRESS}" # MongoDB的地址
+def "MONGO_DATABASE" "${DATABASE_NAME}"        # MongoDB的数据库名
+def "MONGO_USERNAME" "${USER}"                 # MongoDB的用户名
+def "MONGO_PASSWORD" "${PASSWORD}"             # MongoDB的密码
+def "MONGO_MAX_POOL_SIZE" "100"                # 最大连接池大小
 
 ###################### Object 配置信息 ######################
-def "OBJECT_ENABLE" "minio"              # 对象是否启用
+def "OBJECT_ENABLE" "minio" # 对象是否启用
 # 对象的API地址
 readonly OBJECT_APIURL=${OBJECT_APIURL:-"http://${IP}:10002"}
-def "MINIO_BUCKET" "openim"              # MinIO的存储桶名称
-def "MINIO_PORT" "10005"                 # MinIO的端口
+def "MINIO_BUCKET" "openim" # MinIO的存储桶名称
+def "MINIO_PORT" "10005"    # MinIO的端口
 # MinIO的端点URL
-def MINIO_ADDRESS "${DOCKER_BRIDGE_GATEWAY}"
+def MINIO_ADDRESS "${MINIO_NETWORK_ADDRESS}"
 readonly MINIO_ENDPOINT=${MINIO_ENDPOINT:-"http://${MINIO_ADDRESS}:${MINIO_PORT}"}
 def "MINIO_ACCESS_KEY" "${USER}"                                                  # MinIO的访问密钥ID
 def "MINIO_SECRET_KEY" "${PASSWORD}"                                              # MinIO的密钥
@@ -187,19 +187,19 @@ def "MINIO_SESSION_TOKEN"                                                       
 readonly MINIO_SIGN_ENDPOINT=${MINIO_SIGN_ENDPOINT:-"http://${IP}:${MINIO_PORT}"} # signEndpoint为minio公网地址                                              # MinIO的会话令牌
 # 腾讯云COS的存储桶URL
 def "COS_BUCKET_URL" "https://temp-1252357374.cos.ap-chengdu.myqcloud.com"
-def "COS_SECRET_ID"                                                               # 腾讯云COS的密钥ID
-def "COS_SECRET_KEY"                                                              # 腾讯云COS的密钥
-def "COS_SESSION_TOKEN"                                                           # 腾讯云COS的会话令牌
-def "OSS_ENDPOINT" "https://oss-cn-chengdu.aliyuncs.com"                          # 阿里云OSS的端点URL
-def "OSS_BUCKET" "demo-9999999"                                                   # 阿里云OSS的存储桶名称
-def "OSS_BUCKET_URL" "https://demo-9999999.oss-cn-chengdu.aliyuncs.com"           # 阿里云OSS的存储桶URL
-def "OSS_ACCESS_KEY_ID"                                                           # 阿里云OSS的访问密钥ID
-def "OSS_ACCESS_KEY_SECRET"                                                       # 阿里云OSS的密钥
-def "OSS_SESSION_TOKEN"                                                           # 阿里云OSS的会话令牌
+def "COS_SECRET_ID"                                                     # 腾讯云COS的密钥ID
+def "COS_SECRET_KEY"                                                    # 腾讯云COS的密钥
+def "COS_SESSION_TOKEN"                                                 # 腾讯云COS的会话令牌
+def "OSS_ENDPOINT" "https://oss-cn-chengdu.aliyuncs.com"                # 阿里云OSS的端点URL
+def "OSS_BUCKET" "demo-9999999"                                         # 阿里云OSS的存储桶名称
+def "OSS_BUCKET_URL" "https://demo-9999999.oss-cn-chengdu.aliyuncs.com" # 阿里云OSS的存储桶URL
+def "OSS_ACCESS_KEY_ID"                                                 # 阿里云OSS的访问密钥ID
+def "OSS_ACCESS_KEY_SECRET"                                             # 阿里云OSS的密钥
+def "OSS_SESSION_TOKEN"                                                 # 阿里云OSS的会话令牌
 
 ###################### Redis 配置信息 ######################
 def "REDIS_PORT" "16379"                                    # Redis的端口
-def "REDIS_ADDRESS" "${DOCKER_BRIDGE_GATEWAY}"              # Redis的地址
+def "REDIS_ADDRESS" "${REDIS_NETWORK_ADDRESS}"              # Redis的地址
 def "REDIS_USERNAME"                                        # Redis的用户名
 def "REDIS_PASSWORD" "${PASSWORD}"                          # Redis的密码
 
@@ -207,7 +207,7 @@ def "REDIS_PASSWORD" "${PASSWORD}"                          # Redis的密码
 def "KAFKA_USERNAME"                                        # `Kafka` 的用户名
 def "KAFKA_PASSWORD"                                        # `Kafka` 的密码
 def "KAFKA_PORT" "19092"                                    # `Kafka` 的端口
-def "KAFKA_ADDRESS" "${DOCKER_BRIDGE_GATEWAY}"              # `Kafka` 的地址
+def "KAFKA_ADDRESS" "${KAFKA_NETWORK_ADDRESS}"              # `Kafka` 的地址
 def "KAFKA_LATESTMSG_REDIS_TOPIC" "latestMsgToRedis"        # `Kafka` 的最新消息到Redis的主题
 def "KAFKA_OFFLINEMSG_MONGO_TOPIC" "offlineMsgToMongoMysql" # `Kafka` 的离线消息到Mongo的主题
 def "KAFKA_MSG_PUSH_TOPIC" "msgToPush"                      # `Kafka` 的消息到推送的主题
@@ -217,21 +217,21 @@ def "KAFKA_CONSUMERGROUPID_MYSQL" "mysql"                   # `Kafka` 的消费�
 def "KAFKA_CONSUMERGROUPID_PUSH" "push"                     # `Kafka` 的消费组ID到推送
 
 ###################### openim-web 配置信息 ######################
-def "OPENIM_WEB_PORT" "11001"          # openim-web的端口
-def "OPENIM_WEB_ADDRESS" "${DOCKER_BRIDGE_GATEWAY}"   # openim-web的地址
-def "OPENIM_WEB_DIST_PATH" "/app/dist" # openim-web的dist路径
+def "OPENIM_WEB_PORT" "11001"                       # openim-web的端口
+def "OPENIM_WEB_ADDRESS" "${OPENIM_WEB_NETWORK_ADDRESS}" # openim-web的地址
+def "OPENIM_WEB_DIST_PATH" "/app/dist"              # openim-web的dist路径
 
 ###################### RPC 配置信息 ######################
-def "RPC_REGISTER_IP"                # RPC的注册IP
-def "RPC_LISTEN_IP" "0.0.0.0"        # RPC的监听IP
+def "RPC_REGISTER_IP"                               # RPC的注册IP
+def "RPC_LISTEN_IP" "0.0.0.0"                       # RPC的监听IP
 
 ###################### prometheus 配置 ######################
-def "PROMETHEUS_PORT" "19090"         # Prometheus的端口
-def "PROMETHEUS_ADDRESS" "${DOCKER_BRIDGE_GATEWAY}" # Prometheus的地址
+def "PROMETHEUS_PORT" "19090"                       # Prometheus的端口
+def "PROMETHEUS_ADDRESS" "${PROMETHEUS_NETWORK_ADDRESS}" # Prometheus的地址
 
 ###################### Grafana 配置信息 ######################
-def "GRAFANA_PORT" "3000"         # Grafana的端口
-def "GRAFANA_ADDRESS" "${DOCKER_BRIDGE_GATEWAY}" # Grafana的地址
+def "GRAFANA_PORT" "3000"                        # Grafana的端口
+def "GRAFANA_ADDRESS" "${GRAFANA_NETWORK_ADDRESS}" # Grafana的地址
 
 ###################### RPC Port Configuration Variables ######################
 # For launching multiple programs, just fill in multiple ports separated by commas

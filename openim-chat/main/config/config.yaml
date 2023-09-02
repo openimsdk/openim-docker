@@ -13,7 +13,7 @@
 zookeeper:
   schema: openim
   zkAddr:
-    - 172.28.0.1:12181
+    - 172.28.0.6:12181
   username: ''
   password: ''
 
@@ -90,7 +90,6 @@ verifyCode:
 
 ###################### Admin List ######################
 adminList:
-adminList:
   - adminID: admin1
     nickname: chat1
     imAdmin: openIM123456
@@ -102,7 +101,7 @@ adminList:
     imAdmin: openIMAdmin
 
 ###################### OpenIM URL ######################
-openIMUrl: 172.28.0.1:10002
+openIMUrl: 172.28.0.9:10002
 
 ###################### Redis ######################
 redis:
