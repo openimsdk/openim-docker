@@ -101,7 +101,7 @@ adminList:
     imAdmin: openIMAdmin
 
 ###################### OpenIM URL ######################
-openIMUrl: ${OPENIM_SERVER_ADDRESS}:${API_OPENIM_PORT}
+openIMUrl: http://${OPENIM_SERVER_ADDRESS}:${API_OPENIM_PORT}
 
 ###################### Redis ######################
 redis:
