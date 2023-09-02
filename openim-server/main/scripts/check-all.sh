@@ -62,11 +62,11 @@ echo "+++ The port being checked: ${OPENIM_DEPENDENCY_PORT_LISTARIES[@]}"
 
 set +e
 
-if grep -qE 'docker|kubepods' /proc/1/cgroup; then
+if grep -qE 'docker|kubepods' /proc/1/cgroup || [ -f /.dockerenv ]; then
     openim::color::echo ${COLOR_BLUE} "Environment in the interior of the container"
 else
     openim::color::echo ${COLOR_BLUE} "The environment is outside the container"
-    openim::util::check_ports ${OPENIM_DEPENDENCY_PORT_LISTARIES[@]}
+    openim::util::check_ports ${OPENIM_DEPENDENCY_PORT_LISTARIES[@]} || return 0
 fi
 
 if [[ $? -ne 0 ]]; then
