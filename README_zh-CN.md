@@ -67,17 +67,35 @@ OpenIM Docker Deployment
 
 #### 2. 使用 Docker-compose
 
-**克隆存储库：**
+**设置环境变量**
+
+> 可以设置环境变量，也可以使用默认的环境变量，根据自己的需求即可。配置选项在 https://github.com/OpenIMSDK/Open-IM-Server/blob/main/scripts/install/environment.sh 中
 
 ```bash
-git clone https://github.com/openim-sigs/openim-docker openim/openim-docker && export openim=$(pwd)/openim && cd $openim/openim-docker
+export PASSWORD="openIM123" # 设置密码，默认是 openIM123
+export USER="root" # 设置用户名，默认是 root
+# 选择 chat 版本 和 server 版本https://github.com/OpenIMSDK/Open-IM-Server/blob/main/docs/conversions/images.md, eg: main, release-v*.*
+export CHAT_BRANCH="main"   # 设置 chat 版本，默认是 main（不稳定）
+export SERVER_BRANCH="main" # 设置 server 版本，默认是 main（不稳定）
+# ...... 其他环境变量
+# MONGO_USERNAME: 设置 MongoDB 用户名
+# MONGO_PASSWORD: 设置 MongoDB 密码
+# MONGO_DATABASE: 设置 MongoDB 数据库名
+# MINIO_ENDPOINT: 设置 MinIO 服务地址
+# API_URL: 内网环境下，设置 OpenIM Server API 地址
+export API_URL="http://127.0.0.1:10002"
 ```
 
-**默认一键启动：**
+
+**一键部署：**
 
 ```bash
-make install
+git clone -b feat/test https://github.com/openim-sigs/openim-docker openim/openim-docker && export openim=$(pwd)/openim && cd $openim/openim-docker  && ./scripts/init-config.sh && docker compose up -d
 ```
+
+**问题排查：**
+
+一些常见的问题记录在 [FAQ.md](https://github.com/OpenIMSDK/openim-docker/blob/main/FAQ-CN.md) 中，如果您遇到了问题，可以先查看这个文档。
 
 **修改配置文件：**
 
@@ -100,7 +118,7 @@ export SERVER_BRANCH="main" # 设置 server 版本，默认是 main（不稳定�
 export API_URL="http://127.0.0.1:10002"
 ```
 
-需要更新配置：
+**需要更新配置：**
 
 ```bash
 make init
@@ -138,7 +156,7 @@ image: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-server:latest
 ```
 
 
-**定制启动**
+### 定制启动
 
 根据您的需求，选择相应的 Docker-compose 文件进行启动：
 

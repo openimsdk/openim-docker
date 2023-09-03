@@ -150,7 +150,7 @@ services:
       - ${API_OPENIM_PORT}:10002
     healthcheck:
       test: ["CMD", "/openim/openim-server/scripts/check-all.sh"]
-      interval: 300s
+      interval: 60s
       timeout: 10s
       retries: 5
     volumes:
@@ -181,7 +181,7 @@ services:
     container_name: openim-chat
     healthcheck:
       test: ["CMD", "/openim/openim-chat/scripts/check_all.sh"]
-      interval: 300s
+      interval: 60s
       timeout: 10s
       retries: 5
     ports:
