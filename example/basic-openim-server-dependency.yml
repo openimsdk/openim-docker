@@ -87,7 +87,7 @@ services:
     user: root
     restart: always
     ports:
-    - "${KAFKA_PORT}:9092"
+    - "${KAFKA_PORT}:9094"
     volumes:
       - ${DATA_DIR}/openim-server/${SERVER_BRANCH}/scripts/create_topic.sh:/opt/bitnami/kafka/create_topic.sh
       - ${DATA_DIR}/components/kafka:/bitnami/kafka
