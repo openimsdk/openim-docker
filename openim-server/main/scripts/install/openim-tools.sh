@@ -120,7 +120,7 @@ function openim::tools::pre-start() {
     openim::log::info "Preparing to start OpenIM Tools..."
     for tool in "${OPENIM_TOOLS_PRE_START_NAME_LISTARIES[@]}"; do
         openim::log::info "Starting ${tool}..."
-        openim::tools::start_service ${tool} ${OPNEIM_CONFIG}
+        openim::tools::start_service ${tool} ${OPENIM_CONFIG}
         sleep 0.2
     done
 }

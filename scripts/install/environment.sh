@@ -115,7 +115,7 @@ def "OPENIM_CONFIG_DIR" "/etc/openim"
 def "OPENIM_LOG_DIR" "/var/log/openim"
 def "CA_FILE" "${OPENIM_CONFIG_DIR}/cert/ca.pem"
 
-def "OPNEIM_CONFIG" ""${OPENIM_ROOT}"/config"
+def "OPENIM_CONFIG" ""${OPENIM_ROOT}"/config"
 def "OPENIM_SERVER_ADDRESS" "${DOCKER_BRIDGE_GATEWAY}" # OpenIM服务地址
 
 # OpenIM Websocket端口
