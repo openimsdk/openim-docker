@@ -1,4 +1,3 @@
-#fixme  Clone openIM Server project before using docker-compose,project address：https://github.com/OpenIMSDK/Open-IM-Server.git
 version: '3'
 
 networks:
@@ -82,7 +81,7 @@ services:
         ipv4_address: ${ZOOKEEPER_NETWORK_ADDRESS}
 
   kafka:
-    image: 'bitnami/kafka:latest'
+    image: 'bitnami/kafka:3.5.1'
     container_name: kafka
     user: root
     restart: always
@@ -96,12 +95,13 @@ services:
       /opt/bitnami/scripts/kafka/run.sh & sleep 5; /opt/bitnami/kafka/create_topic.sh; wait
       "
     environment:
-       - KAFKA_CFG_NODE_ID=0
        - TZ=Asia/Shanghai
+       - KAFKA_CFG_NODE_ID=0
        - KAFKA_CFG_PROCESS_ROLES=controller,broker
-       - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
-       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-       - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+       - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@<your_host>:9093
+       - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094
+       - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://${DOCKER_BRIDGE_GATEWAY}:${KAFKA_PORT}
+       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
        - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
     networks:
       openim-server:

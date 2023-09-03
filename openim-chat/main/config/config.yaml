@@ -101,7 +101,7 @@ adminList:
     imAdmin: openIMAdmin
 
 ###################### OpenIM URL ######################
-openIMUrl: 172.28.0.1:10002
+openIMUrl: http://172.28.0.1:10002
 
 ###################### Redis ######################
 redis:
