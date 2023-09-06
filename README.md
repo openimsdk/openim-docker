@@ -93,13 +93,13 @@ Next, update the configuration using `make init`:
 make init
 ```
 
-1. Modify the automation script:
+2. Modify the automation script:
 
 ```
 scripts/install/environment.sh
 ```
 
-1. Modify `config.yaml` and `.env` files (but will be overwritten when using `make init` again).
+3. Modify `config.yaml` and `.env` files (but will be overwritten when using `make init` again).
 
 **Default start option:**
 
