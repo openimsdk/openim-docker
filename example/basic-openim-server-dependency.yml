@@ -125,3 +125,13 @@ services:
     networks:
       openim-base:
         ipv4_address: ${MINIO_NETWORK_ADDRESS}
+
+  openim-web:
+    image: ghcr.io/openimsdk/openim-web:latest
+    container_name: openim-web
+    environment:
+      - OPENIM_WEB_DIST_PATH=${OPENIM_WEB_DIST_PATH}
+      - OPENIM_WEB_PPRT=${OPENIM_WEB_PPRT}
+    restart: always
+    ports:
+      - "${OPENIM_WEB_PPRT}:11001"
