@@ -72,7 +72,7 @@ Three ways to modify the configuration:
 
 1. Recommended using environment variables:
 
-```
+```bash
 export PASSWORD="openIM123" # Set password
 export USER="root" # Set username
 # Choose chat version and server version https://github.com/OpenIMSDK/Open-IM-Server/blob/main/docs/conversions/images.md, eg: main, release-v*.*
@@ -85,6 +85,12 @@ export SERVER_BRANCH="main"
 # MINIO_ENDPOINT: set the MinIO service address
 # API_URL: under network environment, set OpenIM Server API address
 export API_URL="http://127.0.0.1:10002"
+```
+
+Because `openim-server:v3.2` has some incompatible file, so, if you want to use `openim-server:v3.2`, so please use the following command to deploy:
+
+```bash
+git clone -b release-v1.2 https://github.com/openim-sigs/openim-docker openim/openim-docker && export openim=$(pwd)/openim && cd $openim/openim-docker && export CHAT_BRANCH="release-v1.2" && export SERVER_BRANCH="release-v3.2" &&  $openim/openim-docker/scripts/init-config.sh && docker-compose up -d
 ```
 
 Next, update the configuration using `make init`:
