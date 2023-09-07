@@ -72,6 +72,9 @@ ifeq ($(strip $(BINS)),)
   $(error Could not determine BINS, set ROOT_DIR or run in source dir)
 endif
 
+# TODO: EXCLUDE_TESTS variable, which contains the name of the package to be excluded from the test
+EXCLUDE_TESTS=github.com/OpenIMSDK/Open-IM-Server/test github.com/OpenIMSDK/Open-IM-Server/pkg/log github.com/OpenIMSDK/Open-IM-Server/db github.com/OpenIMSDK/Open-IM-Server/scripts github.com/OpenIMSDK/Open-IM-Server/config
+
 # ==============================================================================
 # ❯ tree -L 1 cmd
 # cmd
@@ -104,6 +107,34 @@ go.build.verify:
 ifneq ($(shell $(GO) version | grep -q -E '\bgo($(GO_SUPPORTED_VERSIONS))\b' && echo 0 || echo 1), 0)
 	$(error unsupported go version. Please make install one of the following supported version: '$(GO_SUPPORTED_VERSIONS)')
 endif
+
+.PHONY: go.build.%
+go.build.%:
+	$(eval COMMAND := $(word 2,$(subst ., ,$*)))
+	$(eval PLATFORM := $(word 1,$(subst ., ,$*)))
+	$(eval OS := $(word 1,$(subst _, ,$(PLATFORM))))
+	$(eval ARCH := $(word 2,$(subst _, ,$(PLATFORM))))
+	@echo "=====> COMMAND=$(COMMAND)"
+	@echo "=====> PLATFORM=$(PLATFORM)"
+	@echo "=====> BIN_DIR=$(BIN_DIR)"
+	@echo "===========> Building binary $(COMMAND) $(VERSION) for $(OS)_$(ARCH)"
+	@mkdir -p $(BIN_DIR)/platforms/$(OS)/$(ARCH)
+	@if [ "$(COMMAND)" == "openim-sdk-core" ]; then \
+		echo "===========> DEBUG: OpenIM-SDK-Core It is no longer supported for openim-server $(COMMAND)"; \
+	elif [ "$(COMMAND)" == "openim-rpc" ]; then \
+		for d in $(wildcard $(ROOT_DIR)/cmd/openim-rpc/*); do \
+			cd $${d} && CGO_ENABLED=0 GOOS=$(OS) GOARCH=$(ARCH) $(GO) build $(GO_BUILD_FLAGS) -o \
+			$(BIN_DIR)/platforms/$(OS)/$(ARCH)/$$(basename $${d})$(GO_OUT_EXT) $${d}/main.go; \
+		done; \
+	else \
+		if [ -f $(ROOT_DIR)/cmd/$(COMMAND)/main.go ]; then \
+			CGO_ENABLED=0 GOOS=$(OS) GOARCH=$(ARCH) $(GO) build $(GO_BUILD_FLAGS) -o \
+			$(BIN_DIR)/platforms/$(OS)/$(ARCH)/$(COMMAND)$(GO_OUT_EXT) $(ROOT_DIR)/cmd/$(COMMAND)/main.go; \
+		elif [ -f $(ROOT_DIR)/tools/$(COMMAND)/main.go ]; then \
+			CGO_ENABLED=0 GOOS=$(OS) GOARCH=$(ARCH) $(GO) build $(GO_BUILD_FLAGS) -o \
+			$(BIN_TOOLS_DIR)/platforms/$(OS)/$(ARCH)/$(COMMAND)$(GO_OUT_EXT) $(ROOT_DIR)/tools/$(COMMAND)/main.go; \
+		fi \
+	fi
 
 ## go.install: Install deployment openim
 .PHONY: go.install
