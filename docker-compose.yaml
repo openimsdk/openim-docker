@@ -54,8 +54,6 @@ services:
 
   zookeeper:
     image: wurstmeister/zookeeper
-    ports:
-      - 2181:2181
     container_name: zookeeper
     volumes:
       - /etc/localtime:/etc/localtime
@@ -68,8 +66,6 @@ services:
     image: wurstmeister/kafka
     container_name: kafka
     restart: always
-    ports:
-      - 9092:9092
     environment:
       TZ: Asia/Shanghai
       KAFKA_BROKER_ID: 0
@@ -104,9 +100,6 @@ services:
     image: openim/openim-server:${SERVER_BRANCH}
 #    build: .
     container_name: openim-server
-    ports:
-      - 10001:10001
-      - 10002:10002
     healthcheck:
       test: ["CMD", "/openim/openim-server/scripts/check-all.sh"]
       interval: 300s
@@ -141,9 +134,6 @@ services:
       interval: 300s
       timeout: 10s
       retries: 5
-    ports:
-      - 10008:10008
-      - 10009:10009
     volumes:
       - ${DATA_DIR}/openim-chat/${CHAT_BRANCH}/logs:/openim/openim-chat/logs
       - ${DATA_DIR}/openim-chat/${CHAT_BRANCH}/config:/openim/openim-chat/config
@@ -168,8 +158,6 @@ services:
     volumes:
       - ./openim-server/${SERVER_BRANCH}/.docker-compose_cfg/prometheus-compose.yml:/etc/prometheus/prometheus.yml
     container_name: prometheus
-    #    ports:
-    #    - 9091:9091
     depends_on:
       - openim-server
     command: --web.listen-address=:9091 --config.file="/etc/prometheus/prometheus.yml"
