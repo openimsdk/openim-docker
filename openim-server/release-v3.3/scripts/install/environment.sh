@@ -66,8 +66,8 @@ def "ENV_FILE" ""${OPENIM_ROOT}"/scripts/install/environment.sh"
 
 ###################### Docker compose ###################
 # OPENIM AND CHAT
-def "CHAT_BRANCH" "main"
-def "SERVER_BRANCH" "main"
+def "CHAT_BRANCH" "release-v1.3"
+def "SERVER_BRANCH" "release-v3.3"
 
 ###################### OpenIM Docker Network ######################
 # 设置 Docker 网络的网段
