@@ -141,7 +141,7 @@ services:
 
   openim-server:
     # image: ghcr.io/openimsdk/openim-server:${SERVER_BRANCH}
-    image: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-server:main
+    image: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-server:${SERVER_BRANCH}
     # image: openim/openim-server:${SERVER_BRANCH}
 #    build: .
     container_name: openim-server
