@@ -268,7 +268,7 @@ openim::util::check_ports() {
     # Iterate over each given port.
     for port in "$@"; do
         # Use the `ss` command to find process information related to the given port.
-        local info=$(ss -ltnp | grep  ":$port" || true)
+        local info=$(ss -ltnp | grep ":$port" || true)
         
         # If there's no process information, it means the process associated with the port is not running.
         if [[ -z $info ]]; then
@@ -635,7 +635,7 @@ openim::util::remove-gen-docs() {
 # repo, e.g. "upstream" or "origin".
 openim::util::git_upstream_remote_name() {
   git remote -v | grep fetch |\
-    grep -E 'github.com[/:]OpenIMSDK/Open-IM-Server|openim.cc/server' |\
+    grep -E 'github.com[/:]openimsdk/open-im-server|openim.cc/server' |\
     head -n 1 | awk '{print $1}'
 }
 

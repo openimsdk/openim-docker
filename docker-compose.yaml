@@ -154,8 +154,8 @@ services:
       timeout: 10s
       retries: 5
     volumes:
-      - ./openim-server/logs:/openim/openim-server/logs
-      - ./openim-server/_output:/openim/openim-server/_output
+      - ./openim-server/${SERVER_BRANCH}/logs:/openim/openim-server/logs
+      - ./openim-server/${SERVER_BRANCH}/_output:/openim/openim-server/_output
       - ./openim-server/${SERVER_BRANCH}/config:/openim/openim-server/config
       - ./openim-server/${SERVER_BRANCH}/scripts:/openim/openim-server/scripts
     restart: always
@@ -188,8 +188,8 @@ services:
       - ${OPENIM_CHAT_API_PORT}:10008
       - ${OPENIM_ADMIN_API_PORT}:10009
     volumes:
-      - ./openim-chat/logs:/openim/openim-chat/logs
-      - ./openim-chat/_output:/openim/openim-chat/_output
+      - ./openim-chat/${CHAT_BRANCH}/logs:/openim/openim-chat/logs
+      - ./openim-chat/${CHAT_BRANCH}/_output:/openim/openim-chat/_output
       - ./openim-chat/${CHAT_BRANCH}/config:/openim/openim-chat/config
       - ./openim-chat/${CHAT_BRANCH}/scripts:/openim/openim-chat/scripts
     restart: always

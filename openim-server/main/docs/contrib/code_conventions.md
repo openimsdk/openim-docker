@@ -35,4 +35,4 @@
 
 ## Testing conventions
 
-Please refer to [TESTING.md](../../tests/TESTING.md) document.
+Please refer to [TESTING.md](https://github.com/openimsdk/open-im-server/tree/main/test/readme) document.
