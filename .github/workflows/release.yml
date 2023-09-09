@@ -44,7 +44,7 @@ jobs:
           distribution: goreleaser
           version: latest
           workdir: .
-          args: release --rm-dist --timeout=1
+          args: release --rm-dist
         env:
           USERNAME: ${{ github.repository_owner }}
           GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
