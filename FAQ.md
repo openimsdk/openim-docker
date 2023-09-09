@@ -1,6 +1,164 @@
 # Common Docker Compose Questions and Solutions
 
-[toc]
+
+- [Common Docker Compose Questions and Solutions](#common-docker-compose-questions-and-solutions)
+  - [OpenIM-Docker Deployment Issue: Network Overlap](#openim-docker-deployment-issue-network-overlap)
+    - [Diagnosis:](#diagnosis)
+    - [Solutions:](#solutions)
+      - [1. Removing Duplicate Networks](#1-removing-duplicate-networks)
+      - [2. Addressing System-Level Overlaps](#2-addressing-system-level-overlaps)
+    - [Additional Information:](#additional-information)
+  - [1. Configuration File Management](#1-configuration-file-management)
+    - [1.1 Generating Configuration Files](#11-generating-configuration-files)
+      - [Using Makefile](#using-makefile)
+      - [Using Initialization Script](#using-initialization-script)
+    - [1.2 Verify Configuration File](#12-verify-configuration-file)
+    - [1.3 Modifying and Managing the Configuration File](#13-modifying-and-managing-the-configuration-file)
+  - [2. Docker Compose Doesn't Support `gateway`](#2-docker-compose-doesnt-support-gateway)
+    - [2.1 Problem Description](#21-problem-description)
+    - [2.2 Reason](#22-reason)
+    - [2.3 Solution](#23-solution)
+      - [Check the Version](#check-the-version)
+      - [Validate Configuration File](#validate-configuration-file)
+      - [Use Different Network Configurations](#use-different-network-configurations)
+    - [2.4 Debugging and Help](#24-debugging-and-help)
+      - [Check Docker Documentation](#check-docker-documentation)
+      - [Use More Detailed Logs](#use-more-detailed-logs)
+      - [Access the Community and Forums](#access-the-community-and-forums)
+  - [3. MySQL Connection Failure](#3-mysql-connection-failure)
+    - [3.1 Problem Description](#31-problem-description)
+    - [3.2 Common Causes and Solutions](#32-common-causes-and-solutions)
+      - [MySQL Container Not Running](#mysql-container-not-running)
+      - [Wrong MySQL Address or Port](#wrong-mysql-address-or-port)
+      - [MySQL User Permissions Issue](#mysql-user-permissions-issue)
+      - [MySQL's `bind-address`](#mysqls-bind-address)
+      - [Network Issues](#network-issues)
+    - [3.3 Debugging Methods and Help](#33-debugging-methods-and-help)
+      - [View MySQL Logs](#view-mysql-logs)
+      - [Test with MySQL Client](#test-with-mysql-client)
+      - [Check Firewall Settings](#check-firewall-settings)
+    - [3.4 Other Possible Issues](#34-other-possible-issues)
+      - [Using Older Versions of Docker or Docker Compose](#using-older-versions-of-docker-or-docker-compose)
+      - [Database Not Initialized](#database-not-initialized)
+      - [Time Synchronization Issues Between Containers](#time-synchronization-issues-between-containers)
+  - [4. Kafka Errors](#4-kafka-errors)
+    - [4.1 Problem Description](#41-problem-description)
+    - [4.2 Common Causes and Solutions](#42-common-causes-and-solutions)
+      - [Kafka Not Running or Failed to Start](#kafka-not-running-or-failed-to-start)
+      - [Topic Doesn't Exist](#topic-doesnt-exist)
+      - [Kafka Configuration Issues](#kafka-configuration-issues)
+    - [4.3 Debugging Methods and Help](#43-debugging-methods-and-help)
+      - [View Kafka Logs](#view-kafka-logs)
+      - [Use Kafka Command-line Tools](#use-kafka-command-line-tools)
+      - [Ensure Zookeeper Is Running Properly](#ensure-zookeeper-is-running-properly)
+    - [4.4 Other Possible Issues](#44-other-possible-issues)
+      - [Network Issues](#network-issues-1)
+      - [Storage Issues](#storage-issues)
+      - [Version Incompatibility](#version-incompatibility)
+  - [5. Network Errors](#5-network-errors)
+    - [5.1 Common Network Errors](#51-common-network-errors)
+      - [Error 1: Invalid address](#error-1-invalid-address)
+      - [Error 2: Pool overlaps](#error-2-pool-overlaps)
+    - [5.2 Methods to Debug Network Issues](#52-methods-to-debug-network-issues)
+      - [1. `docker network ls`](#1-docker-network-ls)
+      - [2. `docker network inspect [network_name]`](#2-docker-network-inspect-network_name)
+      - [3. `ping` and `curl`](#3-ping-and-curl)
+      - [4. View container logs](#4-view-container-logs)
+    - [5.3 Other Potential Network Issues](#53-other-potential-network-issues)
+      - [DNS Resolution Issues](#dns-resolution-issues)
+      - [Ports Not Exposed or Bound](#ports-not-exposed-or-bound)
+      - [Firewalls or Security Groups](#firewalls-or-security-groups)
+  - [6. Troubleshooting Other Issues](#6-troubleshooting-other-issues)
+    - [6.1 Clearly Define the Issue](#61-clearly-define-the-issue)
+    - [6.2 Divide and Conquer](#62-divide-and-conquer)
+    - [6.3 Use Open Source Community Resources](#63-use-open-source-community-resources)
+    - [6.4 Use Debugging Tools](#64-use-debugging-tools)
+    - [6.5 Steps After Identifying the Issue](#65-steps-after-identifying-the-issue)
+
+
+## OpenIM-Docker Deployment Issue: Network Overlap
+
+When deploying OpenIM-Docker using `docker-compose`, you may encounter the following error:
+
+```bash
+✘ Network openim-docker_openim-server  Error                           0.0s 
+failed to create network openim-docker_openim-server: Error response from daemon: Pool overlaps with other one on this address space
+```
+
+Or there might be issues connecting to the MySQL component.
+
+### Diagnosis:
+
+This error occurs because a network gateway on your local machine conflicts with the network that Docker is trying to create.
+
+1. Use the `ifconfig` command or the `ip a` command to view the networks being used on your host machine.
+
+### Solutions:
+
+#### 1. Removing Duplicate Networks
+
+If there's a duplicate Docker network that's no longer in use:
+
+1. List all Docker networks with:
+
+   ```bash
+   docker network ls
+   ```
+
+2. Identify any networks that are redundant or unused and remove them:
+
+   ```bash
+   docker network rm {NETWORK_ID}
+   ```
+
+3. Refresh the configuration files:
+
+   ```bash
+   make init
+   # or
+   ./scripts/init-config.sh
+   ```
+
+4. Restart the services:
+
+   ```bash
+   docker compose stop;
+   docker compose rm;
+   docker compose up -d;
+   ```
+
+#### 2. Addressing System-Level Overlaps
+
+If the problem stems from Docker system configurations (due to Docker updates, uninstallation issues, or overlapping network segments):
+
+1. Set a new network segment using environment variables. For instance, `172.29.0.0/16`:
+
+   ```bash
+   export DOCKER_BRIDGE_SUBNET=172.29.0.0/16
+   ```
+
+2. Refresh the configuration files:
+
+   ```bash
+   make init
+   # or
+   ./scripts/init-config.sh
+   ```
+
+3. Restart the services:
+
+   ```bash
+   docker compose up -d
+   ```
+
+### Additional Information:
+
++ Always ensure that your Docker configurations don't conflict with existing network setups.
++ Regularly check and clean up redundant or unused Docker networks to maintain a streamlined system.
++ When changing Docker network configurations, always document the changes and ensure team members are informed.
+
+This FAQ offers an insight into addressing potential Docker network conflicts that can arise during deployments. Familiarity with Docker commands and understanding of networking basics is key in resolving such issues swiftly.
+
 
 ## 1. Configuration File Management
 
