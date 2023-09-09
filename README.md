@@ -1,5 +1,28 @@
 # OpenIM Docker Deployment
 
+- [OpenIM Docker Deployment](#openim-docker-deployment)
+  - [Directory Structure](#directory-structure)
+    - [Project Structure Explanation](#project-structure-explanation)
+  - [OpenIM Docker Usage Guide](#openim-docker-usage-guide)
+      - [1. Obtain the Image](#1-obtain-the-image)
+      - [2. Using Docker-compose](#2-using-docker-compose)
+    - [One-click Deployment:](#one-click-deployment)
+      - [Troubleshooting:](#troubleshooting)
+      - [Modify Configuration Files:](#modify-configuration-files)
+        - [1. Recommended: Use environment variables (as mentioned above).](#1-recommended-use-environment-variables-as-mentioned-above)
+        - [2. Modify the automation script:](#2-modify-the-automation-script)
+        - [3. Modify the `config.yaml` and `.env` files (but note that reusing `make init` to generate configurations will overwrite them).](#3-modify-the-configyaml-and-env-files-but-note-that-reusing-make-init-to-generate-configurations-will-overwrite-them)
+  - [OpenIM Data Storage Architecture Guide](#openim-data-storage-architecture-guide)
+    - [**II. OpenIM Default Data Storage Structure**](#ii-openim-default-data-storage-structure)
+    - [III. Customizing OpenIM's Data Storage](#iii-customizing-openims-data-storage)
+    - [IV. Docker Volume Storage: An Advanced Approach](#iv-docker-volume-storage-an-advanced-approach)
+    - [Custom Startup](#custom-startup)
+      - [3. Tips](#3-tips)
+  - [Contribution](#contribution)
+    - [Conclusion](#conclusion)
+  - [License](#license)
+
+
 OpenIM Docker offers a stable solution for building and deploying OpenIM. There are many deployment options available, and the process is simplified using Docker and Docker Compose.
 
 <p align="center">     <a href="./README.md"><b> English </b></a> •     <a href="./README_zh-CN.md"><b> 简体中文 </b></a> </p>
@@ -80,21 +103,22 @@ export SERVER_BRANCH="main" # Set server version, default is release-v3.3 (unsta
 # MINIO_ENDPOINT: Set MinIO service address
 # API_URL: In a local network environment, set OpenIM Server API address
 export API_URL="http://127.0.0.1:10002"
+# DOCKER_BRIDGE_SUBNET: Set Docker bridge network address, default is 172.28.0.0/16
+export DOCKER_BRIDGE_SUBNET=172.28.0.0/16
 ```
 
 These are just a few common configuration options. If you don't need them, you can read through our [config center instructions](https://github.com/openimsdk/open-im-server/blob/main/docs/contrib/environment.md).
 
 Render the required configuration via './scripts/init-config.sh 'or' make init '. It can be modified directly https://github.com/openimsdk/openim-docker/blob/main/scripts/install/environment.sh or set linux environment variables. For example, above `PASSWORD` and `USER`. The latter method works only on the current terminal
 
- 
 
-**One-click Deployment:**
+### One-click Deployment:
 
 ```bash
 git clone https://github.com/openim-sigs/openim-docker openim/openim-docker && export openim=$(pwd)/openim && cd $openim/openim-docker && ./scripts/init-config.sh && docker compose up -d
 ```
 
-**Troubleshooting:**
+#### Troubleshooting:
 
 Common issues are documented in [FAQ.md](https://github.com/OpenIMSDK/openim-docker/blob/main/FAQ.md). If you encounter any issues, you can refer to this document.
 
@@ -102,11 +126,11 @@ It's also possible to find [issues](https://github.com/OpenIMSDK/openim-docker/i
 
 
 
-**Modify Configuration Files:**
+#### Modify Configuration Files:
 
 There are three ways to modify the configuration files:
 
-1. Recommended: Use environment variables (as mentioned above).
+##### 1. Recommended: Use environment variables (as mentioned above).
 
 **For updating configurations:**
 
@@ -114,7 +138,7 @@ There are three ways to modify the configuration files:
 make init
 ```
 
-1. Modify the automation script:
+##### 2. Modify the automation script:
 
 ```bash
 scripts/install/environment.sh
@@ -126,7 +150,7 @@ To update the configuration:
 make init
 ```
 
-1. Modify the `config.yaml` and `.env` files (but note that reusing `make init` to generate configurations will overwrite them).
+##### 3. Modify the `config.yaml` and `.env` files (but note that reusing `make init` to generate configurations will overwrite them).
 
 **Default Startup Selection:**
 
@@ -141,6 +165,95 @@ docker-compose up -d
 image: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-server:latest
 # image: openim/openim-server:latest
 ```
+
+
+## OpenIM Data Storage Architecture Guide
+
+### **II. OpenIM Default Data Storage Structure**
+
+**A. Overview**
+
+At the heart of OpenIM's data storage are the essential components: Kafka, MNT, MongoDB, MySQL, and Redis. Each serves a distinct purpose and requires specific configuration and data directories for optimal performance.
+
+**B. Directory Structure**
+
+```bash
+$ tree components/ -d -L 2
+components/
+├── kafka
+│   ├── config
+│   └── data
+├── mnt
+│   ├── config
+│   └── data
+├── mongodb
+│   └── data
+├── mysql
+│   └── data
+└── redis
+    ├── config
+    └── data
+```
+
+
+### III. Customizing OpenIM's Data Storage
+
+**A. Setting a Custom Directory**
+
+For organizations with specific storage directory requirements, OpenIM offers the flexibility to specify a custom directory. Follow these steps:
+
+1. Define your custom directory path by setting the `DATA_DIR` environment variable:
+
+```bash
+$ export DATA_DIR="/path/to/your/directory"
+```
+
+1. Refresh OpenIM's configuration to reflect this change:
+
+```bash
+$ make init
+```
+
+**Note:** This action will update the configuration to point to the directory you've specified.
+
+
+### IV. Docker Volume Storage: An Advanced Approach
+
+**A. Why Docker Volumes?**
+
+Docker volumes offer isolated storage solutions, optimizing data persistence and performance. When scaling services in Docker, using volumes ensures that data remains consistent and protected.
+
+**B. Using Docker Volumes with OpenIM**
+
+To launch OpenIM with Docker volume support, execute:
+
+```bash
+$ docker compose -f example/volume-all-server.yml up -d
+```
+
+With this setup, your OpenIM data is securely mounted onto Docker's volumes, providing added resilience and scalability.
+
+**C. Managing Docker Volumes**
+
+1. **Listing OpenIM Docker Volumes**
+
+Retrieve a list of Docker volumes associated with OpenIM using:
+
+```bash
+$ docker volume ls | grep open-im-server
+```
+
+1. **Removing Data**
+
+- For **locally mapped data**: Simply navigate to the appropriate directory and delete the desired files or folders.
+- For **Docker volume data**: If you wish to clear data from Docker volumes, employ the command below:
+
+```bash
+$ docker volume ls | grep open-im-server | awk '{print $2}' | xargs docker volume rm
+```
+
+**Warning:** This action will permanently erase the data. Always ensure you have backups before proceeding.
+
 
 ### Custom Startup
 
@@ -236,6 +349,12 @@ Ensure your Docker and Docker Compose are up-to-date to guarantee the best compa
 - Create a new Pull Request on GitHub.
 
 We encourage community contributions and improvements to this project. For the specific contribution process, please refer to [CONTRIBUTING.md](https://chat.openai.com/CONTRIBUTING.md).
+
+### Conclusion
+
+OpenIM's flexible storage solutions empower organizations to configure their infrastructure in alignment with their specific needs. Whether through default directories, custom paths, or Docker volumes, OpenIM guarantees efficient and secure data management.
+
+For further assistance or advanced configurations, please consult our technical support team or refer to OpenIM's comprehensive documentation.
 
 ## License
 
