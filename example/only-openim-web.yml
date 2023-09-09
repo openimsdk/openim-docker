@@ -36,7 +36,7 @@ services:
       - "${DATA_DIR}/components/mongodb/data/db:/data/db"
       - "${DATA_DIR}/components/mongodb/data/logs:/data/logs"
       - "${DATA_DIR}/components/mongodb/data/conf:/etc/mongo"
-      - "./openim-server/${SERVER_BRANCH}/scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro"
+      - "./scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro"
     environment:
       - TZ=Asia/Shanghai
       - wiredTigerCacheSizeGB=1
@@ -87,9 +87,9 @@ services:
     user: root
     restart: always
     ports:
-    - "${KAFKA_PORT}:9092"
+    - "${KAFKA_PORT}:9094"
     volumes:
-      - ./openim-server/${SERVER_BRANCH}/scripts/create_topic.sh:/opt/bitnami/kafka/create_topic.sh
+      - ./scripts/create_topic.sh:/opt/bitnami/kafka/create_topic.sh
       - ${DATA_DIR}/components/kafka:/bitnami/kafka
     command: >
       bash -c "
