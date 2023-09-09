@@ -187,7 +187,7 @@ services:
       - openim-server
     command: --web.listen-address=:9091 --config.file="/etc/prometheus/prometheus.yml"
     networks:
-      openim-server:
+      server:
         ipv4_address: ${PROMETHEUS_NETWORK_ADDRESS}
 
   grafana:
@@ -202,5 +202,5 @@ services:
     depends_on:
       - prometheus
     networks:
-      openim-server:
+      server:
         ipv4_address: ${GRAFANA_NETWORK_ADDRESS}
