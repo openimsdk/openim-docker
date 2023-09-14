@@ -159,6 +159,87 @@ If the problem stems from Docker system configurations (due to Docker updates, u
 
 This FAQ offers an insight into addressing potential Docker network conflicts that can arise during deployments. Familiarity with Docker commands and understanding of networking basics is key in resolving such issues swiftly.
 
+## Resolving Docker Network Anomalies
+
+When working with Docker or Docker Compose, sometimes network configurations might conflict with existing setups or leave residues post-deletion. Here's a comprehensive guide to help you navigate and potentially resolve these anomalies.
+
+### Overview
+
+Based on observations, it seems possible that some Docker networks might not be completely cleaned up, potentially due to Docker upgrades, interrupted network deletions, daemon setting changes, or even manual state manipulations.
+
+### Diagnosing the Issue
+
+Before diving into solutions, it's essential to understand the problem.
+
+#### 1. List Docker Networks
+
+To get a glimpse of all networks Docker is aware of:
+
+```
+bashCopy code
+docker network ls
+```
+
+#### 2. Inspect Specific Docker Networks
+
+For in-depth details about a specific network:
+
+```
+bashCopy code
+docker network inspect <NETWORK_ID>
+```
+
+#### 3. System-Level Network Configuration
+
+To see network interfaces at the system level:
+
+```
+bashCopy code
+ip address
+```
+
+This command might reveal network bridges/interfaces that exist at the system level but aren't visible in Docker's network list.
+
+### Solutions & Workarounds
+
+If you've identified phantom or ghost networks, here's how to address them:
+
+#### 1. Delete Phantom Docker Networks
+
+First, identify the name of the network interface you wish to remove, e.g., `br-e12dc9422f8c`.
+
+```
+bashCopy codesudo ip link set <INTERFACE_NAME> down
+sudo ip link delete <INTERFACE_NAME>
+```
+
+This will remove the specific network interface from the system.
+
+####  2. Check Docker Daemon Configuration
+
+Open the Docker daemon configuration:
+
+```
+bashCopy code
+sudo nano /etc/docker/daemon.json
+```
+
+Look for any network-related settings, such as `--default-address-pool`. Modify as needed.
+
+#### 3. Restart DockerTo ensure all changes take effect, restart the Docker daemon:
+
+```
+bashCopy code
+sudo systemctl restart docker
+```
+
+####  4. Examine `/var/lib/docker`
+
+In certain cases, it might be necessary to inspect or even modify `/var/lib/docker`. However, it's highly discouraged to manually modify files under this directory unless you're sure about the implications. Any incorrect modifications can damage your Docker installation.
+
+### Closing Thoughts
+
+While the above steps provide a holistic approach to resolving Docker network anomalies, always exercise caution. Before making any changes, always back up your data and configurations. Engage with the Docker community, like through [Docker GitHub Issues](https://github.com/docker/cli/issues/4558), to report or understand such anomalies better.
 
 ## 1. Configuration File Management
 
