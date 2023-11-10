@@ -135,14 +135,14 @@ api:
 # minio.signEndpoint is minio public network address
 object:
   enable: "minio"
-  apiURL: "http://127.0.0.1:10002"
+  apiURL: "http://14.155.47.109:10002"
   minio:
     bucket: "openim"
     endpoint: "http://172.28.0.1:10005"
     accessKeyID: "root"
     secretAccessKey: "openIM123"
     sessionToken: ''
-    signEndpoint: "http://127.0.0.1:10005"
+    signEndpoint: "http://14.155.47.109:10005"
     publicRead: false
   cos:
     bucketURL: https://temp-1252357374.cos.ap-chengdu.myqcloud.com
@@ -198,7 +198,7 @@ rpcRegisterName:
 # Whether to output in json format
 # Whether to include stack trace in logs
 log:
-  storageLocation: ./logs/
+  storageLocation: /root/workspaces/openim/openim-docker/openim-server/release-v3.4/logs/
   rotationTime: 24
   remainRotationCount: 2
   remainLogLevel: 6
@@ -382,8 +382,8 @@ callback:
 # The number of Prometheus ports per service needs to correspond to rpcPort
 # The number of ports needs to be consistent with msg_transfer_service_num in script/path_info.sh
 prometheus:
-  enable: true
-  prometheusUrl: "https://openim.prometheus"
+  enable: false
+  prometheusUrl: /prometheus
   apiPrometheusPort: [20100]
   userPrometheusPort: [ 20110 ]
   friendPrometheusPort: [ 20120 ]

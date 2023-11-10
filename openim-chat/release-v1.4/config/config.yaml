@@ -1,4 +1,4 @@
-# Copyright © 2023 OpenIM open source community. All rights reserved.
+# Copyright © 2023 OpenIM. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,25 +12,36 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# 需要先启动OpenIMServer
-envs:
-  discovery: "zookeeper"
+# Configuration for OpenIMServer
 
+# -----------------------------------------------------------------
+# TODO: This config file is the template file
+# --| source: deployments/templates/chat.yaml
+# --| env: scripts/install/environment
+# --| target: config/config.yaml
+# -----------------------------------------------------------------
+
+###################### Zookeeper ######################
+# Zookeeper configuration
+# It's not recommended to modify the schema
 zookeeper:
   schema: openim
   zkAddr:
-    - 127.0.0.1:12181
-  username: ""
-  password: ""
+    - 172.28.0.1:12181
+  username: ''
+  password: ''
 
+###################### Chat API ######################
 chatApi:
   openImChatApiPort: [ 10008 ]
-  listenIP:
+  listenIP: ''
 
+###################### Admin API ######################
 adminApi:
   openImAdminApiPort: [ 10009 ]
-  listenIP:
+  listenIP: ''
 
+###################### RPC ######################
 rpc:
   registerIP:                             #作为rpc启动时，注册到zookeeper的IP，api/gateway能访问到此ip和对应的rpcPort中的端口
   listenIP:                               #默认为0.0.0.0
@@ -42,7 +53,7 @@ rpcRegisterName:
   openImAdminName: admin
   openImChatName: chat
 
-# 没有配置表示和OpenIM一致
+###################### MySQL ######################
 mysql:
   #  address: [ 127.0.0.1:13306 ]            #目前仅支持单机
   #  username: root                          #用户名
@@ -53,9 +64,9 @@ mysql:
   #  maxLifeTime: 60                         #连接可以重复使用的最长时间（秒）
   #  logLevel: 4                             #日志级别 1=slient 2=error 3=warn 4=info
   #  slowThreshold: 500                      #慢语句阈值 （毫秒）
-  #  database: openim_enterprise
+  database: openim_enterprise
 
-# 没有配置表示和OpenIM一致
+###################### Log ######################
 log:
   storageLocation: ../logs/           #存放目录
 #  rotationTime: 24                    #日志旋转时间
@@ -65,10 +76,12 @@ log:
 #  isJson: false
 #  withStack: false
 
+###################### Secret & Token Policy ######################
 # secret: openIM123
 #tokenPolicy:
 #  expire: 86400
 
+###################### Verify Code ######################
 verifyCode:
   validTime: 300 # 验证码有效时间
   validCount: 5 # 验证码有效次数
@@ -92,10 +105,11 @@ verifyCode:
   testDepartMentID: 001
   imAPIURL: http://127.0.0.1:10002
 
-
+###################### Proxy Header ######################
 # 获取ip的header,没有配置直接获取远程地址
 #proxyHeader: "X-Forwarded-For"
 
+###################### Admin List ######################
 adminList:
   - adminID: admin1
     nickname: chat1
@@ -107,9 +121,10 @@ adminList:
     nickname: chat3
     imAdmin: openIMAdmin
 
+###################### OpenIM URL ######################
+openIMUrl: 172.28.0.1:10002
 
-openIMUrl: "http://127.0.0.1:10002"
-
+###################### Redis ######################
 redis:
   # address: [ 127.0.0.1:16379 ]
   # username:

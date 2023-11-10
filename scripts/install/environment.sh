@@ -66,7 +66,7 @@ def "ENV_FILE" ""${OPENIM_ROOT}"/scripts/install/environment.sh"
 
 ###################### Docker compose ###################
 # OPENIM AND CHAT
-def "CHAT_BRANCH" "release-v3.4"
+def "CHAT_BRANCH" "release-v1.4"
 def "SERVER_BRANCH" "release-v3.4"
 
 # Choose the appropriate image address, the default is GITHUB image,
