@@ -21,6 +21,9 @@
 # --| target: config/config.yaml
 # -----------------------------------------------------------------
 
+envs:
+  discovery: "zookeeper"
+
 ###################### Zookeeper ######################
 # Zookeeper configuration
 # It's not recommended to modify the schema
