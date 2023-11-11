@@ -21,6 +21,9 @@
 # --| target: config/config.yaml
 # -----------------------------------------------------------------
 
+envs:
+  discovery: "zookeeper"
+
 ###################### Zookeeper ######################
 # Zookeeper configuration
 # It's not recommended to modify the schema
@@ -64,7 +67,7 @@ mysql:
   #  maxLifeTime: 60                         #连接可以重复使用的最长时间（秒）
   #  logLevel: 4                             #日志级别 1=slient 2=error 3=warn 4=info
   #  slowThreshold: 500                      #慢语句阈值 （毫秒）
-  database: openim_enterprise
+  # database: openim_enterprise
 
 ###################### Log ######################
 log:
@@ -122,7 +125,8 @@ adminList:
     imAdmin: openIMAdmin
 
 ###################### OpenIM URL ######################
-openIMUrl: 172.28.0.1:10002
+# TODO
+openIMUrl: "http://172.28.0.1:10002"
 
 ###################### Redis ######################
 redis:
