@@ -135,7 +135,7 @@ api:
 # minio.signEndpoint is minio public network address
 object:
   enable: "minio"
-  apiURL: "142.333.2.31"
+  apiURL: "http://142.3.2.31:10002"
   minio:
     bucket: "openim"
     endpoint: "http://172.28.0.1:10005"
