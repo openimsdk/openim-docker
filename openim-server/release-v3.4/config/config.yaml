@@ -135,14 +135,14 @@ api:
 # minio.signEndpoint is minio public network address
 object:
   enable: "minio"
-  apiURL: "http://14.155.47.109:10002"
+  apiURL: "142.333.2.31"
   minio:
     bucket: "openim"
     endpoint: "http://172.28.0.1:10005"
     accessKeyID: "root"
     secretAccessKey: "openIM123"
     sessionToken: ''
-    signEndpoint: "http://14.155.47.109:10005"
+    signEndpoint: "http://142.3.2.31:10005"
     publicRead: false
   cos:
     bucketURL: https://temp-1252357374.cos.ap-chengdu.myqcloud.com
