@@ -93,18 +93,20 @@ To ensure you get the latest version of the image, please refer to the following
 ```bash
 export PASSWORD="openIM123" # Set password, default is openIM123
 export USER="root" # Set username, default is root
-# Choose chat version and server version https://github.com/OpenIMSDK/Open-IM-Server/blob/main/docs/conversions/images.md, eg: main, release-v*.*
-export CHAT_BRANCH="main"   # Set chat version, default is release-v3.3 (unstable)
-export SERVER_BRANCH="main" # Set server version, default is release-v3.3 (unstable)
+# Choose chat version and server version https://github.com/OpenIMSDK/Open-IM-Server/blob/main/docs/conversions/images.md, eg: release-v*.*
+export CHAT_BRANCH="release-v1.4"   # Set chat version, default is release-v1.4 (unstable)
+export SERVER_BRANCH="release-v3.4" # Set server version, default is release-v3.4 (unstable)
 # ...... other environment variables
 # MONGO_USERNAME: Set MongoDB username
 # MONGO_PASSWORD: Set MongoDB password
 # MONGO_DATABASE: Set MongoDB database name
 # MINIO_ENDPOINT: Set MinIO service address
-# API_URL: In a local network environment, set OpenIM Server API address
-export API_URL="http://127.0.0.1:10002"
+# OPENIM_IP: In a local network environment, set OpenIM Server API address
+export OPENIM_IP="127.0.0.1"
 # DOCKER_BRIDGE_SUBNET: Set Docker bridge network address, default is 172.28.0.0/16
 export DOCKER_BRIDGE_SUBNET=172.28.0.0/16
+# For Prometheus, it is not enabled by default. To enable it
+export PROMETHEUS_ENABLE=true   # Default is false
 ```
 
 These are just a few common configuration options. If you don't need them, you can read through our [config center instructions](https://github.com/openimsdk/open-im-server/blob/main/docs/contrib/environment.md).

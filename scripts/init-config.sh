@@ -72,6 +72,7 @@ declare -A TEMPLATES=(
   ["${OPENIM_ROOT}/templates/env_template.yaml"]="${OPENIM_ROOT}/.env;${OPENIM_ROOT}/example/.env"
   ["${OPENIM_ROOT}/templates/openim.yaml"]="${OPENIM_ROOT}/openim-server/${SERVER_BRANCH}/config/config.yaml"
   ["${OPENIM_ROOT}/templates/chat.yaml"]="${OPENIM_ROOT}/openim-chat/${CHAT_BRANCH}/config/config.yaml"
+  ["${OPENIM_ROOT}/templates/prometheus.yml"]="${OPENIM_ROOT}/openim-server/${SERVER_BRANCH}/config/prometheus.yml"
 )
 
 for template in "${!TEMPLATES[@]}"; do
@@ -87,6 +88,7 @@ for template in "${!TEMPLATES[@]}"; do
       exit 1
     }
   done
+  sleep 0.5
 done
 
 openim::log::success "✨  All configuration files have been successfully generated!"
