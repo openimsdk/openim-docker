@@ -1,5 +1,14 @@
-#fixme  Clone openIM Server project before using docker-compose,project address：https://github.com/OpenIMSDK/Open-IM-Server.git
 version: '3'
+
+volumes:
+  mysql_data:
+  mongo_db:
+  mongo_logs:
+  mongo_conf:
+  redis_data:
+  kafka_data:
+  minio_data:
+  minio_config:
 
 services:
   mysql:
@@ -8,11 +17,11 @@ services:
       - "${MYSQL_PORT}:3306"
     container_name: mysql
     volumes:
-      - "${DATA_DIR}/components/mysql/data:/var/lib/mysql"
-      - "/etc/localtime:/etc/localtime"
+      - mysql_data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: "${MYSQL_PASSWORD}"
     restart: always
+    network_mode: "host"
 
   mongodb:
     image: mongo:6.0.2
@@ -21,10 +30,9 @@ services:
     container_name: mongo
     command: --wiredTigerCacheSizeGB 1 --auth
     volumes:
-      - "${DATA_DIR}/components/mongodb/data/db:/data/db"
-      - "${DATA_DIR}/components/mongodb/data/logs:/data/logs"
-      - "${DATA_DIR}/components/mongodb/data/conf:/etc/mongo"
-      - "./scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro"
+      - mongo_db:/data/db
+      - mongo_logs:/data/logs
+      - mongo_conf:/etc/mongo
     environment:
       - TZ=Asia/Shanghai
       - wiredTigerCacheSizeGB=1
@@ -32,51 +40,45 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
       - MONGO_INITDB_DATABASE=${MONGO_DATABASE}
     restart: always
+    network_mode: "host"
 
   redis:
     image: redis:7.0.0
+    container_name: redis
     ports:
       - "${REDIS_PORT}:6379"
-    container_name: redis
     volumes:
-      - "${DATA_DIR}/components/redis/data:/data"
-      - "${DATA_DIR}/components/redis/config/redis.conf:/usr/local/redis/config/redis.conf"
+      - redis_data:/data
     environment:
       TZ: Asia/Shanghai
     restart: always
     sysctls:
       net.core.somaxconn: 1024
     command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
-
-  zookeeper:
-    image: wurstmeister/zookeeper
-    ports:
-      - "${ZOOKEEPER_PORT}:2181"
-    container_name: zookeeper
-    volumes:
-      - "/etc/localtime:/etc/localtime"
-    environment:
-      TZ: Asia/Shanghai
-    restart: always
     network_mode: "host"
 
   kafka:
-    image: wurstmeister/kafka
+    image: 'bitnami/kafka:3.5.1'
     container_name: kafka
+    user: root
     restart: always
     ports:
       - "${KAFKA_PORT}:9092"
+    volumes:
+      - kafka_data:/bitnami/kafka
+    command: >
+      bash -c "
+      /opt/bitnami/scripts/kafka/run.sh & sleep 5; /opt/bitnami/kafka/create-topic.sh; wait
+      "
     environment:
-      TZ: Asia/Shanghai
-      KAFKA_BROKER_ID: 0
-      KAFKA_ZOOKEEPER_CONNECT: "${ZOOKEEPER_ADDRESS}:${ZOOKEEPER_PORT}"
-      KAFKA_CREATE_TOPICS: "${KAFKA_LATESTMSG_REDIS_TOPIC}:8:1,${KAFKA_MSG_PUSH_TOPIC}:8:1,${KAFKA_OFFLINEMSG_MONGO_TOPIC}:8:1"
-      KAFKA_ADVERTISED_LISTENERS: INSIDE://${KAFKA_ADDR}:${KAFKA_PORT},OUTSIDE://CHANGE_TO_YOUR_EXTERNAL_IP:${KAFKA_PORT}
-      KAFKA_LISTENERS: INSIDE://:9092,OUTSIDE://:9093
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT"
-      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
-    depends_on:
-      - zookeeper
+      - TZ=Asia/Shanghai
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@<your_host>:9093
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://${DOCKER_BRIDGE_GATEWAY}:${KAFKA_PORT}
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
     network_mode: "host"
 
   minio:
@@ -86,10 +88,24 @@ services:
       - "9090:9090"
     container_name: minio
     volumes:
-      - "${DATA_DIR}/components/mnt/data:/data"
-      - "${DATA_DIR}/components/mnt/config:/root/.minio"
+      - minio_data:/data
+      - minio_config:/root/.minio
     environment:
       MINIO_ROOT_USER: "${MINIO_ACCESS_KEY}"
       MINIO_ROOT_PASSWORD: "${MINIO_SECRET_KEY}"
     restart: always
     command: minio server /data --console-address ':9090'
+    network_mode: "host"
+
+  zookeeper:
+    image: bitnami/zookeeper:3.8
+    container_name: zookeeper
+    ports:
+      - "${ZOOKEEPER_PORT}:2181"
+    volumes:
+      - "/etc/localtime:/etc/localtime"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+      - TZ="Asia/Shanghai"
+    restart: always
+    network_mode: "host"

@@ -1,0 +1,47 @@
+name: Isolated Docker Compose Tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Docker
+      uses: docker/setup-buildx-action@v1
+
+    - name: Run Docker Compose
+      run: |
+        make init
+        docker-compose up -d
+        docker-compose ps
+        docker-compose down
+
+  test-example:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        compose-file: 
+          - 'example/basic-openim-server-dependency.yml'
+          - 'example/full-openim-server-and-chat.yml'
+          - 'example/host-network-basic-openim-server-dependency.yml'
+          - 'example/only-openim-server.yml'
+          - 'example/only-openim-web.yml'
+          - 'example/volume-all-server.yml'
+          
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Docker
+      uses: docker/setup-buildx-action@v1
+
+    - name: Run Docker ${{ matrix.compose-file }} Compose
+      run: |
+        make init
+        docker-compose -f ${{ matrix.compose-file }} up -d
+        docker-compose -f ${{ matrix.compose-file }} ps
+        docker-compose -f ${{ matrix.compose-file }} down
