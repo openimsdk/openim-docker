@@ -22,6 +22,7 @@ jobs:
   test-example:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         compose-file: 
           - 'example/basic-openim-server-dependency.yml'
