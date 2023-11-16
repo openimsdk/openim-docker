@@ -2,7 +2,7 @@
 version: '3'
 
 networks:
-  server:
+  openim-server:
     driver: bridge
     ipam:
       driver: default
@@ -23,7 +23,7 @@ services:
       MYSQL_ROOT_PASSWORD: "${MYSQL_PASSWORD}"
     restart: always
     networks:
-      server:
+      openim-server:
         ipv4_address: ${MYSQL_NETWORK_ADDRESS}
 
   mongodb:
@@ -36,7 +36,7 @@ services:
       - "${DATA_DIR}/components/mongodb/data/db:/data/db"
       - "${DATA_DIR}/components/mongodb/data/logs:/data/logs"
       - "${DATA_DIR}/components/mongodb/data/conf:/etc/mongo"
-      - ./scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro"
+      - "./scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro"
     environment:
       - TZ=Asia/Shanghai
       - wiredTigerCacheSizeGB=1
@@ -45,7 +45,7 @@ services:
       - MONGO_INITDB_DATABASE=${MONGO_DATABASE}
     restart: always
     networks:
-      server:
+      openim-server:
         ipv4_address: ${MONGO_NETWORK_ADDRESS}
 
   redis:
@@ -63,7 +63,7 @@ services:
       net.core.somaxconn: 1024
     command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
     networks:
-      server:
+      openim-server:
         ipv4_address: ${REDIS_NETWORK_ADDRESS}
 
   zookeeper:
@@ -78,7 +78,7 @@ services:
      - TZ="Asia/Shanghai"
    restart: always
    networks:
-      server:
+      openim-server:
         ipv4_address: ${ZOOKEEPER_NETWORK_ADDRESS}
 
   kafka:
@@ -87,13 +87,13 @@ services:
     user: root
     restart: always
     ports:
-    - "${KAFKA_PORT}:9094"
+    - "${KAFKA_PORT}:9092"
     volumes:
-      - ./scripts/create_topic.sh:/opt/bitnami/kafka/create_topic.sh
+      - ./openim-server/${SERVER_BRANCH}/scripts/create-topic.sh:/opt/bitnami/kafka/create-topic.sh
       - ${DATA_DIR}/components/kafka:/bitnami/kafka
     command: >
       bash -c "
-      /opt/bitnami/scripts/kafka/run.sh & sleep 5; /opt/bitnami/kafka/create_topic.sh; wait
+      /opt/bitnami/scripts/kafka/run.sh & sleep 5; /opt/bitnami/kafka/create-topic.sh; wait
       "
     environment:
        - TZ=Asia/Shanghai
@@ -105,7 +105,7 @@ services:
        - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
        - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
     networks:
-      server:
+      openim-server:
         ipv4_address: ${KAFKA_NETWORK_ADDRESS}
 
   minio:
@@ -123,13 +123,14 @@ services:
     restart: always
     command: minio server /data --console-address ':9090'
     networks:
-      server:
+      openim-server:
         ipv4_address: ${MINIO_NETWORK_ADDRESS}
 
   openim-web:
-    image: ghcr.io/openimsdk/openim-web:latest
+    # image: ghcr.io/openimsdk/openim-web:latest
     # image: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-web:latest
     # image: openim/openim-web:latest
+    image: ${IMAGE_REGISTRY}/openim-web:latest
     container_name: openim-web
     environment:
       - OPENIM_WEB_DIST_PATH=${OPENIM_WEB_DIST_PATH}
@@ -138,13 +139,14 @@ services:
     ports:
       - "${OPENIM_WEB_PORT}:11001"
     networks:
-      server:
+      openim-server:
         ipv4_address: ${OPENIM_WEB_NETWORK_ADDRESS}
 
   openim-server:
-    image: ghcr.io/openimsdk/openim-server:main
-    # image: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-server:main
-    # image: openim/openim-server:main
+    # image: ghcr.io/openimsdk/openim-server:${SERVER_BRANCH}
+    # image: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-server:${SERVER_BRANCH}
+    # image: openim/openim-server:${SERVER_BRANCH}
+    image: ${IMAGE_REGISTRY}/openim-server:${SERVER_BRANCH}
 #    build: .
     container_name: openim-server
     ports:
@@ -152,14 +154,14 @@ services:
       - ${API_OPENIM_PORT}:10002
     healthcheck:
       test: ["CMD", "/openim/openim-server/scripts/check-all.sh"]
-      interval: 300s
+      interval: 60s
       timeout: 10s
       retries: 5
     volumes:
-      - ./logs:/openim/openim-server/logs
-      - ./_output/logs:/openim/openim-server/_output/logs
-      - ./config:/openim/openim-server/config
-      - ./scripts:/openim/openim-server/scripts
+      - ./openim-server/${SERVER_BRANCH}/logs:/openim/openim-server/logs
+      - ./openim-server/${SERVER_BRANCH}/_output/logs:/openim/openim-server/_output/logs
+      - ./openim-server/${SERVER_BRANCH}/config:/openim/openim-server/config
+      - ./openim-server/${SERVER_BRANCH}/scripts:/openim/openim-server/scripts
     restart: always
     depends_on:
       - kafka
@@ -173,5 +175,41 @@ services:
         max-size: "1g"
         max-file: "2"
     networks:
-      server:
+      openim-server:
         ipv4_address: ${OPENIM_SERVER_NETWORK_ADDRESS}
+
+  openim-chat:
+    # image: ghcr.io/openimsdk/openim-chat:${CHAT_BRANCH}
+    # image: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-chat:${CHAT_BRANCH}
+    # image: openim/openim-chat:${CHAT_BRANCH}
+    image: ${IMAGE_REGISTRY}/openim-chat:${CHAT_BRANCH}
+    container_name: openim-chat
+    healthcheck:
+      test: ["CMD", "/openim/openim-chat/scripts/check_all.sh"]
+      interval: 60s
+      timeout: 10s
+      retries: 5
+    ports:
+      - ${OPENIM_CHAT_API_PORT}:10008
+      - ${OPENIM_ADMIN_API_PORT}:10009
+    volumes:
+      - ./openim-chat/${CHAT_BRANCH}/logs:/openim/openim-chat/logs
+      - ./openim-chat/${CHAT_BRANCH}/_output/logs:/openim/openim-chat/_output/logs
+      - ./openim-chat/${CHAT_BRANCH}/config:/openim/openim-chat/config
+      - ./openim-chat/${CHAT_BRANCH}/scripts:/openim/openim-chat/scripts
+    restart: always
+    user: root:root
+    depends_on:
+      - mysql
+      - mongodb
+      - redis
+      - minio
+      - openim-server
+    logging:
+      driver: json-file
+      options:
+        max-size: "1g"
+        max-file: "2"
+    networks:
+      openim-server:
+        ipv4_address: ${OPENIM_CHAT_NETWORK_ADDRESS}
