@@ -175,32 +175,3 @@ services:
     networks:
       server:
         ipv4_address: ${OPENIM_SERVER_NETWORK_ADDRESS}
-
-  prometheus:
-    image: prom/prometheus
-    volumes:
-      - ./.docker-compose_cfg/prometheus-compose.yml:/etc/prometheus/prometheus.yml
-    container_name: prometheus
-    ports:
-      - ${PROMETHEUS_PORT}:9091
-    depends_on:
-      - openim-server
-    command: --web.listen-address=:9091 --config.file="/etc/prometheus/prometheus.yml"
-    networks:
-      server:
-        ipv4_address: ${PROMETHEUS_NETWORK_ADDRESS}
-
-  grafana:
-    image: grafana/grafana
-    volumes:
-      - ./.docker-compose_cfg/datasource-compose.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
-      - ./.docker-compose_cfg/grafana.ini:/etc/grafana/grafana.ini
-      - ./.docker-compose_cfg/node-exporter-full_rev1.json:/var/lib/grafana/dashboards/node-exporter-full_rev1.json
-    container_name: grafana
-    ports:
-      - ${GRAFANA_PORT}:3000
-    depends_on:
-      - prometheus
-    networks:
-      server:
-        ipv4_address: ${GRAFANA_NETWORK_ADDRESS}
