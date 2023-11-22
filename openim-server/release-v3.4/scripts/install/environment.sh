@@ -19,7 +19,7 @@
 # 格式化 bash 注释：https://tool.lu/shell/
 # 配置中心文档：https://github.com/openimsdk/open-im-server/blob/main/docs/contrib/environment.md
 
-OPENIM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
+OPENIM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd -P)"
 
 # 生成文件存放目录
 LOCAL_OUTPUT_ROOT=""${OPENIM_ROOT}"/${OUT_DIR:-_output}"
