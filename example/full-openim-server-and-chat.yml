@@ -148,7 +148,6 @@ services:
     restart: always
     depends_on:
       - kafka
-      - mysql
       - mongodb
       - redis
       - minio
