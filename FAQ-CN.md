@@ -495,7 +495,7 @@ RUN echo listener.security.protocol.map=INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT >> co
     ports:
     - "${KAFKA_PORT}:9092"
     volumes:
-      - ./openim-server/${SERVER_BRANCH}/scripts/create_topic.sh:/opt/bitnami/kafka/create_topic.sh
+      - ./scripts/create_topic.sh:/opt/bitnami/kafka/create_topic.sh
       - ${DATA_DIR}/components/kafka:/bitnami/kafka
     command: >
       bash -c "
