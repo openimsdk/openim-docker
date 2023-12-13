@@ -149,6 +149,10 @@ services:
       interval: 60s
       timeout: 10s
       retries: 5
+    env_file:
+      - .env
+    environment:
+      - OPENIM_IP=${OPENIM_IP:-127.0.0.1}
     volumes:
       - "./openim-server/logs:/openim/openim-server/logs"
       - "./openim-server/_output/logs:/openim/openim-server/_output/logs"
@@ -178,6 +182,8 @@ services:
       interval: 60s
       timeout: 10s
       retries: 5
+    env_file:
+      - .env
     ports:
       - "${OPENIM_CHAT_API_PORT:-10008}:10008"
       - "${OPENIM_ADMIN_API_PORT:-10009}:10009"
