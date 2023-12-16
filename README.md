@@ -94,8 +94,8 @@ To ensure you get the latest version of the image, please refer to the following
 export PASSWORD="openIM123" # Set password, default is openIM123
 export USER="root" # Set username, default is root
 # Choose chat version and server version https://github.com/OpenIMSDK/Open-IM-Server/blob/main/docs/conversions/images.md, eg: release-v*.*
-export CHAT_BRANCH="release-v1.4"   # Set chat version, default is release-v1.4 (unstable)
-export SERVER_BRANCH="release-v3.4" # Set server version, default is release-v3.4 (unstable)
+export CHAT_IMAGE_VERSION="release-v1.4"   # Set chat version, default is release-v1.4 (unstable)
+export SERVER_IMAGE_VERSION="release-v3.4" # Set server version, default is release-v3.4 (unstable)
 # ...... other environment variables
 # MONGO_USERNAME: Set MongoDB username
 # MONGO_PASSWORD: Set MongoDB password

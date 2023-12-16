@@ -143,10 +143,10 @@ services:
         ipv4_address: ${OPENIM_WEB_NETWORK_ADDRESS}
 
   openim-server:
-    # image: ghcr.io/openimsdk/openim-server:${SERVER_BRANCH}
-    # image: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-server:${SERVER_BRANCH}
-    # image: openim/openim-server:${SERVER_BRANCH}
-    image: ${IMAGE_REGISTRY}/openim-server:${SERVER_BRANCH}
+    # image: ghcr.io/openimsdk/openim-server:${SERVER_IMAGE_VERSION}
+    # image: registry.cn-hangzhou.aliyuncs.com/openimsdk/openim-server:${SERVER_IMAGE_VERSION}
+    # image: openim/openim-server:${SERVER_IMAGE_VERSION}
+    image: ${IMAGE_REGISTRY}/openim-server:${SERVER_IMAGE_VERSION}
 #    build: .
     container_name: openim-server
     ports:
@@ -158,10 +158,10 @@ services:
       timeout: 10s
       retries: 5
     volumes:
-      - ./openim-server/${SERVER_BRANCH}/logs:/openim/openim-server/logs
-      - ./openim-server/${SERVER_BRANCH}/_output/logs:/openim/openim-server/_output/logs
-      - ./openim-server/${SERVER_BRANCH}/config:/openim/openim-server/config
-      - ./openim-server/${SERVER_BRANCH}/scripts:/openim/openim-server/scripts
+      - ./openim-server/${SERVER_IMAGE_VERSION}/logs:/openim/openim-server/logs
+      - ./openim-server/${SERVER_IMAGE_VERSION}/_output/logs:/openim/openim-server/_output/logs
+      - ./openim-server/${SERVER_IMAGE_VERSION}/config:/openim/openim-server/config
+      - ./openim-server/${SERVER_IMAGE_VERSION}/scripts:/openim/openim-server/scripts
     restart: always
     depends_on:
       - kafka

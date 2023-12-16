@@ -126,7 +126,7 @@ services:
         ipv4_address: ${MINIO_NETWORK_ADDRESS:-172.28.0.6}
 
   openim-server:
-    image: ${IMAGE_REGISTRY:-ghcr.io/openimsdk}/openim-server:${SERVER_BRANCH:-3.5.0-rc.6}
+    image: ${IMAGE_REGISTRY:-ghcr.io/openimsdk}/openim-server:${SERVER_IMAGE_VERSION:-3.5.0-rc.6}
     container_name: openim-server
     ports:
       - "${OPENIM_WS_PORT:-10001}:10001"
@@ -161,7 +161,7 @@ services:
         ipv4_address: ${OPENIM_SERVER_NETWORK_ADDRESS:-172.28.0.8}
 
   openim-chat:
-    image: ${IMAGE_REGISTRY:-ghcr.io/openimsdk}/openim-chat:${CHAT_BRANCH:-1.5.0-beta.1}
+    image: ${IMAGE_REGISTRY:-ghcr.io/openimsdk}/openim-chat:${CHAT_IMAGE_VERSION:-1.5.0-beta.1}
     container_name: openim-chat
     healthcheck:
       test: ["CMD", "/openim/openim-chat/scripts/check_all.sh"]

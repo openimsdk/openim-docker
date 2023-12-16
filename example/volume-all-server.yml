@@ -97,7 +97,7 @@ services:
       - "${KAFKA_PORT}:9092"
     volumes:
       - kafka_data:/bitnami/kafka
-      - ./openim-server/${SERVER_BRANCH}/scripts/create-topic.sh:/opt/bitnami/kafka/create-topic.sh
+      - ./openim-server/${SERVER_IMAGE_VERSION}/scripts/create-topic.sh:/opt/bitnami/kafka/create-topic.sh
     command: >
       bash -c "
       /opt/bitnami/scripts/kafka/run.sh & sleep 5; /opt/bitnami/kafka/create-topic.sh; wait
@@ -147,7 +147,7 @@ services:
         ipv4_address: ${OPENIM_WEB_NETWORK_ADDRESS}
 
   openim-server:
-    image: ${IMAGE_REGISTRY}/openim-server:${SERVER_BRANCH}
+    image: ${IMAGE_REGISTRY}/openim-server:${SERVER_IMAGE_VERSION}
     container_name: openim-server
     ports:
       - ${OPENIM_WS_PORT}:10001
@@ -158,10 +158,10 @@ services:
       timeout: 10s
       retries: 5
     volumes:
-      - ./openim-server/${SERVER_BRANCH}/logs:/openim/openim-server/logs
-      - ./openim-server/${SERVER_BRANCH}/_output/logs:/openim/openim-server/_output/logs
-      - ./openim-server/${SERVER_BRANCH}/config:/openim/openim-server/config
-      - ./openim-server/${SERVER_BRANCH}/scripts:/openim/openim-server/scripts
+      - ./openim-server/${SERVER_IMAGE_VERSION}/logs:/openim/openim-server/logs
+      - ./openim-server/${SERVER_IMAGE_VERSION}/_output/logs:/openim/openim-server/_output/logs
+      - ./openim-server/${SERVER_IMAGE_VERSION}/config:/openim/openim-server/config
+      - ./openim-server/${SERVER_IMAGE_VERSION}/scripts:/openim/openim-server/scripts
     restart: always
     depends_on:
       - kafka
@@ -179,7 +179,7 @@ services:
         ipv4_address: ${OPENIM_SERVER_NETWORK_ADDRESS}
 
   openim-chat:
-    image: ${IMAGE_REGISTRY}/openim-chat:${CHAT_BRANCH}
+    image: ${IMAGE_REGISTRY}/openim-chat:${CHAT_IMAGE_VERSION}
     container_name: openim-chat
     healthcheck:
       test: ["CMD", "/openim/openim-chat/scripts/check_all.sh"]
@@ -190,10 +190,10 @@ services:
       - ${OPENIM_CHAT_API_PORT}:10008
       - ${OPENIM_ADMIN_API_PORT}:10009
     volumes:
-      - ./openim-chat/${CHAT_BRANCH}/logs:/openim/openim-chat/logs
-      - ./openim-chat/${CHAT_BRANCH}/_output/logs:/openim/openim-chat/_output/logs
-      - ./openim-chat/${CHAT_BRANCH}/config:/openim/openim-chat/config
-      - ./openim-chat/${CHAT_BRANCH}/scripts:/openim/openim-chat/scripts
+      - ./openim-chat/${CHAT_IMAGE_VERSION}/logs:/openim/openim-chat/logs
+      - ./openim-chat/${CHAT_IMAGE_VERSION}/_output/logs:/openim/openim-chat/_output/logs
+      - ./openim-chat/${CHAT_IMAGE_VERSION}/config:/openim/openim-chat/config
+      - ./openim-chat/${CHAT_IMAGE_VERSION}/scripts:/openim/openim-chat/scripts
     restart: always
     depends_on:
       - mysql
@@ -216,7 +216,7 @@ services:
     hostname: prometheus
     restart: always
     volumes:
-      - ./openim-server/${SERVER_BRANCH}/config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./openim-server/${SERVER_IMAGE_VERSION}/config/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "${PROMETHEUS_PORT}:9090"
     networks:
