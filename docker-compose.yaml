@@ -258,6 +258,8 @@ services:
       - "${GRAFANA_PORT:-13000}:3000"
     volumes:
       - "${DATA_DIR:-./}/components/grafana:/var/lib/grafana"
+    environment:
+      - GF_SECURITY_ALLOW_EMBEDDING=true
     networks:
       openim-server:
         ipv4_address: ${GRAFANA_NETWORK_ADDRESS:-172.28.0.11}
