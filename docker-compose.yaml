@@ -126,7 +126,7 @@ services:
         ipv4_address: ${MINIO_NETWORK_ADDRESS:-172.28.0.6}
 
   openim-server:
-    image: ${IMAGE_REGISTRY:-ghcr.io/openimsdk}/openim-server:${SERVER_IMAGE_VERSION:-3.5.0-rc.6}
+    image: ${IMAGE_REGISTRY:-ghcr.io/openimsdk}/openim-server:${SERVER_IMAGE_VERSION:-latest}
     container_name: openim-server
     ports:
       - "${OPENIM_WS_PORT:-10001}:10001"
@@ -161,7 +161,7 @@ services:
         ipv4_address: ${OPENIM_SERVER_NETWORK_ADDRESS:-172.28.0.8}
 
   openim-chat:
-    image: ${IMAGE_REGISTRY:-ghcr.io/openimsdk}/openim-chat:${CHAT_IMAGE_VERSION:-1.5.0-beta.1}
+    image: ${IMAGE_REGISTRY:-ghcr.io/openimsdk}/openim-chat:${CHAT_IMAGE_VERSION:-latest}
     container_name: openim-chat
     healthcheck:
       test: ["CMD", "/openim/openim-chat/scripts/check_all.sh"]
@@ -170,6 +170,11 @@ services:
       retries: 5
     env_file:
       - .env
+    environment:
+      - ZOOKEEPER_ADDRESS=${DOCKER_BRIDGE_GATEWAY:-172.28.0.1}
+      - ZOOKEEPER_PORT=${ZOOKEEPER_PORT:-12181}
+      - OPENIM_SERVER_ADDRESS=${DOCKER_BRIDGE_GATEWAY:-172.28.0.1}
+      - API_OPENIM_PORT=${API_OPENIM_PORT:-10002}
     ports:
       - "${OPENIM_CHAT_API_PORT:-10008}:10008"
       - "${OPENIM_ADMIN_API_PORT:-10009}:10009"
@@ -184,7 +189,6 @@ services:
       - mongodb
       - redis
       - minio
-      - openim-server
     logging:
       driver: json-file
       options:
@@ -223,7 +227,8 @@ services:
     hostname: prometheus
     restart: always
     depends_on:
-      - openim-server
+      openim-server:
+        condition: service_healthy
     volumes:
       - "./openim-server/config/prometheus.yml:/etc/prometheus/prometheus.yml"
     ports:
@@ -238,7 +243,8 @@ services:
     hostname: alertmanager
     restart: always
     depends_on:
-      - openim-server
+      openim-server:
+        condition: service_healthy
     volumes:
       - ./openim-server/config/alertmanager.yml:/etc/alertmanager/alertmanager.yml
       - ./openim-server/config/email.tmpl:/etc/alertmanager/email.tmpl

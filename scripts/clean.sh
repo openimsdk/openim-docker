@@ -21,5 +21,7 @@ fi
 
 pushd $OPENIM_ROOT
 rm -rf "$DATA_DIR/components"
+rm -rf "$DATA_DIR/openim-server/config"
+rm -rf "$DATA_DIR/openim-chat/config"
 docker network prune -f
 popd
