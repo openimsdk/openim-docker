@@ -62,10 +62,10 @@ init:
 
 
 ## update: Update openim-chat config
-.PHONY: update
-update:
+.PHONY: upgrade
+upgrade:
 	@echo "===========> Update openim-chat config"
-	@$(ROOT_DIR)/scripts/update-config.sh
+	@$(ROOT_DIR)/scripts/upgrade.sh
 
 ## clean: Clean all data
 .PHONY: clean

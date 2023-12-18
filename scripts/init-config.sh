@@ -10,7 +10,6 @@ OPENIM_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 
 config_file="${OPENIM_ROOT}/.env"
 
-# Initialize flags
 FORCE=false
 SKIP=false
 
