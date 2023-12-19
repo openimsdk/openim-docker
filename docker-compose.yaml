@@ -161,7 +161,7 @@ services:
         ipv4_address: ${OPENIM_SERVER_NETWORK_ADDRESS:-172.28.0.8}
 
   openim-chat:
-    image: ${IMAGE_REGISTRY:-ghcr.io/openimsdk}/openim-chat:${CHAT_IMAGE_VERSION:-latest}
+    image: openim-chat:test
     container_name: openim-chat
     healthcheck:
       test: ["CMD", "/openim/openim-chat/scripts/check_all.sh"]
@@ -175,12 +175,15 @@ services:
       - ZOOKEEPER_PORT=${ZOOKEEPER_PORT:-12181}
       - OPENIM_SERVER_ADDRESS=${DOCKER_BRIDGE_GATEWAY:-172.28.0.1}
       - API_OPENIM_PORT=${API_OPENIM_PORT:-10002}
+      # - MYSQL_ADDRESS=${DOCKER_BRIDGE_GATEWAY:-172.28.0.1}
+      # - MYSQL_PORT=${MYSQL_PORT:-13306}
+      - REDIS_ADDRESS=${DOCKER_BRIDGE_GATEWAY:-172.28.0.1}
+      - REDIS_PORT=${REDIS_PORT:-16379}
     ports:
       - "${OPENIM_CHAT_API_PORT:-10008}:10008"
       - "${OPENIM_ADMIN_API_PORT:-10009}:10009"
     volumes:
       - "./openim-chat/logs:/openim/openim-chat/logs"
-      - "./openim-chat/_output/logs:/openim/openim-chat/_output/logs"
       - "./openim-chat/config:/openim/openim-chat/config"
     restart: always
     user: root:root
@@ -189,6 +192,7 @@ services:
       - mongodb
       - redis
       - minio
+      - openim-server
     logging:
       driver: json-file
       options:

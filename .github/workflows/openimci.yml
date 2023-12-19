@@ -14,9 +14,11 @@ jobs:
 
     - name: Run Docker Compose
       run: |
-        make init
+        ./scripts/init-config.sh --force
         docker-compose up -d
         docker-compose ps
+        docker-compose logs openim-server
+        docker-compose logs openim-chat
         docker-compose down
 
   test-example:
@@ -31,7 +33,7 @@ jobs:
           - 'example/only-openim-server.yml'
           - 'example/only-openim-web.yml'
           - 'example/volume-all-server.yml'
-          
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
@@ -41,7 +43,7 @@ jobs:
 
     - name: Run Docker ${{ matrix.compose-file }} Compose
       run: |
-        make init
+        ./scripts/init-config.sh --force
         docker-compose -f ${{ matrix.compose-file }} up -d
         docker-compose -f ${{ matrix.compose-file }} ps
         docker-compose -f ${{ matrix.compose-file }} down

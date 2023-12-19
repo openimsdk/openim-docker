@@ -72,6 +72,8 @@ fi
 pushd $OPENIM_ROOT
 delete_dir "$DATA_DIR/components"
 delete_dir "$DATA_DIR/openim-server/config"
+delete_dir "$DATA_DIR/openim-server/logs"
 delete_dir "$DATA_DIR/openim-chat/config"
+delete_dir "$DATA_DIR/openim-chat/logs"
 docker network prune -f
 popd
