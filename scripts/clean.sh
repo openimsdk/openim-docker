@@ -11,10 +11,20 @@ OPENIM_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 config_file="${OPENIM_ROOT}/.env"
 components_file="${OPENIM_ROOT}/components/"
 
-source $config_file
+if [ -f "$config_file" ]; then
+    source "$config_file"
+else
+    echo "Config file not found."
+    exit 1
+fi
 
 # Function to delete directory with confirmation
 delete_dir() {
+    if [ ! -d "$1" ]; then
+        echo "Directory $1 does not exist."
+        return
+    fi
+
     read -p "Are you sure you want to delete $1? [Y/N] " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]
@@ -44,15 +54,15 @@ if [[ $# -gt 0 ]]; then
             exit 0
             ;;
         --components)
-            delete_dir "$DATA_DIR/components"
+            delete_dir "$components_file"
             exit 0
             ;;
         --openim-server-config)
-            delete_dir "$DATA_DIR/openim-server/config"
+            delete_dir "${DATA_DIR}/openim-server/config"
             exit 0
             ;;
         --openim-chat-config)
-            delete_dir "$DATA_DIR/openim-chat/config"
+            delete_dir "${DATA_DIR}/openim-chat/config"
             exit 0
             ;;
         *)
@@ -65,15 +75,14 @@ fi
 
 if [ -z "$DATA_DIR" ]; then
     echo "DATA_DIR is not set or is empty"
-    rm -rf $components_file
     exit 1
 fi
 
-pushd $OPENIM_ROOT
-delete_dir "$DATA_DIR/components"
-delete_dir "$DATA_DIR/openim-server/config"
-delete_dir "$DATA_DIR/openim-server/logs"
-delete_dir "$DATA_DIR/openim-chat/config"
-delete_dir "$DATA_DIR/openim-chat/logs"
+pushd "$OPENIM_ROOT" || exit
+delete_dir "${DATA_DIR}/components"
+delete_dir "${DATA_DIR}/openim-server/config"
+delete_dir "${DATA_DIR}/openim-server/logs"
+delete_dir "${DATA_DIR}/openim-chat/config"
+delete_dir "${DATA_DIR}/openim-chat/logs"
 docker network prune -f
 popd
