@@ -188,11 +188,8 @@ services:
     restart: always
     user: root:root
     depends_on:
-      - mysql
-      - mongodb
-      - redis
-      - minio
-      - openim-server
+      openim-server:
+        condition: service_healthy
     logging:
       driver: json-file
       options:
