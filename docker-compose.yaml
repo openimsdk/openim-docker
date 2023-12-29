@@ -131,6 +131,21 @@ services:
     ports:
       - "${OPENIM_WS_PORT:-10001}:10001"
       - "${API_OPENIM_PORT:-10002}:10002"
+      - "${API_PROM_PORT:-20100}:20100"
+      - "${USER_PROM_PORT:-20110}:20110"
+      - "${FRIEND_PROM_PORT:-20120}:20120"
+      - "${MESSAGE_PROM_PORT:-20130}:20130"
+      - "${MSG_GATEWAY_PROM_PORT:-20140}:20140"
+      - "${GROUP_PROM_PORT:-20150}:20150"
+      - "${AUTH_PROM_PORT:-20160}:20160"
+      - "${PUSH_PROM_PORT:-20170}:20170"
+      - "${CONVERSATION_PROM_PORT:-20230}:20230"
+      - "${RTC_PROM_PORT:-21300}:21300"
+      - "${THIRD_PROM_PORT:-21301}:21301"
+      - "${MSG_TRANSFER_PROM_PORT:-21400}:21400"
+      - "${MSG_TRANSFER_PROM_PORT:-21401}:21401"
+      - "${MSG_TRANSFER_PROM_PORT:-21402}:21402"
+      - "${MSG_TRANSFER_PROM_PORT:-21403}:21403"
     healthcheck:
       test: ["CMD", "/openim/openim-server/scripts/check-all.sh"]
       interval: 60s
