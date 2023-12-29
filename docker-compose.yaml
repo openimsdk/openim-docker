@@ -134,7 +134,7 @@ services:
     healthcheck:
       test: ["CMD", "/openim/openim-server/scripts/check-all.sh"]
       interval: 60s
-      timeout: 10s
+      timeout: 30s
       retries: 5
     env_file:
       - .env
@@ -166,7 +166,7 @@ services:
     healthcheck:
       test: ["CMD", "/openim/openim-chat/scripts/check_all.sh"]
       interval: 60s
-      timeout: 10s
+      timeout: 30s
       retries: 5
     env_file:
       - .env
