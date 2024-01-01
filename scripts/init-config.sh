@@ -9,6 +9,7 @@ SCRIPTS_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 OPENIM_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 
 config_file="${OPENIM_ROOT}/.env"
+example_config_file="${OPENIM_ROOT}/example/.env"
 
 FORCE=false
 SKIP=false
@@ -31,6 +32,7 @@ clean_config() {
 generate_config() {
     echo "Generating configuration file..."
     cp "${OPENIM_ROOT}/.env.example" "${config_file}"
+    cp "${OPENIM_ROOT}/.env.example" "${example_config_file}"
     echo "Configuration file generated."
 }
 

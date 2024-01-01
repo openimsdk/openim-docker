@@ -47,7 +47,7 @@ config/config.yaml
 ./config/config.yaml
 .env
 ./.env
-
+example/.env
 
 .idea.md
 .todo.md
