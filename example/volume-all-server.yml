@@ -150,8 +150,7 @@ services:
     container_name: openim-server
     ports:
       - "${OPENIM_WS_PORT:-10001}:10001"
-      - "${API_OPENIM_PORT:-10002}:10002"
-      - ... # 其他端口按需配置
+      - "${API_OPENIM_PORT:-10002}:10002" # 其他端口按需配置
     healthcheck:
       test: ["CMD", "/openim/openim-server/scripts/check-all.sh"]
       interval: 60s
