@@ -22,7 +22,7 @@ jobs:
     if: github.event.label.name == 'help wanted' || github.event.label.name == 'good first issue'
     runs-on: ubuntu-latest
     permissions:
-      issues: write
+      issues: admin
     steps:
       - name: Add comment
         uses: peter-evans/create-or-update-comment@v3
