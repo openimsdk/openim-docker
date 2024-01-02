@@ -72,7 +72,9 @@ jobs:
 
     - name: Get OpenIM Data DIR
       id: get-dir
-      run: echo "DATA_DIR=$(pwd)" >> $GITHUB_ENV
+      run: |
+        echo "DATA_DIR=$(pwd)" >> $GITHUB_ENV
+        echo $DATA_DIR
 
     - name: Run Docker ${{ matrix.compose-file }} Compose
       run: |
