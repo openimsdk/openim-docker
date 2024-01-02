@@ -12,6 +12,10 @@ jobs:
     - name: Set up Docker
       uses: docker/setup-buildx-action@v1
 
+    - name: Get IP Address
+      id: get-ip
+      run: echo "OPENIM_IP=$(curl -s ifconfig.me)" >> $GITHUB_ENV
+
     - name: Run Docker Compose
       run: |
         ./scripts/init-config.sh --force
@@ -39,6 +43,10 @@ jobs:
 
     - name: Set up Docker
       uses: docker/setup-buildx-action@v1
+
+    - name: Get IP Address
+      id: get-ip
+      run: echo "OPENIM_IP=$(curl -s ifconfig.me)" >> $GITHUB_ENV
 
     - name: Run Docker ${{ matrix.compose-file }} Compose
       run: |
