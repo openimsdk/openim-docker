@@ -16,6 +16,10 @@ jobs:
       id: get-ip
       run: echo "OPENIM_IP=$(curl -s ifconfig.me)" >> $GITHUB_ENV
 
+    - name: Get OpenIM Data DIR
+      id: get-dir
+      run: echo "DATA_DIR=$(pwd)" >> $GITHUB_ENV
+
     - name: Run Docker Compose
       run: |
         ./scripts/init-config.sh --force
@@ -65,6 +69,10 @@ jobs:
     - name: Get IP Address
       id: get-ip
       run: echo "OPENIM_IP=$(curl -s ifconfig.me)" >> $GITHUB_ENV
+
+    - name: Get OpenIM Data DIR
+      id: get-dir
+      run: echo "DATA_DIR=$(pwd)" >> $GITHUB_ENV
 
     - name: Run Docker ${{ matrix.compose-file }} Compose
       run: |
