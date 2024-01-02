@@ -40,6 +40,7 @@ jobs:
       run: |
         docker stop $(docker ps -qa)
         docker rm $(docker ps -qa)
+        docker network prune -f
 
   test-example:
     runs-on: ubuntu-latest
@@ -73,3 +74,4 @@ jobs:
         docker-compose -f ${{ matrix.compose-file }} down
         docker stop $(docker ps -qa)
         docker rm $(docker ps -qa)
+        docker network prune -f
