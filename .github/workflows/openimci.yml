@@ -44,8 +44,9 @@ jobs:
         compose-file: 
           - 'example/basic-openim-server-dependency.yml'
           - 'example/full-openim-server-and-chat.yml'
+          - 'example/full-openim-server-chat-web.yml'
+          - 'example/full-openim-server-chat-web-admin.yml'
           - 'example/only-openim-server.yml'
-          - 'example/only-openim-web.yml'
           - 'example/volume-all-server.yml'
 
     steps:
