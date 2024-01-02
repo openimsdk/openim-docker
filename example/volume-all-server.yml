@@ -187,7 +187,8 @@ services:
       timeout: 10s
       retries: 5
     ports:
-      - "${OPENIM_CHAT_API_PORT:-10008}:10008"
+          environment:
+      - OPENIM_CHAT_API_PORT=${OPENIM_CHAT_API_PORT:-10008}
       - "${OPENIM_ADMIN_API_PORT:-10009}:10009"
     volumes:
       - ./openim-chat/logs:/openim/openim-chat/logs
