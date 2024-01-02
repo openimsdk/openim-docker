@@ -36,6 +36,11 @@ jobs:
       run: |
         docker-compose down
 
+    - name: clean all docker containers
+      run: |
+        docker stop $(docker ps -qa)
+        docker rm $(docker ps -qa)
+
   test-example:
     runs-on: ubuntu-latest
     strategy:
@@ -66,3 +71,5 @@ jobs:
         docker-compose -f ${{ matrix.compose-file }} up -d
         docker-compose -f ${{ matrix.compose-file }} ps
         docker-compose -f ${{ matrix.compose-file }} down
+        docker stop $(docker ps -qa)
+        docker rm $(docker ps -qa)
