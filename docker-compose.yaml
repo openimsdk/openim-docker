@@ -197,6 +197,8 @@ services:
     ports:
       - "${OPENIM_CHAT_API_PORT:-10008}:10008"
       - "${OPENIM_ADMIN_API_PORT:-10009}:10009"
+    environment:
+      - OPENIM_CHAT_API_PORT=${OPENIM_CHAT_API_PORT:-10008}
     volumes:
       - "./openim-chat/logs:/openim/openim-chat/logs"
       - "./openim-chat/config:/openim/openim-chat/config"
