@@ -132,6 +132,7 @@ services:
     networks:
       openim-server:
         ipv4_address: ${MINIO_NETWORK_ADDRESS:-172.28.0.6}
+
   openim-web:
     image: ${IMAGE_REGISTRY:-ghcr.io/openimsdk}/openim-web:${OPENIM_WEB_IMAGE_VERSION:-latest}
     container_name: openim-web

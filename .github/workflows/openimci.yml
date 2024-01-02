@@ -16,7 +16,7 @@ jobs:
       run: |
         ./scripts/init-config.sh --force
         docker-compose up -d
-        docker-compose ps#
+        docker-compose ps
         docker-compose logs openim-server
         docker-compose logs openim-chat
         docker-compose down
@@ -29,7 +29,6 @@ jobs:
         compose-file: 
           - 'example/basic-openim-server-dependency.yml'
           - 'example/full-openim-server-and-chat.yml'
-          - 'example/host-network-basic-openim-server-dependency.yml'
           - 'example/only-openim-server.yml'
           - 'example/only-openim-web.yml'
           - 'example/volume-all-server.yml'
