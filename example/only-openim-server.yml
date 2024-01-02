@@ -156,9 +156,9 @@ services:
     environment:
       - OPENIM_IP=${OPENIM_IP:-127.0.0.1}
     volumes:
-      - "./openim-server/logs:/openim/openim-server/logs"
-      - "./openim-server/_output/logs:/openim/openim-server/_output/logs"
-      - "./openim-server/config:/openim/openim-server/config"
+      - "${DATA_DIR:-./}/openim-server/logs:/openim/openim-server/logs"
+      - "${DATA_DIR:-./}/openim-server/_output/logs:/openim/openim-server/_output/logs"
+      - "${DATA_DIR:-./}/openim-server/config:/openim/openim-server/config"
     restart: always
     depends_on:
       - kafka

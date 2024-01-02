@@ -156,9 +156,9 @@ services:
     environment:
       - OPENIM_IP=${OPENIM_IP:-127.0.0.1}
     volumes:
-      - "./openim-server/logs:/openim/openim-server/logs"
-      - "./openim-server/_output/logs:/openim/openim-server/_output/logs"
-      - "./openim-server/config:/openim/openim-server/config"
+      - "${DATA_DIR:-./}/openim-server/logs:/openim/openim-server/logs"
+      - "${DATA_DIR:-./}/openim-server/_output/logs:/openim/openim-server/_output/logs"
+      - "${DATA_DIR:-./}/openim-server/config:/openim/openim-server/config"
     restart: always
     depends_on:
       - kafka
@@ -198,8 +198,8 @@ services:
       - "${OPENIM_CHAT_API_PORT:-10008}:10008"
       - "${OPENIM_ADMIN_API_PORT:-10009}:10009"
     volumes:
-      - "./openim-chat/logs:/openim/openim-chat/logs"
-      - "./openim-chat/config:/openim/openim-chat/config"
+      - "${DATA_DIR:-./}/openim-chat/logs:/openim/openim-chat/logs"
+      - "${DATA_DIR:-./}/openim-chat/config:/openim/openim-chat/config"
     restart: always
     user: root:root
     depends_on:
