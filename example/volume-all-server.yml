@@ -18,7 +18,11 @@ volumes:
   kafka_data:
   minio_data:
   minio_config:
-  grafana_data:
+  openim-server-output-logs:
+  openim-server-logs:
+  openim-server-config:
+  openim-chat-logs:
+  openim-chat-config:
 
 services:
   mysql:
@@ -171,13 +175,12 @@ services:
     healthcheck:
       test: ["CMD", "/openim/openim-server/scripts/check-all.sh"]
       interval: 60s
-      timeout: 10s
+      timeout: 30s
       retries: 5
     volumes:
-      - ./openim-server/logs:/openim/openim-server/logs
-      - ./openim-server/_output/logs:/openim/openim-server/_output/logs
-      - ./openim-server/config:/openim/openim-server/config
-      - ./openim-server/scripts:/openim/openim-server/scripts
+      - openim-server-logs:/openim/openim-server/logs
+      - openim-server-output-logs:/openim/openim-server/_output/logs
+      - openim-server-config:/openim/openim-server/config
     restart: always
     depends_on:
       - kafka
@@ -200,16 +203,25 @@ services:
     healthcheck:
       test: ["CMD", "/openim/openim-chat/scripts/check_all.sh"]
       interval: 60s
-      timeout: 10s
+      timeout: 30s
       retries: 5
     ports:
       - "${OPENIM_CHAT_API_PORT:-10008}:10008"
       - "${OPENIM_ADMIN_API_PORT:-10009}:10009"
+    env_file:
+      - .env
+    environment:
+      - ZOOKEEPER_ADDRESS=${DOCKER_BRIDGE_GATEWAY:-172.28.0.1}
+      - ZOOKEEPER_PORT=${ZOOKEEPER_PORT:-12181}
+      - OPENIM_SERVER_ADDRESS=http://${OPENIM_SERVER_ADDRESS:-172.28.0.1}
+      - API_OPENIM_PORT=${API_OPENIM_PORT:-10002}
+      - MYSQL_ADDRESS=${DOCKER_BRIDGE_GATEWAY:-172.28.0.1}
+      - MYSQL_PORT=${MYSQL_PORT:-13306}
+      - REDIS_ADDRESS=${DOCKER_BRIDGE_GATEWAY:-172.28.0.1}
+      - REDIS_PORT=${REDIS_PORT:-16379}
     volumes:
-      - ./openim-chat/logs:/openim/openim-chat/logs
-      - ./openim-chat/_output/logs:/openim/openim-chat/_output/logs
-      - ./openim-chat/config:/openim/openim-chat/config
-      - ./openim-chat/scripts:/openim/openim-chat/scripts
+      - openim-chat-logs:/openim/openim-chat/logs
+      - openim-chat-config:/openim/openim-chat/config
     restart: always
     depends_on:
       - openim-server
@@ -221,41 +233,3 @@ services:
     networks:
       openim-server:
         ipv4_address: ${OPENIM_CHAT_NETWORK_ADDRESS:-172.28.0.9}
-
-  prometheus:
-    image: prom/prometheus
-    container_name: prometheus
-    hostname: prometheus
-    restart: always
-    volumes:
-      - ./openim-server/config/prometheus.yml:/etc/prometheus/prometheus.yml
-    ports:
-      - "${PROMETHEUS_PORT:-9090}:9090"
-    networks:
-      openim-server:
-        ipv4_address: ${PROMETHEUS_NETWORK_ADDRESS:-172.28.0.10}
-
-  grafana:
-    image: grafana/grafana
-    container_name: grafana
-    hostname: grafana
-    user: root
-    restart: always
-    ports:
-      - "${GRAFANA_PORT:-3000}:3000"
-    volumes:
-      - grafana_data:/var/lib/grafana
-    networks:
-      openim-server:
-        ipv4_address: ${GRAFANA_NETWORK_ADDRESS:-172.28.0.11}
-
-  node-exporter:
-    image: quay.io/prometheus/node-exporter
-    container_name: node-exporter
-    hostname: node-exporter
-    restart: always
-    ports:
-      - "${NODE_EXPORTER_PORT:-9100}:9100"
-    networks:
-      openim-server:
-        ipv4_address: ${NODE_EXPORTER_NETWORK_ADDRESS:-172.28.0.12}
