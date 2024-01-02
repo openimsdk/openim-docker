@@ -21,8 +21,19 @@ jobs:
         ./scripts/init-config.sh --force
         docker-compose up -d
         docker-compose ps
+
+    - name: Test OpenIM Server
+      run: |
+        sleep 40
         docker-compose logs openim-server
+
+    - name: Test OpenIM chat
+      run: |
+        sleep 40
         docker-compose logs openim-chat
+
+    - name: stop docker-compose
+      run: |
         docker-compose down
 
   test-example:

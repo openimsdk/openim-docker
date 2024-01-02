@@ -213,3 +213,16 @@ services:
     networks:
       openim-server:
         ipv4_address: ${OPENIM_CHAT_NETWORK_ADDRESS:-172.28.0.9}
+
+  openim-web:
+    image: ${IMAGE_REGISTRY:-ghcr.io/openimsdk}/openim-web:${OPENIM_WEB_IMAGE_VERSION:-latest}
+    container_name: openim-web
+    environment:
+      - OPENIM_WEB_DIST_PATH=${OPENIM_WEB_DIST_PATH:-/app/dist}
+      - OPENIM_WEB_PORT=${OPENIM_WEB_PORT:-11001}
+    restart: always
+    ports:
+      - "${OPENIM_WEB_PORT:-11001}:11001"
+    networks:
+      openim-server:
+        ipv4_address: ${OPENIM_WEB_NETWORK_ADDRESS:-172.28.0.7}
