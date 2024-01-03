@@ -50,3 +50,4 @@ jobs:
           OCO_EMOJI: false
           OCO_MODEL: gpt-3.5-turbo
           OCO_LANGUAGE: en
+        continue-on-error: true

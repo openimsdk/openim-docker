@@ -201,7 +201,7 @@ services:
       - "${DATA_DIR:-./}/openim-chat/logs:/openim/openim-chat/logs"
       - "${DATA_DIR:-./}/openim-chat/config:/openim/openim-chat/config"
     restart: always
-    user: root:root
+    # user: root:root
     depends_on:
       openim-server:
         condition: service_healthy
