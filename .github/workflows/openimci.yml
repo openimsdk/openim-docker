@@ -12,14 +12,39 @@ jobs:
     - name: Set up Docker
       uses: docker/setup-buildx-action@v1
 
+    - name: Get IP Address
+      id: get-ip
+      run: echo "OPENIM_IP=$(curl -s ifconfig.me)" >> $GITHUB_ENV
+
+    - name: Get OpenIM Data DIR
+      id: get-dir
+      run: echo "DATA_DIR=$(pwd)" >> $GITHUB_ENV
+
     - name: Run Docker Compose
       run: |
         ./scripts/init-config.sh --force
         docker-compose up -d
-        docker-compose ps#
+        docker-compose ps
+
+    - name: Test OpenIM Server
+      run: |
+        sleep 40
         docker-compose logs openim-server
+
+    - name: Test OpenIM chat
+      run: |
+        sleep 40
         docker-compose logs openim-chat
+
+    - name: stop docker-compose
+      run: |
         docker-compose down
+
+    - name: clean all docker containers
+      run: |
+        docker stop $(docker ps -qa)
+        docker rm $(docker ps -qa)
+        docker network prune -f
 
   test-example:
     runs-on: ubuntu-latest
@@ -29,9 +54,9 @@ jobs:
         compose-file: 
           - 'example/basic-openim-server-dependency.yml'
           - 'example/full-openim-server-and-chat.yml'
-          - 'example/host-network-basic-openim-server-dependency.yml'
+          - 'example/full-openim-server-chat-web.yml'
+          - 'example/full-openim-server-chat-web-admin.yml'
           - 'example/only-openim-server.yml'
-          - 'example/only-openim-web.yml'
           - 'example/volume-all-server.yml'
 
     steps:
@@ -41,9 +66,22 @@ jobs:
     - name: Set up Docker
       uses: docker/setup-buildx-action@v1
 
+    - name: Get IP Address
+      id: get-ip
+      run: echo "OPENIM_IP=$(curl -s ifconfig.me)" >> $GITHUB_ENV
+
+    - name: Get OpenIM Data DIR
+      id: get-dir
+      run: |
+        echo "DATA_DIR=$(pwd)" >> $GITHUB_ENV
+        echo $DATA_DIR
+
     - name: Run Docker ${{ matrix.compose-file }} Compose
       run: |
         ./scripts/init-config.sh --force
         docker-compose -f ${{ matrix.compose-file }} up -d
         docker-compose -f ${{ matrix.compose-file }} ps
         docker-compose -f ${{ matrix.compose-file }} down
+        docker stop $(docker ps -qa)
+        docker rm $(docker ps -qa)
+        docker network prune -f
