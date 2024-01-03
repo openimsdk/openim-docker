@@ -101,7 +101,7 @@ services:
       - "${KAFKA_PORT:-19094}:9092"
     volumes:
       - kafka_data:/bitnami/kafka
-      - ./scripts/create-topic.sh:/opt/bitnami/kafka/create-topic.sh
+      - ../scripts/create-topic.sh:/opt/bitnami/kafka/create-topic.sh
     command: >
       bash -c "
       /opt/bitnami/scripts/kafka/run.sh & sleep 5; /opt/bitnami/kafka/create-topic.sh; wait

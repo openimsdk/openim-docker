@@ -9,13 +9,19 @@ SCRIPTS_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 OPENIM_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 
 config_file="${OPENIM_ROOT}/.env"
+example_config_file="${OPENIM_ROOT}/.env.example"
 components_file="${OPENIM_ROOT}/components/"
 
 if [ -f "$config_file" ]; then
     source "$config_file"
 else
     echo "Config file not found."
-    exit 1
+fi
+
+if [ -f "$example_config_file" ]; then
+    source "$example_config_file"
+else
+    echo "example_config_file file not found."
 fi
 
 # Function to delete directory with confirmation
