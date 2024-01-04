@@ -142,10 +142,7 @@ services:
       - "${CONVERSATION_PROM_PORT:-20230}:20230"
       - "${RTC_PROM_PORT:-21300}:21300"
       - "${THIRD_PROM_PORT:-21301}:21301"
-      - "${MSG_TRANSFER_PROM_PORT:-21400}:21400"
-      - "${MSG_TRANSFER_PROM_PORT:-21401}:21401"
-      - "${MSG_TRANSFER_PROM_PORT:-21402}:21402"
-      - "${MSG_TRANSFER_PROM_PORT:-21403}:21403"
+      - "21400-21403:21400-21403"
     healthcheck:
       test: ["CMD", "/openim/openim-server/scripts/check-all.sh"]
       interval: 60s
@@ -215,6 +212,7 @@ services:
         ipv4_address: ${OPENIM_CHAT_NETWORK_ADDRESS:-172.28.0.9}
 
   openim-web:
+    # https://github.com/openimsdk/open-im-server/issues/1662
     image: ${IMAGE_REGISTRY:-ghcr.io/openimsdk}/openim-web:${OPENIM_WEB_IMAGE_VERSION:-latest}
     container_name: openim-web
     environment:
@@ -228,6 +226,7 @@ services:
         ipv4_address: ${OPENIM_WEB_NETWORK_ADDRESS:-172.28.0.7}
 
   openim-admin:
+    # https://github.com/openimsdk/open-im-server/issues/1662
     image: ${IMAGE_REGISTRY:-ghcr.io/openimsdk}/openim-admin:${ADMIN_FRONT_VERSION:-toc-base-open-docker.35}
     container_name: openim-admin
     restart: always
