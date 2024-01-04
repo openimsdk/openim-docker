@@ -119,7 +119,7 @@ docker compose up -d
 ##  9. <a name='DirectoryStructure'></a>Directory Structure
 
 ```bash
-smile@smile:/data/workspaces/openim-docker$ tree 
+smile@openim-docker$ tree 
 .
 ├── 📝 `docker-compose.yaml` - *Docker Compose configuration file for defining and running multi-container Docker applications.*
 ├── 📂 `example` - *Contains various example configuration files and scripts showing how to configure and use OpenIM services.*
