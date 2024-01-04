@@ -142,10 +142,7 @@ services:
       - "${CONVERSATION_PROM_PORT:-20230}:20230"
       - "${RTC_PROM_PORT:-21300}:21300"
       - "${THIRD_PROM_PORT:-21301}:21301"
-      - "${MSG_TRANSFER_PROM_PORT:-21400}:21400"
-      - "${MSG_TRANSFER_PROM_PORT:-21401}:21401"
-      - "${MSG_TRANSFER_PROM_PORT:-21402}:21402"
-      - "${MSG_TRANSFER_PROM_PORT:-21403}:21403"
+      - "21400-21403:21400-21403"
     healthcheck:
       test: ["CMD", "/openim/openim-server/scripts/check-all.sh"]
       interval: 60s
