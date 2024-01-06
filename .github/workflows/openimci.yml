@@ -28,12 +28,12 @@ jobs:
 
     - name: Test OpenIM Server
       run: |
-        sleep 40
+        sleep 30
         docker-compose logs openim-server
 
     - name: Test OpenIM chat
       run: |
-        sleep 40
+        sleep 30
         docker-compose logs openim-chat
 
     - name: stop docker-compose
