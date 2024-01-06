@@ -36,6 +36,34 @@ jobs:
         sleep 30
         docker-compose logs openim-chat
 
+    - name: Check the OpenIM environment and status
+      id: docker_info
+      run: |
+        sleep 30
+        echo "images<<EOF" >> $GITHUB_ENV
+        sudo docker images >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+        echo "containers<<EOF" >> $GITHUB_ENV
+        sudo docker ps >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+
+    - name: Comment PR
+      uses: thollander/actions-comment-pull-request@v2
+      with:
+        message: |
+          > [!TIP]
+          > Run make install to check the status
+
+          ### Docker Images:
+          ```
+          ${{ env.images }}
+          ```
+          ### Docker Processes:
+          ```
+          ${{ env.containers }}
+          ```
+        GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+
     - name: stop docker-compose
       run: |
         docker-compose down
