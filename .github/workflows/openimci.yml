@@ -29,12 +29,16 @@ jobs:
     - name: Test OpenIM Server
       run: |
         sleep 30
-        docker-compose logs openim-server
+        echo "<details><summary>OpenIM Server Logs</summary><p>" >> $GITHUB_ENV
+        docker-compose logs openim-server >> $GITHUB_ENV
+        echo "</p></details>" >> $GITHUB_ENV
 
     - name: Test OpenIM chat
       run: |
         sleep 30
-        docker-compose logs openim-chat
+        echo "<details><summary>OpenIM Chat Logs</summary><p>" >> $GITHUB_ENV
+        docker-compose logs openim-chat >> $GITHUB_ENV
+        echo "</p></details>" >> $GITHUB_ENV
 
     - name: Check the OpenIM environment and status
       id: docker_info
