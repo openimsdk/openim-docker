@@ -29,16 +29,12 @@ jobs:
     - name: Test OpenIM Server
       run: |
         sleep 30
-        echo "<details><summary>OpenIM Server Logs</summary><p>" >> $GITHUB_ENV
-        docker-compose logs openim-server >> $GITHUB_ENV
-        echo "</p></details>" >> $GITHUB_ENV
+        docker-compose logs openim-server
 
     - name: Test OpenIM chat
       run: |
         sleep 30
-        echo "<details><summary>OpenIM Chat Logs</summary><p>" >> $GITHUB_ENV
-        docker-compose logs openim-chat >> $GITHUB_ENV
-        echo "</p></details>" >> $GITHUB_ENV
+        docker-compose logs openim-chat
 
     - name: Check the OpenIM environment and status
       id: docker_info
@@ -50,6 +46,11 @@ jobs:
         echo "containers<<EOF" >> $GITHUB_ENV
         sudo docker ps >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
+        # echo "<details><summary>OpenIM Server Logs</summary><p>" >> $GITHUB_ENV
+        # echo "</p></details>" >> $GITHUB_ENV
+        # echo "<details><summary>OpenIM Chat Logs</summary><p>" >> $GITHUB_ENV
+        # echo "</p></details>" >> $GITHUB_ENV
+
 
     - name: Comment PR
       uses: thollander/actions-comment-pull-request@v2
