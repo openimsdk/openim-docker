@@ -1,0 +1,25 @@
+name: GitHub Actions Workflow
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Check CLA
+        uses: contributor-assistant/github-action@v2.3.0
+
+      - name: Fail if CLA not signed
+        run: |
+          if [ "$CLA_SIGNED" != "true" ]; then
+            echo "Committers of Pull Request number ${{ github.event.pull_request.number }} have to sign the CLA 📝"
+            exit 1
+          fi
