@@ -12,6 +12,7 @@ networks:
 services:
   mysql:
     image: mysql:${MYSQL_IMAGE_VERSION:-5.7}
+    platform: linux/amd64
     ports:
       - "${MYSQL_PORT:-13306}:3306"
     container_name: mysql
