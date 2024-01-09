@@ -56,6 +56,7 @@ jobs:
 
           ### Docker Images:
           <details><summary>Click to expand docker images</summary>
+
           ```bash
           ${{ env.images }}
           ```
@@ -63,6 +64,7 @@ jobs:
 
           ### Docker Processes:
           <details><summary>Click to expand docker ps</summary>
+
           ```bash
           ${{ env.containers }}
           ```
@@ -113,8 +115,9 @@ jobs:
         run: |
           ./scripts/init-config.sh --force
           docker-compose -f ${{ matrix.compose-file }} up -d
+          sleep 35
           docker images >> $GITHUB_ENV
-          docker ps -a >> $GITHUB_ENV
+          docker ps >> $GITHUB_ENV
 
       - name: Save Docker Info
         run: |
