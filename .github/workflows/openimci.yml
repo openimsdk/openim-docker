@@ -46,11 +46,6 @@ jobs:
         echo "containers<<EOF" >> $GITHUB_ENV
         sudo docker ps >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
-        # echo "<details><summary>OpenIM Server Logs</summary><p>" >> $GITHUB_ENV
-        # echo "</p></details>" >> $GITHUB_ENV
-        # echo "<details><summary>OpenIM Chat Logs</summary><p>" >> $GITHUB_ENV
-        # echo "</p></details>" >> $GITHUB_ENV
-
 
     - name: Comment PR
       uses: thollander/actions-comment-pull-request@v2
@@ -60,13 +55,18 @@ jobs:
           > Run make install to check the status
 
           ### Docker Images:
-          ```
+          <details><summary>Click to expand docker images</summary>
+          ```bash
           ${{ env.images }}
           ```
+          </details>
+
           ### Docker Processes:
-          ```
+          <details><summary>Click to expand docker ps</summary>
+          ```bash
           ${{ env.containers }}
           ```
+          </details>
         GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
 
     - name: stop docker-compose
@@ -80,41 +80,89 @@ jobs:
         docker network prune -f
 
   test-example:
+      runs-on: ubuntu-latest
+      strategy:
+        fail-fast: false
+        matrix:
+          arch: [amd64, arm64]
+          compose-file: 
+            - 'example/basic-openim-server-dependency.yml'
+            - 'example/full-openim-server-and-chat.yml'
+            - 'example/full-openim-server-chat-web.yml'
+            - 'example/full-openim-server-chat-web-admin.yml'
+            - 'example/only-openim-server.yml'
+            - 'example/volume-all-server.yml'
+
+      steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+    
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: linux/${{ matrix.arch }}
+
+      - name: Get IP Address
+        run: echo "OPENIM_IP=$(curl -s ifconfig.me)" >> $GITHUB_ENV
+
+      - name: Get OpenIM Data DIR
+        run: |
+          echo "DATA_DIR=$(pwd)" >> $GITHUB_ENV
+
+      - name: Run Docker Compose and Log Output
+        run: |
+          ./scripts/init-config.sh --force
+          docker-compose -f ${{ matrix.compose-file }} up -d
+          docker-compose -f ${{ matrix.compose-file }} ps
+          docker-compose -f ${{ matrix.compose-file }} down
+          docker stop $(docker ps -qa)
+          docker rm $(docker ps -qa)
+          docker network prune -f
+          docker images >> $GITHUB_ENV
+          docker ps -a >> $GITHUB_ENV
+
+      - name: Save Docker Info
+        run: |
+          mkdir -p ./tmp
+          echo "### Docker Info for ${{ matrix.compose-file }} on ${{ matrix.arch }}" >> ./tmp/docker_info.md
+          echo "#### Docker Images" >> ./tmp/docker_info.md
+          docker images | tee -a ./tmp/docker_info.md
+          echo "#### Docker Containers" >> ./tmp/docker_info.md
+          docker ps -a | tee -a ./tmp/docker_info.md
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: docker-info-${{ matrix.arch }}-${{ matrix.compose-file }}
+          path: ./tmp/docker_info.md
+
+    # Create a new job to consolidate the results and comment on the PR
+  consolidate-results:
+    needs: test-example
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        compose-file: 
-          - 'example/basic-openim-server-dependency.yml'
-          - 'example/full-openim-server-and-chat.yml'
-          - 'example/full-openim-server-chat-web.yml'
-          - 'example/full-openim-server-chat-web-admin.yml'
-          - 'example/only-openim-server.yml'
-          - 'example/volume-all-server.yml'
-
+    if: github.event_name == 'pull_request'
     steps:
-    - name: Checkout repository
+    - name: Checkout Repository
       uses: actions/checkout@v4
-
-    - name: Set up Docker
-      uses: docker/setup-buildx-action@v3
-
-    - name: Get IP Address
-      id: get-ip
-      run: echo "OPENIM_IP=$(curl -s ifconfig.me)" >> $GITHUB_ENV
-
-    - name: Get OpenIM Data DIR
-      id: get-dir
+  
+    - name: Download All Artifacts
+      uses: actions/download-artifact@v3
+      with:
+        path: ./artifacts
+  
+    - name: Consolidate Results
       run: |
-        echo "DATA_DIR=$(pwd)" >> $GITHUB_ENV
-        echo $DATA_DIR
-
-    - name: Run Docker ${{ matrix.compose-file }} Compose
-      run: |
-        ./scripts/init-config.sh --force
-        docker-compose -f ${{ matrix.compose-file }} up -d
-        docker-compose -f ${{ matrix.compose-file }} ps
-        docker-compose -f ${{ matrix.compose-file }} down
-        docker stop $(docker ps -qa)
-        docker rm $(docker ps -qa)
-        docker network prune -f
+        mkdir -p ./tmp
+        echo "# OpenIM Docker Test Results" > ./tmp/consolidated_report.md
+        for file in ./artifacts/*; do
+          cat "$file" >> ./tmp/consolidated_report.md
+          echo "" >> ./tmp/consolidated_report.md
+        done  
+    - name: Comment PR with Consolidated Report
+      uses: thollander/actions-comment-pull-request@v2
+      with:
+        filePath: ./tmp/consolidated_report.md
+        comment_tag: docker_info_report
+        reactions: eyes, rocket
+        mode: recreate
+        GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
