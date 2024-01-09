@@ -113,11 +113,6 @@ jobs:
         run: |
           ./scripts/init-config.sh --force
           docker-compose -f ${{ matrix.compose-file }} up -d
-          docker-compose -f ${{ matrix.compose-file }} ps
-          docker-compose -f ${{ matrix.compose-file }} down
-          docker stop $(docker ps -qa)
-          docker rm $(docker ps -qa)
-          docker network prune -f
           docker images >> $GITHUB_ENV
           docker ps -a >> $GITHUB_ENV
 
@@ -129,6 +124,14 @@ jobs:
           docker images | tee -a ./tmp/docker_info.md
           echo "#### Docker Containers" >> ./tmp/docker_info.md
           docker ps -a | tee -a ./tmp/docker_info.md
+
+      - name: Stop Docker Compose
+        run: |
+          docker-compose -f ${{ matrix.compose-file }} ps
+          docker-compose -f ${{ matrix.compose-file }} down
+          docker stop $(docker ps -qa)
+          docker rm $(docker ps -qa)
+          docker network prune -f
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
