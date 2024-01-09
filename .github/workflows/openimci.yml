@@ -157,16 +157,24 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         path: ./artifacts
+      continue-on-error: true
   
     - name: Consolidate Results
       run: |
         mkdir -p ./tmp
-        echo "# OpenIM Docker Test Results" > ./tmp/consolidated_report.md
-        for file in ./artifacts/*; do
-          cat "$file" >> ./tmp/consolidated_report.md
-          echo "" >> ./tmp/consolidated_report.md
-        done  
+        if compgen -G "./artifacts/*" > /dev/null; then
+          echo "# OpenIM Docker Test Results" > ./tmp/consolidated_report.md
+          for file in ./artifacts/*; do
+            cat "$file" >> ./tmp/consolidated_report.md
+            echo "" >> ./tmp/consolidated_report.md
+          done  
+        else
+          echo "No artifacts found in './artifacts' directory."
+          exit 0
+      continue-on-error: true
+  
     - name: Comment PR with Consolidated Report
+      if: always() && steps.consolidate-results.conclusion == 'success'
       uses: thollander/actions-comment-pull-request@v2
       with:
         filePath: ./tmp/consolidated_report.md
@@ -174,3 +182,4 @@ jobs:
         reactions: eyes, rocket
         mode: recreate
         GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+      continue-on-error: true
