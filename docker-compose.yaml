@@ -233,6 +233,7 @@ services:
     # https://github.com/openimsdk/open-im-server/issues/1662
     image: ${IMAGE_REGISTRY:-ghcr.io/openimsdk}/openim-admin:${ADMIN_FRONT_VERSION:-toc-base-open-docker.35}
     container_name: openim-admin
+    platform: linux/amd64
     restart: always
     ports:
       - "${OPENIM_ADMIN_FRONT_PORT:-11002}:80"
