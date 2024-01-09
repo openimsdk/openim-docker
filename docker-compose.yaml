@@ -250,6 +250,7 @@ services:
         condition: service_healthy
     volumes:
       - "${DATA_DIR:-./}/openim-server/config/prometheus.yml:/etc/prometheus/prometheus.yml"
+      - "${DATA_DIR:-./}/openim-server/config/instance-down-rules.yml:/etc/prometheus/instance-down-rules.yml"
     ports:
       - "${PROMETHEUS_PORT:-19090}:9090"
     networks:
