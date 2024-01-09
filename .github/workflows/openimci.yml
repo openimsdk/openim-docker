@@ -112,10 +112,10 @@ jobs:
           echo "DATA_DIR=$(pwd)" >> $GITHUB_ENV
           echo $DATA_DIR
 
-          - name: Run Docker ${{ matrix.compose-file }} Compose
-          run: |
-            ./scripts/init-config.sh --force
-            docker-compose -f ${{ matrix.compose-file }} up -d
+      - name: Run Docker ${{ matrix.compose-file }} Compose
+        run: |
+          ./scripts/init-config.sh --force
+          docker-compose -f ${{ matrix.compose-file }} up -d
         
       - name: Save Docker Info
         run: |
