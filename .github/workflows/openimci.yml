@@ -110,14 +110,12 @@ jobs:
       - name: Get OpenIM Data DIR
         run: |
           echo "DATA_DIR=$(pwd)" >> $GITHUB_ENV
+          echo $DATA_DIR
 
-      - name: Run Docker Compose and Log Output
+      - name: Run Docker ${{ matrix.compose-file }} Compose
         run: |
           ./scripts/init-config.sh --force
           docker-compose -f ${{ matrix.compose-file }} up -d
-          sleep 35
-          docker images >> $GITHUB_ENV
-          docker ps >> $GITHUB_ENV
 
       - name: Save Docker Info
         run: |
