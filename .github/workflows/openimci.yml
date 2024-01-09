@@ -112,11 +112,11 @@ jobs:
           echo "DATA_DIR=$(pwd)" >> $GITHUB_ENV
           echo $DATA_DIR
 
-      - name: Run Docker ${{ matrix.compose-file }} Compose
-        run: |
-          ./scripts/init-config.sh --force
-          docker-compose -f ${{ matrix.compose-file }} up -d
-
+          - name: Run Docker ${{ matrix.compose-file }} Compose
+          run: |
+            ./scripts/init-config.sh --force
+            docker-compose -f ${{ matrix.compose-file }} up -d
+        
       - name: Save Docker Info
         run: |
           mkdir -p ./tmp
@@ -125,7 +125,7 @@ jobs:
           docker images | tee -a ./tmp/docker_info.md
           echo "#### Docker Containers" >> ./tmp/docker_info.md
           docker ps -a | tee -a ./tmp/docker_info.md
-
+      
       - name: Stop Docker Compose
         run: |
           docker-compose -f ${{ matrix.compose-file }} ps
@@ -133,14 +133,18 @@ jobs:
           docker stop $(docker ps -qa)
           docker rm $(docker ps -qa)
           docker network prune -f
-
+      
+      - name: Set Artifact Name
+        id: set_artifact_name
+        run: |
+          echo "ARTIFACT_NAME=docker-info-${{ matrix.arch }}-$(echo ${{ matrix.compose-file }} | sed 's|/|-|g')" >> $GITHUB_ENV
+      
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: docker-info-${{ matrix.arch }}-${{ matrix.compose-file }}
-          path: ./tmp/docker_info.md
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ./tmp/docker_info.md           
 
-    # Create a new job to consolidate the results and comment on the PR
   consolidate-results:
     needs: test-example
     runs-on: ubuntu-latest
