@@ -232,6 +232,7 @@ services:
   openim-admin:
     image: ${IMAGE_REGISTRY:-ghcr.io/openimsdk}/openim-admin:${ADMIN_FRONT_VERSION:-v3.4.0}
     container_name: openim-admin
+    platform: linux/amd64
     restart: always
     ports:
       - "${OPENIM_ADMIN_FRONT_PORT:-11002}:80"

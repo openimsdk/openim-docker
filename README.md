@@ -45,7 +45,6 @@ This guide provides detailed instructions for deploying OpenIM v3.5 using Docker
 - Install Docker on the server.
 
 
-
 ##  2. <a name='OpenIMDockerUsageGuide'></a>OpenIM Docker Usage Guide
 
 ###  2.1. <a name='ProjectStructureExplanation'></a>Project Structure Explanation
@@ -69,7 +68,7 @@ To ensure you get the latest version of the image, please refer to the following
 - [OpenIM Version Design](https://github.com/OpenIMSDK/Open-IM-Server/blob/main/docs/conversions/version.md)
 - [OpenIM Image Strategy](https://github.com/OpenIMSDK/Open-IM-Server/blob/main/docs/conversions/images.md)
 
-
+docker deployments currently support both `linux/arm64` and `linux/amd64` architectures
 
 ##  3. <a name='RepositorySetup'></a>Repository Setup
 
