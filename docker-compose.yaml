@@ -217,7 +217,7 @@ services:
 
   openim-web:
     # https://github.com/openimsdk/open-im-server/issues/1662
-    image: ${IMAGE_REGISTRY:-ghcr.io/openimsdk}/openim-web:${OPENIM_WEB_IMAGE_VERSION:-latest}
+    image: ${IMAGE_REGISTRY:-ghcr.io/openimsdk}/openim-web:${OPENIM_WEB_IMAGE_VERSION:-RELEASE.2024-01-11T07-46-16Z}
     container_name: openim-web
     restart: always
     ports:
