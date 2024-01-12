@@ -149,7 +149,7 @@ services:
       - "21400-21403:21400-21403"
     healthcheck:
       test: ["CMD", "/openim/openim-server/scripts/check-all.sh"]
-      interval: 60s
+      interval: 120s
       timeout: 30s
       retries: 5
     env_file:
