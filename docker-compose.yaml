@@ -112,7 +112,7 @@ services:
         ipv4_address: ${KAFKA_NETWORK_ADDRESS:-172.28.0.4}
 
   minio:
-    image: minio/minio:${MINIO_IMAGE_VERSION:-latest}
+    image: minio/minio:${MINIO_IMAGE_VERSION:-RELEASE.2024-01-11T07-46-16Z}
     ports:
       - "${MINIO_PORT:-10005}:9000"
       - "9090:9090"
@@ -149,7 +149,7 @@ services:
       - "21400-21403:21400-21403"
     healthcheck:
       test: ["CMD", "/openim/openim-server/scripts/check-all.sh"]
-      interval: 60s
+      interval: 120s
       timeout: 30s
       retries: 5
     env_file:
@@ -217,14 +217,11 @@ services:
 
   openim-web:
     # https://github.com/openimsdk/open-im-server/issues/1662
-    image: ${IMAGE_REGISTRY:-ghcr.io/openimsdk}/openim-web:${OPENIM_WEB_IMAGE_VERSION:-latest}
+    image: ${IMAGE_REGISTRY:-ghcr.io/openimsdk}/openim-web:${OPENIM_WEB_IMAGE_VERSION:-v3.5.0-docker}
     container_name: openim-web
-    environment:
-      - OPENIM_WEB_DIST_PATH=${OPENIM_WEB_DIST_PATH:-/app/dist}
-      - OPENIM_WEB_PORT=${OPENIM_WEB_PORT:-11001}
     restart: always
     ports:
-      - "${OPENIM_WEB_PORT:-11001}:11001"
+      - "${OPENIM_WEB_PORT:-11001}:80"
     networks:
       openim-server:
         ipv4_address: ${OPENIM_WEB_NETWORK_ADDRESS:-172.28.0.7}
