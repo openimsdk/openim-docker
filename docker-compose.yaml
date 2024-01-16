@@ -218,6 +218,7 @@ services:
   openim-web:
     # https://github.com/openimsdk/open-im-server/issues/1662
     image: ${IMAGE_REGISTRY:-ghcr.io/openimsdk}/openim-web:${OPENIM_WEB_IMAGE_VERSION:-v3.5.0-docker}
+    platform: linux/amd64
     container_name: openim-web
     restart: always
     ports:
@@ -229,6 +230,7 @@ services:
   openim-admin:
     # https://github.com/openimsdk/open-im-server/issues/1662
     image: ${IMAGE_REGISTRY:-ghcr.io/openimsdk}/openim-admin:${ADMIN_FRONT_VERSION:-toc-base-open-docker.35}
+    platform: linux/amd64
     container_name: openim-admin
     platform: linux/amd64
     restart: always
