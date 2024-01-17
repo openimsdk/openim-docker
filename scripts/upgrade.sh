@@ -13,7 +13,7 @@ OPENIM_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 echo "Choose whether to overwrite the configuration files:"
 
 # Call the script to initialize configuration
-${OPENIM_ROOT}/scripts/init-config.sh
+${OPENIM_ROOT}/scripts/init-config.sh --token <TOKEN> --token <TOKEN>
 
 # Check if docker-compose is installed
 if ! command -v docker-compose &> /dev/null && ! command -v docker compose &> /dev/null; then
