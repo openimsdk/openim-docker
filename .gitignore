@@ -29,6 +29,8 @@ openim-chat/_output
 openim-chat/scripts
 openim-chat/config
 
+# openkf
+
 ### OpenIM developer supplement ###
 logs
 .devcontainer
