@@ -26,7 +26,7 @@ volumes:
 
 services:
   mysql:
-    image: mysql:${MYSQL_IMAGE_VERSION:-5.7}
+    image: mariadb:${MYSQL_IMAGE_VERSION:-10.6}
     ports:
       - "${MYSQL_PORT:-13306}:3306"
     container_name: mysql
@@ -54,7 +54,7 @@ services:
       - wiredTigerCacheSizeGB=1
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME:-root}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:-openIM123}
-      - MONGO_INITDB_DATABASE=${MONGO_DATABASE:-openIM_v3}
+      - MONGO_INITDB_DATABASE=${MONGO_DATABASE:-openim_v3}
       - MONGO_OPENIM_USERNAME=${MONGO_OPENIM_USERNAME:-openIM} # Non-root username
       - MONGO_OPENIM_PASSWORD=${MONGO_OPENIM_PASSWORD:-openIM123456} # Non-root password
     restart: always
