@@ -430,7 +430,7 @@ Type 'help' for list of commands.
 configFolderPath:
 use config /root/workspaces/openim/openim-server/config/config.yaml
 use config /root/workspaces/openim/openim-server/config/notification.yaml
-mongo: mongodb://root:openIM123@172.29.0.1:37017/openIM_v3?maxPoolSize=100&authSource=admin
+mongo: mongodb://root:openIM123@172.29.0.1:37017/openim_v3?maxPoolSize=100&authSource=admin
 start msg transfer prometheusPort: 0
 > [unrecovered-panic] runtime.fatalpanic() /snap/go/10319/src/runtime/panic.go:1175 (hits total:2) (PC: 0x43b940)
 > [unrecovered-panic] runtime.fatalpanic() /snap/go/10319/src/runtime/panic.go:1175 (hits total:2) (PC: 0x43b940)
