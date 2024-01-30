@@ -10,21 +10,6 @@ networks:
           gateway: '${DOCKER_BRIDGE_GATEWAY:-172.28.0.1}'
 
 services:
-  mysql:
-    image: mariadb:${MYSQL_IMAGE_VERSION:-10.6}
-    ports:
-      - "${MYSQL_PORT:-13306}:3306"
-    container_name: mysql
-    volumes:
-      - "${DATA_DIR:-./}/components/mysql/data:/var/lib/mysql"
-      - "/etc/localtime:/etc/localtime"
-    environment:
-      MYSQL_ROOT_PASSWORD: "${MYSQL_PASSWORD:-openIM123}"
-    restart: always
-    networks:
-      openim-server:
-        ipv4_address: ${MYSQL_NETWORK_ADDRESS:-172.28.0.15}
-
   mongodb:
     image: mongo:${MONGODB_IMAGE_VERSION-6.0.2}
     ports:
@@ -110,7 +95,7 @@ services:
         ipv4_address: ${KAFKA_NETWORK_ADDRESS:-172.28.0.4}
 
   minio:
-    image: minio/minio:${MINIO_IMAGE_VERSION:-latest}
+    image: minio/minio:${MINIO_IMAGE_VERSION:-2024-01-11T07-46-16Z}
     ports:
       - "${MINIO_PORT:-10005}:9000"
       - "9090:9090"
