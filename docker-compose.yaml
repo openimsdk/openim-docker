@@ -163,7 +163,7 @@ services:
     image: ${IMAGE_REGISTRY:-ghcr.io/openimsdk}/openim-chat:${CHAT_IMAGE_VERSION:-latest}
     container_name: openim-chat
     healthcheck:
-      test: ["CMD", "/openim/openim-chat/scripts/check_all.sh"]
+      test: ["CMD", "/openim/openim-chat/scripts/check-all.sh"]
       interval: 30s
       timeout: 30s
       retries: 10
