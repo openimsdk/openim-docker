@@ -148,15 +148,14 @@ services:
       - "21400-21403:21400-21403"
     healthcheck:
       test: ["CMD", "/openim/openim-server/scripts/check-all.sh"]
-      interval: 120s
+      interval: 30s
       timeout: 30s
-      retries: 5
+      retries: 10
     env_file:
       - .env
     environment:
       - OPENIM_IP=${OPENIM_IP:-127.0.0.1}
     volumes:
-      - "${DATA_DIR:-./}/openim-server/logs:/openim/openim-server/logs"
       - "${DATA_DIR:-./}/openim-server/_output/logs:/openim/openim-server/_output/logs"
       - "${DATA_DIR:-./}/openim-server/config:/openim/openim-server/config"
     restart: always
@@ -180,9 +179,9 @@ services:
     container_name: openim-chat
     healthcheck:
       test: ["CMD", "/openim/openim-chat/scripts/check_all.sh"]
-      interval: 60s
+      interval: 30s
       timeout: 30s
-      retries: 5
+      retries: 10
     env_file:
       - .env
     environment:
@@ -198,7 +197,7 @@ services:
       - "${OPENIM_CHAT_API_PORT:-10008}:10008"
       - "${OPENIM_ADMIN_API_PORT:-10009}:10009"
     volumes:
-      - "${DATA_DIR:-./}/openim-chat/logs:/openim/openim-chat/logs"
+      - "${DATA_DIR:-./}/openim-chat/_output/logs:/openim/openim-chat/_output/logs"
       - "${DATA_DIR:-./}/openim-chat/config:/openim/openim-chat/config"
     restart: always
     # user: root:root
