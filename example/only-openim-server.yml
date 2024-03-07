@@ -10,21 +10,6 @@ networks:
           gateway: '${DOCKER_BRIDGE_GATEWAY:-172.28.0.1}'
 
 services:
-  mysql:
-    image: mariadb:${MYSQL_IMAGE_VERSION:-10.6}
-    ports:
-      - "${MYSQL_PORT:-13306}:3306"
-    container_name: mysql
-    volumes:
-      - "${DATA_DIR:-./}/components/mysql/data:/var/lib/mysql"
-      - "/etc/localtime:/etc/localtime"
-    environment:
-      MYSQL_ROOT_PASSWORD: "${MYSQL_PASSWORD:-openIM123}"
-    restart: always
-    networks:
-      openim-server:
-        ipv4_address: ${MYSQL_NETWORK_ADDRESS:-172.28.0.15}
-
   mongodb:
     image: mongo:${MONGODB_IMAGE_VERSION-6.0.2}
     ports:
@@ -43,7 +28,7 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:-openIM123}
       - MONGO_INITDB_DATABASE=${MONGO_DATABASE:-openim_v3}
       - MONGO_OPENIM_USERNAME=${MONGO_OPENIM_USERNAME:-openIM} # Non-root username
-      - MONGO_OPENIM_PASSWORD=${MONGO_OPENIM_PASSWORD:-openIM123456} # Non-root password
+      - MONGO_OPENIM_PASSWORD=${MONGO_OPENIM_PASSWORD:-openIM123} # Non-root password
     restart: always
     networks:
       openim-server:
@@ -158,13 +143,11 @@ services:
     environment:
       - OPENIM_IP=${OPENIM_IP:-127.0.0.1}
     volumes:
-      - "${DATA_DIR:-./}/openim-server/logs:/openim/openim-server/logs"
       - "${DATA_DIR:-./}/openim-server/_output/logs:/openim/openim-server/_output/logs"
       - "${DATA_DIR:-./}/openim-server/config:/openim/openim-server/config"
     restart: always
     depends_on:
       - kafka
-      - mysql
       - mongodb
       - redis
       - minio
