@@ -30,10 +30,10 @@
 	/vscode-markdown-toc-config -->
 <!-- /vscode-markdown-toc -->
 
-This guide provides detailed instructions for deploying OpenIM v3.5 using Docker Compose. It covers all steps from preparing the environment to verifying the deployment.
+This guide provides detailed instructions for deploying OpenIM v3.6 using Docker Compose. It covers all steps from preparing the environment to verifying the deployment.
 
 > [!WARNING]
-> Note that this guide is only applicable to OpenIM v3.5. If you want to use older versions, please refer to other `release-*` branches.
+> Note that this guide is only applicable to OpenIM v3.6. If you want to use older versions, please refer to other `release-*` branches.
 
 **Documentation**
 
@@ -263,8 +263,8 @@ grafanaUrl: http://$OPENIM_IP:$GRAFANA_PORT
 
 ##  13. <a name='OpenIMDockerUpgrade'></a>OpenIM Docker Upgrade
 
-- Upgrading from V3.4 to V3.5 involves code changes and deployment structure reconfiguration, currently not supporting automatic upgrades.
-- For minor updates (and those after v3.5), which do not involve adding or removing configuration files, modify `SERVER_IMAGE_VERSION` and `CHAT_IMAGE_VERSION` in the `.env` file.
+- Upgrading from V3.4 to V3.6 involves code changes and deployment structure reconfiguration, currently not supporting automatic upgrades.
+- For minor updates (and those after v3.6), which do not involve adding or removing configuration files, modify `SERVER_IMAGE_VERSION` and `CHAT_IMAGE_VERSION` in the `.env` file.
 - Use `git pull` and `make upgrade` to update the repository.
 
 ##  14. <a name='CleaningUpDeployment'></a>Cleaning Up Deployment
