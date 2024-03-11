@@ -43,7 +43,7 @@ jobs:
           git config --local user.name "kubbot"
           git add .env.example
           git commit -m "Update server and chat image versions to ${SERVER_TAG} and ${CHAT_TAG}" || echo "No changes to commit"
-          git push
+        #   git push
 
       - name: Test the setup
         run: |
