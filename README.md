@@ -70,6 +70,41 @@ To ensure you get the latest version of the image, please refer to the following
 
 docker deployments currently support both `linux/arm64` and `linux/amd64` architectures
 
+###  2.3. <a name='OpenIMDockerVersion'></a>OpenIM Docker Version Management Strategy
+
+The OpenIM Docker version management strategy is designed to maintain consistency and reliability in the deployment of OpenIM services using Docker. This strategy is focused on the synchronization of version tags between the `openim-server` and `chat` repositories and the `openim-docker` repository. The process ensures that `openim-docker` always runs the most current and stable versions of both OpenIM components.
+
+#### Version Tagging Convention
+
+The version tags for `openim-docker` follow a specific format that reflects the versions of both `openim-server` and `chat`. The tag format is `${OPENIM_SERVER_TAG}-${CHAT_TAG}`, where:
+
+- `${OPENIM_SERVER_TAG}` is the latest tag from the `openim-server` repository.
+- `${CHAT_TAG}` is the latest tag from the `chat` repository.
+
+This convention allows users to easily identify the versions of both `openim-server` and `chat` that are included in each `openim-docker` release.
+
+#### Automated Synchronization Process
+
+An automated GitHub Actions workflow runs daily and upon specific triggers (e.g., manual dispatch or pushes to the main branch). The workflow performs the following tasks:
+
+1. **Check for New Tags**: The workflow fetches the latest tags from both the `openim-server` and `chat` repositories. If either repository has a new tag that is not yet reflected in `openim-docker`, the workflow proceeds with the synchronization process.
+
+2. **Update `.env.example`**: The workflow updates the `.env.example` file in the `openim-docker` repository, setting the `SERVER_IMAGE_VERSION` and `CHAT_IMAGE_VERSION` variables to the latest tags fetched in the previous step.
+
+3. **Commit and Push Changes**: If there are changes in the `.env.example` file, the workflow commits these changes with a clear message indicating the new versions of `openim-server` and `chat`, and then pushes the commit to the `openim-docker` repository.
+
+4. **Test the Setup**: Before proceeding to create a new version tag for `openim-docker`, the workflow initiates a test deployment using `docker-compose` to ensure the updated configuration functions correctly. This step includes running `make init` followed by `docker-compose up -d`.
+
+5. **Create and Push New Tag**: Upon successful testing, the workflow creates a new tag for `openim-docker` using the format described above and pushes this tag to the repository. This final step concludes the synchronization process.
+
+#### Version Management Best Practices
+
+- **Stability and Reliability**: Before tagging new versions, extensive testing is recommended to ensure compatibility and stability across the `openim-server`, `chat`, and `openim-docker` components.
+- **Clear Documentation**: Each release should be accompanied by clear documentation outlining the changes, improvements, or fixes included in the new versions of `openim-server` and `chat`.
+- **Community Feedback**: Engage with the user community to gather feedback on the release process and any issues encountered with new versions. This feedback loop is vital for continuous improvement.
+
+The OpenIM Docker version management strategy is crucial for maintaining a reliable and efficient deployment mechanism for users and developers of the OpenIM platform. By automating the synchronization of version tags and enforcing a clear version tagging convention, we ensure that `openim-docker` remains up-to-date with the latest developments in `openim-server` and `chat`.
+
 ##  3. <a name='RepositorySetup'></a>Repository Setup
 
 Clone the repository and select the appropriate branch:
