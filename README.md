@@ -72,6 +72,11 @@ docker deployments currently support both `linux/arm64` and `linux/amd64` archit
 
 ###  2.3. <a name='OpenIMDockerVersion'></a>OpenIM Docker Version Management Strategy
 
+**Synchronizing the status of the tag:**
+
+[![Sync Tags from openim-server and chat to openim-docker](https://github.com/openimsdk/openim-docker/actions/workflows/sync-server-version.yaml/badge.svg)](https://github.com/openimsdk/openim-docker/actions/workflows/sync-server-version.yaml)
+
+
 The OpenIM Docker version management strategy is designed to maintain consistency and reliability in the deployment of OpenIM services using Docker. This strategy is focused on the synchronization of version tags between the `openim-server` and `chat` repositories and the `openim-docker` repository. The process ensures that `openim-docker` always runs the most current and stable versions of both OpenIM components.
 
 #### Version Tagging Convention
