@@ -21,39 +21,42 @@ jobs:
       - name: Set up Docker and Docker Compose
         uses: docker/setup-buildx-action@v1
 
-      - name: Check and Sync Tags
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y jq curl
+
+      - name: Fetch the latest tag of openim-server
+        id: server-tag
+        run: echo "SERVER_TAG=$(curl -s https://api.github.com/repos/openimsdk/open-im-server/tags | jq -r '.[0].name')" >> $GITHUB_ENV
+
+      - name: Fetch the latest tag of chat
+        id: chat-tag
+        run: echo "CHAT_TAG=$(curl -s https://api.github.com/repos/openimsdk/chat/tags | jq -r '.[0].name')" >> $GITHUB_ENV
+
+      - name: Update .env.example with the latest tags
         run: |
-          # Install necessary tools
-          sudo apt-get update && sudo apt-get install -y jq curl
-          
-          # Fetch the latest tags
-          # v3.6.0
-          SERVER_TAG=$(curl -s https://api.github.com/repos/openimsdk/open-im-server/tags | jq -r '.[0].name')
-          CHAT_TAG=$(curl -s https://api.github.com/repos/openimsdk/chat/tags | jq -r '.[0].name')
-          
-          # Update .env.example
           sed -i "s/SERVER_IMAGE_VERSION=.*/SERVER_IMAGE_VERSION=${SERVER_TAG}/" .env.example
           sed -i "s/CHAT_IMAGE_VERSION=.*/CHAT_IMAGE_VERSION=${CHAT_TAG}/" .env.example
-          
-          # Commit and push if there are changes
+
+      - name: Commit and Push Changes
+        run: |
           git config --local user.email "3293172751ysy@gmail.com"
           git config --local user.name "kubbot"
           git add .env.example
-          git commit -m "Update server and chat image versions to ${SERVER_TAG} and ${CHAT_TAG}"
-          git push || echo "No changes to commit"
+          git commit -m "Update server and chat image versions to ${SERVER_TAG} and ${CHAT_TAG}" || echo "No changes to commit"
+          git push
 
-          # Test the setup
+      - name: Test the setup
+        run: |
           make init
           docker compose up -d
-          
           # Add some test cases or a health check here
           echo "Assume tests passed for now"
-          
-          # Create and push tag
+
+      - name: Create and Push New Tag
+        run: |
           git tag "${SERVER_TAG}-${CHAT_TAG}"
           git push origin "${SERVER_TAG}-${CHAT_TAG}"
-        env:
-          BOT_GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
 
       - name: Cleanup
         run: docker-compose down
+        if: always()
