@@ -26,23 +26,11 @@ jobs:
 
       - name: Fetch the latest tag of openim-server
         id: server-tag
-        run: |
-          SERVER_TAG=$(curl -s https://api.github.com/repos/openimsdk/open-im-server/tags | jq -r '.[0].name')
-          if [[ $SERVER_TAG == "null" ]]; then
-            echo "No new tags found for openim-server. Exiting..."
-            exit 78; # Exits the job early with success status
-          fi
-          echo "SERVER_TAG=${SERVER_TAG}" >> $GITHUB_ENV
+        run: echo "SERVER_TAG=$(curl -s https://api.github.com/repos/openimsdk/open-im-server/tags | jq -r '.[0].name')" >> $GITHUB_ENV
 
       - name: Fetch the latest tag of chat
         id: chat-tag
-        run: |
-          CHAT_TAG=$(curl -s https://api.github.com/repos/openimsdk/chat/tags | jq -r '.[0].name')
-          if [[ $CHAT_TAG == "null" ]]; then
-            echo "No new tags found for chat. Exiting..."
-            exit 78; # Exits the job early with success status
-          fi
-          echo "CHAT_TAG=${CHAT_TAG}" >> $GITHUB_ENV
+        run: echo "CHAT_TAG=$(curl -s https://api.github.com/repos/openimsdk/chat/tags | jq -r '.[0].name')" >> $GITHUB_ENV
 
       - name: Update .env.example with the latest tags
         run: |
@@ -55,20 +43,20 @@ jobs:
           git config --local user.name "kubbot"
           git add .env.example
           git commit -m "Update server and chat image versions to ${SERVER_TAG} and ${CHAT_TAG}" || echo "No changes to commit"
-          git push || echo "No changes to push or push failed"
+          # git push
 
-      - name: Check if tag already exists
+      - name: Check if tag exists
         id: check-tag
         run: |
-          if git rev-parse "${SERVER_TAG}-${CHAT_TAG}" >/dev/null 2>&1; then
-            echo "Tag ${SERVER_TAG}-${CHAT_TAG} already exists. Skipping tag creation."
-            echo "SKIP_TAG_CREATION=true" >> $GITHUB_ENV
+          if git ls-remote --tags origin | grep "${SERVER_TAG}-${CHAT_TAG}"; then
+            echo "Tag exists, skipping creation and push."
+            echo "TAG_EXISTS=true" >> $GITHUB_ENV
           else
-            echo "SKIP_TAG_CREATION=false" >> $GITHUB_ENV
+            echo "TAG_EXISTS=false" >> $GITHUB_ENV
           fi
 
       - name: Create and Push New Tag
-        if: env.SKIP_TAG_CREATION == 'false'
+        if: env.TAG_EXISTS == 'false'
         run: |
           git tag "${SERVER_TAG}-${CHAT_TAG}"
           git push origin "${SERVER_TAG}-${CHAT_TAG}"
