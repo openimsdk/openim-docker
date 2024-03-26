@@ -72,7 +72,3 @@ jobs:
         run: |
           git tag "${SERVER_TAG}-${CHAT_TAG}"
           git push origin "${SERVER_TAG}-${CHAT_TAG}"
-
-      - name: Cleanup
-        run: docker-compose down
-        if: always()
