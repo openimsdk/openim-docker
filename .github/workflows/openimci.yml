@@ -1,6 +1,10 @@
 name: Isolated Docker Compose Tests
 
-on: [pull_request]
+on:
+  pull_request:
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   test:
