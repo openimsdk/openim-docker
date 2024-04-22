@@ -47,7 +47,6 @@ _output/
 ### OpenIM Config ###
 config/config.yaml
 ./config/config.yaml
-.env
 ./.env
 example/.env
 
