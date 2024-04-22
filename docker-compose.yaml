@@ -114,46 +114,46 @@ services:
       - openim
 
 
-  prometheus:
-    image: ${PROMETHEUS_IMAGE}
-    container_name: prometheus
-    hostname: prometheus
-    restart: always
-    volumes:
-      - "${DATA_DIR}/config/instance-down-rules.yml:/etc/prometheus/instance-down-rules.yml"
-      - "${DATA_DIR}/config/prometheus.yml:/etc/prometheus/prometheus.yml"
-    ports:
-      - "${PROMETHEUS_PORT}:9090"
-    networks:
-      - openim
-
-
-  alertmanager:
-    image: ${ALERTMANAGER_IMAGE}
-    container_name: alertmanager
-    hostname: alertmanager
-    restart: always
-    volumes:
-      - "${DATA_DIR}/config/alertmanager.yml:/etc/alertmanager/alertmanager.yml"
-      - "${DATA_DIR}/config/email.tmpl:/etc/alertmanager/email.tmpl"
-    ports:
-      - "${ALERT_MANAGER_PORT}:9093"
-    networks:
-      - openim
-
-
-  grafana:
-    image: ${GRAFANA_IMAGE}
-    container_name: grafana
-    hostname: grafana
-    user: root
-    restart: always
-    ports:
-      - "${GRAFANA_PORT}:3000"
-    volumes:
-      - "${DATA_DIR}/components/grafana:/var/lib/grafana"
-    networks:
-      - openim
+#  prometheus:
+#    image: ${PROMETHEUS_IMAGE}
+#    container_name: prometheus
+#    hostname: prometheus
+#    restart: always
+#    volumes:
+#      - "${DATA_DIR}/config/instance-down-rules.yml:/etc/prometheus/instance-down-rules.yml"
+#      - "${DATA_DIR}/config/prometheus.yml:/etc/prometheus/prometheus.yml"
+#    ports:
+#      - "${PROMETHEUS_PORT}:9090"
+#    networks:
+#      - openim
+#
+#
+#  alertmanager:
+#    image: ${ALERTMANAGER_IMAGE}
+#    container_name: alertmanager
+#    hostname: alertmanager
+#    restart: always
+#    volumes:
+#      - "${DATA_DIR}/config/alertmanager.yml:/etc/alertmanager/alertmanager.yml"
+#      - "${DATA_DIR}/config/email.tmpl:/etc/alertmanager/email.tmpl"
+#    ports:
+#      - "${ALERT_MANAGER_PORT}:9093"
+#    networks:
+#      - openim
+#
+#
+#  grafana:
+#    image: ${GRAFANA_IMAGE}
+#    container_name: grafana
+#    hostname: grafana
+#    user: root
+#    restart: always
+#    ports:
+#      - "${GRAFANA_PORT}:3000"
+#    volumes:
+#      - "${DATA_DIR}/components/grafana:/var/lib/grafana"
+#    networks:
+#      - openim
 
 
   node-exporter:
