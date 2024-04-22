@@ -214,7 +214,6 @@ services:
       - openim
 
 
-
   openim-chat:
     image: ${OPENIM_CHAT_IMAGE}
     container_name: openim-chat
