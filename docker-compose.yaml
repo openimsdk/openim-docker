@@ -83,8 +83,8 @@ services:
       - "${DATA_DIR}/components/mnt/config:/root/.minio"
     environment:
       TZ: Asia/Shanghai
-      MINIO_ROOT_USER: "${MINIO_USER}"
-      MINIO_ROOT_PASSWORD: "${MINIO_PASSWORD}"
+      MINIO_ROOT_USER: "${MINIO_ACCESS_KEY_ID}"
+      MINIO_ROOT_PASSWORD: "${MINIO_SECRET_ACCESS_KEY}"
     restart: always
     command: minio server /data --console-address ':9090'
     networks:
