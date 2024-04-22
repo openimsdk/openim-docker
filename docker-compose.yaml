@@ -156,15 +156,15 @@ services:
 #      - openim
 
 
-  node-exporter:
-    image: ${NODE_EXPORTER_IMAGE}
-    container_name: node-exporter
-    hostname: node-exporter
-    restart: always
-    ports:
-      - "${NODE_EXPORTER_PORT}:9100"
-    networks:
-      - openim
+#  node-exporter:
+#    image: ${NODE_EXPORTER_IMAGE}
+#    container_name: node-exporter
+#    hostname: node-exporter
+#    restart: always
+#    ports:
+#      - "${NODE_EXPORTER_PORT}:9100"
+#    networks:
+#      - openim
 
 
 
