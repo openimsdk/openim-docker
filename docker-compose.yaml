@@ -199,11 +199,6 @@ services:
       - IMENV_LOG_ISSTDOUT=${LOG_IS_STDOUT}
     entrypoint: [ "sh", "-c", "mage start && tail -f /dev/null" ]
     restart: always
-    logging:
-      driver: json-file
-      options:
-        max-size: "1g"
-        max-file: "2"
     networks:
       - openim
 
@@ -233,11 +228,5 @@ services:
       - "${ADMIN_API_PORT}:10009"
     entrypoint: ["sh", "-c", "mage start && tail -f /dev/null"]
     restart: always
-    # user: root:root
-    logging:
-      driver: json-file
-      options:
-        max-size: "1g"
-        max-file: "2"
     networks:
       - openim
