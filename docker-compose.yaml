@@ -176,11 +176,11 @@ services:
     ports:
       - "${OPENIM_MSG_GATEWAY_PORT}:10001"
       - "${OPENIM_API_PORT}:10002"
-#    healthcheck:
-#      test: [ "CMD", "mage check" ]
-#      interval: 30s
-#      timeout: 30s
-#      retries: 10
+    healthcheck:
+      test: [ "CMD", "mage check" ]
+      interval: 30s
+      timeout: 60s
+      retries: 10
     env_file:
       - .env
     environment:
@@ -196,8 +196,6 @@ services:
       - IMENV_MINIO_ACCESSKEYID=${MINIO_ACCESS_KEY_ID}
       - IMENV_MINIO_SECRETACCESSKEY=${MINIO_SECRET_ACCESS_KEY}
       - IMENV_SHARE_SECRET=${OPENIM_SECRET}
-    volumes:
-      - "${DATA_DIR}/openim-server/_output/logs:/openim-server/_output/logs"
     entrypoint: [ "sh", "-c", "mage start && tail -f /dev/null" ]
     restart: always
     logging:
@@ -212,11 +210,11 @@ services:
   openim-chat:
     image: ${OPENIM_CHAT_IMAGE}
     container_name: openim-chat
-#    healthcheck:
-#      test: [ "CMD", "mage check" ]
-#      interval: 30s
-#      timeout: 30s
-#      retries: 10
+    healthcheck:
+      test: [ "CMD", "mage check" ]
+      interval: 30s
+      timeout: 60s
+      retries: 10
     env_file:
       - .env
     environment:
@@ -241,5 +239,3 @@ services:
         max-file: "2"
     networks:
       - openim
-    volumes:
-      - ./logs1:/openim-chat/_output/logs
