@@ -196,6 +196,9 @@ services:
       - IMENV_MINIO_ACCESSKEYID=${MINIO_ACCESS_KEY_ID}
       - IMENV_MINIO_SECRETACCESSKEY=${MINIO_SECRET_ACCESS_KEY}
       - IMENV_SHARE_SECRET=${OPENIM_SECRET}
+    volumes:
+      - "${DATA_DIR}/openim-server/_output/logs:/openim-server/_output/logs"
+      - "${DATA_DIR}/openim-server/config:/openim-server/config"
     entrypoint: [ "sh", "-c", "mage start && tail -f /dev/null" ]
     restart: always
     logging:
@@ -239,3 +242,6 @@ services:
         max-file: "2"
     networks:
       - openim
+    volumes:
+      - ./config:/openim-chat/config1
+      - ./logs:/openim-chat/_output/logs1
