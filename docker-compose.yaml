@@ -178,7 +178,7 @@ services:
       - "${OPENIM_API_PORT}:10002"
     healthcheck:
       test: [ "CMD", "sh", "-c", "mage check" ]
-      interval: 30s
+      interval: 5s
       timeout: 60s
       retries: 10
     environment:
@@ -205,7 +205,7 @@ services:
     container_name: openim-chat
     healthcheck:
       test: [ "CMD", "sh", "-c", "mage check" ]
-      interval: 30s
+      interval: 5s
       timeout: 60s
       retries: 10
     environment:
