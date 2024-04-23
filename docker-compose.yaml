@@ -198,7 +198,6 @@ services:
       - IMENV_SHARE_SECRET=${OPENIM_SECRET}
     volumes:
       - "${DATA_DIR}/openim-server/_output/logs:/openim-server/_output/logs"
-      - "${DATA_DIR}/openim-server/config:/openim-server/config"
     entrypoint: [ "sh", "-c", "mage start && tail -f /dev/null" ]
     restart: always
     logging:
@@ -243,5 +242,4 @@ services:
     networks:
       - openim
     volumes:
-      - ./config1:/openim-chat/config
       - ./logs1:/openim-chat/_output/logs
