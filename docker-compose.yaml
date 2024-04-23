@@ -243,5 +243,5 @@ services:
     networks:
       - openim
     volumes:
-      - ./config:/openim-chat/config1
-      - ./logs:/openim-chat/_output/logs1
+      - ./config1:/openim-chat/config
+      - ./logs1:/openim-chat/_output/logs
