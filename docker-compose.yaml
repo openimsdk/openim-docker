@@ -200,11 +200,6 @@ services:
       - "${DATA_DIR:-./}/openim-server/_output/logs:/openim/openim-server/_output/logs"
       - "${DATA_DIR:-./}/openim-server/config:/openim/openim-server/config"
     restart: always
-    depends_on:
-      - kafka
-      - mongodb
-      - redis
-      - minio
     logging:
       driver: json-file
       options:
@@ -241,9 +236,6 @@ services:
       - "${DATA_DIR:-./}/openim-chat/config:/openim/openim-chat/config"
     restart: always
     # user: root:root
-    depends_on:
-      openim-server:
-        condition: service_healthy
     logging:
       driver: json-file
       options:
