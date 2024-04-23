@@ -210,7 +210,6 @@ services:
       options:
         max-size: "1g"
         max-file: "2"
-    command: cd /openim/openim-server/;mage start;tail -f /dev/null
     networks:
       - openim
 
