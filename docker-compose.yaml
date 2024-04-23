@@ -196,6 +196,7 @@ services:
       - IMENV_MINIO_ACCESSKEYID=${MINIO_ACCESS_KEY_ID}
       - IMENV_MINIO_SECRETACCESSKEY=${MINIO_SECRET_ACCESS_KEY}
       - IMENV_SHARE_SECRET=${OPENIM_SECRET}
+      - IMENV_LOG_ISSTDOUT=${LOG_IS_STDOUT}
     entrypoint: [ "sh", "-c", "mage start && tail -f /dev/null" ]
     restart: always
     logging:
@@ -226,6 +227,7 @@ services:
       - CHATENV_REDIS_PASSWORD=${REDIS_PASSWORD}
       - CHATENV_SHARE_OPENIM_SECRET=${OPENIM_SECRET}
       - CHATENV_SHARE_OPENIM_APIURL=${API_URL}
+      - CHATENV_LOG_ISSTDOUT=${LOG_IS_STDOUT}
     ports:
       - "${CHAT_API_PORT}:10008"
       - "${ADMIN_API_PORT}:10009"
