@@ -197,8 +197,8 @@ services:
       - IMENV_MINIO_SECRETACCESSKEY=${MINIO_SECRET_ACCESS_KEY}
       - IMENV_SHARE_SECRET=${OPENIM_SECRET}
     volumes:
-      - "${DATA_DIR:-./}/openim-server/_output/logs:/openim/openim-server/_output/logs"
-      - "${DATA_DIR:-./}/openim-server/config:/openim/openim-server/config"
+      - "${DATA_DIR}/openim-server/_output/logs:/openim-server/_output/logs"
+      - "${DATA_DIR}/openim-server/config:/openim-server/config"
     entrypoint: [ "sh", "-c", "mage start && tail -f /dev/null" ]
     restart: always
     logging:
@@ -233,8 +233,8 @@ services:
       - "${CHAT_API_PORT}:10008"
       - "${ADMIN_API_PORT}:10009"
     volumes:
-      - "${DATA_DIR:-./}/openim-chat/_output/logs:/openim/openim-chat/_output/logs"
-      - "${DATA_DIR:-./}/openim-chat/config:/openim/openim-chat/config"
+      - "${DATA_DIR}/openim-chat/_output/logs:/openim-chat/_output/logs"
+      - "${DATA_DIR}/openim-chat/config:/openim-chat/config"
     entrypoint: ["sh", "-c", "mage start && tail -f /dev/null"]
     restart: always
     # user: root:root
