@@ -176,11 +176,11 @@ services:
     ports:
       - "${OPENIM_MSG_GATEWAY_PORT}:10001"
       - "${OPENIM_API_PORT}:10002"
-    healthcheck:
-      test: [ "CMD", "mage check" ]
-      interval: 30s
-      timeout: 30s
-      retries: 10
+#    healthcheck:
+#      test: [ "CMD", "mage check" ]
+#      interval: 30s
+#      timeout: 30s
+#      retries: 10
     env_file:
       - .env
     environment:
@@ -218,11 +218,11 @@ services:
   openim-chat:
     image: ${OPENIM_CHAT_IMAGE}
     container_name: openim-chat
-    healthcheck:
-      test: [ "CMD", "mage check" ]
-      interval: 30s
-      timeout: 30s
-      retries: 10
+#    healthcheck:
+#      test: [ "CMD", "mage check" ]
+#      interval: 30s
+#      timeout: 30s
+#      retries: 10
     env_file:
       - .env
     environment:
