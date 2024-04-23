@@ -232,9 +232,6 @@ services:
     ports:
       - "${CHAT_API_PORT}:10008"
       - "${ADMIN_API_PORT}:10009"
-    volumes:
-      - "${DATA_DIR}/openim-chat/_output/logs:/openim-chat/_output/logs"
-      - "${DATA_DIR}/openim-chat/config:/openim-chat/config"
     entrypoint: ["sh", "-c", "mage start && tail -f /dev/null"]
     restart: always
     # user: root:root
