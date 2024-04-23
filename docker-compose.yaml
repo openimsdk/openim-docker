@@ -54,6 +54,7 @@ services:
   kafka:
     image: "${KAFKA_IMAGE}"
     container_name: kafka
+    user: root
     restart: always
     volumes:
       - ./scripts/create-topic.sh:/opt/bitnami/kafka/create-topic.sh
