@@ -177,12 +177,10 @@ services:
       - "${OPENIM_MSG_GATEWAY_PORT}:10001"
       - "${OPENIM_API_PORT}:10002"
     healthcheck:
-      test: [ "CMD", "mage check" ]
+      test: [ "sh", "-c", "mage check" ]
       interval: 30s
       timeout: 60s
       retries: 10
-    env_file:
-      - .env
     environment:
       - IMENV_MONGODB_ADDRESS=${MONGO_ADDRESS}
       - IMENV_MONGODB_USERNAME=${MONGO_USERNAME}
@@ -197,7 +195,6 @@ services:
       - IMENV_MINIO_SECRETACCESSKEY=${MINIO_SECRET_ACCESS_KEY}
       - IMENV_SHARE_SECRET=${OPENIM_SECRET}
       - IMENV_LOG_ISSTDOUT=${LOG_IS_STDOUT}
-    entrypoint: [ "sh", "-c", "mage start && tail -f /dev/null" ]
     restart: always
     networks:
       - openim
@@ -207,12 +204,10 @@ services:
     image: ${OPENIM_CHAT_IMAGE}
     container_name: openim-chat
     healthcheck:
-      test: [ "CMD", "mage check" ]
+      test: [ "sh", "-c", "mage check" ]
       interval: 30s
       timeout: 60s
       retries: 10
-    env_file:
-      - .env
     environment:
       - CHATENV_MONGODB_ADDRESS=${MONGO_ADDRESS}
       - CHATENV_MONGODB_USERNAME=${MONGO_USERNAME}
@@ -226,7 +221,6 @@ services:
     ports:
       - "${CHAT_API_PORT}:10008"
       - "${ADMIN_API_PORT}:10009"
-    entrypoint: ["sh", "-c", "mage start && tail -f /dev/null"]
     restart: always
     networks:
       - openim
