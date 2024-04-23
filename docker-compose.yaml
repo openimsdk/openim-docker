@@ -177,7 +177,7 @@ services:
       - "${OPENIM_MSG_GATEWAY_PORT}:10001"
       - "${OPENIM_API_PORT}:10002"
     healthcheck:
-      test: [ "CMD", "sh", "-c", "mage check" ]
+      test: [ "CMD", "sh", "-c", "mage check | tee /var/log/mage_check_output.log" ]
       interval: 5s
       timeout: 60s
       retries: 10
@@ -204,7 +204,7 @@ services:
     image: ${OPENIM_CHAT_IMAGE}
     container_name: openim-chat
     healthcheck:
-      test: [ "CMD", "sh", "-c", "mage check" ]
+      test: [ "CMD", "sh", "-c", "mage check | tee /var/log/mage_check_output.log" ]
       interval: 5s
       timeout: 60s
       retries: 10
