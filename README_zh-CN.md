@@ -6,7 +6,7 @@
 
 ## :busts_in_silhouette: Community
 
-+ 💬 [关注推特t](https://twitter.com/founder_im63606)
++ 💬 [关注推特](https://twitter.com/founder_im63606)
 + 🚀 [进slack频道](https://join.slack.com/t/openimsdk/shared_invite/zt-22720d66b-o_FvKxMTGXtcnnnHiMqe9Q)
 + :eyes: [进微信群](https://openim-1253691595.cos.ap-nanjing.myqcloud.com/WechatIMG20.jpeg)
 
@@ -14,9 +14,8 @@
 
 - 在服务器上安装带有 Compose 插件的 Docker 或 docker-compose。安装详情请访问 [Docker Compose 安装指南](https://docs.docker.com/compose/install/linux/)。
 
-## 仓库配置 🗂️
+## 仓库克隆 🗂️
 
-执行克隆仓库命令：
 ```bash
 git clone https://github.com/openimsdk/openim-docker
 ```
