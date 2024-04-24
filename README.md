@@ -1,4 +1,3 @@
-```markdown
 # OpenIM Docker Usage Instructions 📘
 
 > **Documentation Resources** 📚
