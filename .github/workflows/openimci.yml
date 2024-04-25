@@ -50,31 +50,31 @@ jobs:
         sudo docker ps >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
 
-    - name: Comment PR
-      if: github.event_name == 'pull_request'
-      uses: thollander/actions-comment-pull-request@v2
-      with:
-        message: |
-          > [!TIP]
-          > Run make install to check the status
+#    - name: Comment PR
+#      if: github.event_name == 'pull_request'
+#      uses: thollander/actions-comment-pull-request@v2
+#      with:
+#        message: |
+#          > [!TIP]
+#          > Run make install to check the status
 
           ### Docker Images:
-          <details><summary>Click to expand docker images</summary>
+#          <details><summary>Click to expand docker images</summary>
 
-          ```bash
-          ${{ env.images }}
-          ```
-          </details>
+#          ```bash
+#          ${{ env.images }}
+#          ```
+#          </details>
 
           ### Docker Processes:
-          <details><summary>Click to expand docker ps</summary>
+#          <details><summary>Click to expand docker ps</summary>
 
-          ```bash
-          ${{ env.containers }}
-          ```
-          </details>
-      env:
-        GITHUB_TOKEN: ${{ secrets.REDBOT_GITHUB_TOKEN }}
+#          ```bash
+#          ${{ env.containers }}
+#          ```
+#          </details>
+#      env:
+#        GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
 
     - name: stop docker-compose
       run: |
