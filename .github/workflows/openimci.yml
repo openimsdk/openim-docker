@@ -26,19 +26,18 @@ jobs:
 
     - name: Run Docker Compose
       run: |
-        ./scripts/init-config.sh --force
         docker-compose up -d
         docker-compose ps
 
     - name: Test OpenIM Server
       run: |
         sleep 30
-        docker-compose logs openim-server
+        docker-compose logs -f openim-server
 
     - name: Test OpenIM chat
       run: |
         sleep 30
-        docker-compose logs openim-chat
+        docker-compose logs -f openim-chat
 
     - name: Check the OpenIM environment and status
       id: docker_info
@@ -119,7 +118,6 @@ jobs:
 
       - name: Run Docker ${{ matrix.compose-file }} Compose
         run: |
-          ./scripts/init-config.sh --force
           docker-compose -f ${{ matrix.compose-file }} up -d
         
       - name: Save Docker Info
