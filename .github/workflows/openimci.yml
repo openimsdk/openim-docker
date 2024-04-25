@@ -74,7 +74,7 @@ jobs:
           ```
           </details>
       env:
-        GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.REDBOT_GITHUB_TOKEN }}
 
     - name: stop docker-compose
       run: |
