@@ -139,6 +139,12 @@ services:
       - "${GRAFANA_PORT}:3000"
     volumes:
       - "${DATA_DIR}/components/grafana:/var/lib/grafana"
+    environment:
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_SESSION_COOKIE_SAMESITE=none
+      - GF_SESSION_COOKIE_SECURE=true
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
     networks:
       - openim
 
@@ -178,6 +184,7 @@ services:
       - IMENV_SHARE_SECRET=${OPENIM_SECRET}
       - IMENV_LOG_ISSTDOUT=${LOG_IS_STDOUT}
       - IMENV_LOG_REMAINLOGLEVEL=${LOG_LEVEL}
+      - IMENV_OPENIM_API_PROMETHEUS_GRAFANAURL=${GRAFANA_URL}
     restart: always
     networks:
       - openim
