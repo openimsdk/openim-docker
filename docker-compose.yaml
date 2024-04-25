@@ -178,6 +178,7 @@ services:
       - IMENV_SHARE_SECRET=${OPENIM_SECRET}
       - IMENV_LOG_ISSTDOUT=${LOG_IS_STDOUT}
       - IMENV_LOG_REMAINLOGLEVEL=${LOG_LEVEL}
+      - IMENV_OPENIM_API_PROMETHEUS_GRAFANAURL=${GRAFANA_URL}
     restart: always
     networks:
       - openim
