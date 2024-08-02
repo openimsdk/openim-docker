@@ -126,13 +126,6 @@ services:
     restart: always
     ports:
       - "${PROMETHEUS_PORT}:9090"
-    # volumes:
-    #   - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
-    #   - ./config/instance-down-rules.yml:/etc/prometheus/instance-down-rules.yml
-    #   - ${DATA_DIR}/components/prometheus/data:/prometheus
-    # command:
-    #   - '--config.file=/etc/prometheus/prometheus.yml'
-    #   - '--storage.tsdb.path=/prometheus'
     networks:
       - openim
 
@@ -140,10 +133,6 @@ services:
     image: ${ALERTMANAGER_IMAGE}
     container_name: alertmanager
     hostname: alertmanager
-    restart: always
-    # volumes:
-    #   - ./config/alertmanager.yml:/etc/alertmanager/alertmanager.yml
-    #   - ./config/email.tmpl:/etc/alertmanager/email.tmpl
     ports:
       - "${ALERT_MANAGER_PORT}:9093"
     networks:
@@ -158,7 +147,7 @@ services:
     ports:
       - "${GRAFANA_PORT}:3000"
     volumes:
-      - ${DATA_DIR}/components/grafana:/var/lib/grafana
+      - "${DATA_DIR}/components/grafana:/var/lib/grafana"
     environment:
       - GF_SECURITY_ALLOW_EMBEDDING=true
       - GF_SESSION_COOKIE_SAMESITE=none
