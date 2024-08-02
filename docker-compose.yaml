@@ -133,6 +133,7 @@ services:
     image: ${ALERTMANAGER_IMAGE}
     container_name: alertmanager
     hostname: alertmanager
+    restart: always
     ports:
       - "${ALERT_MANAGER_PORT}:9093"
     networks:
