@@ -26,18 +26,18 @@ jobs:
 
     - name: Run Docker Compose
       run: |
-        docker-compose up -d
-        docker-compose ps
+        docker compose up -d
+        docker compose ps
 
     - name: Test OpenIM Server
       run: |
         sleep 30
-        docker-compose logs --tail=50 openim-server
+        docker compose logs --tail=50 openim-server
 
     - name: Test OpenIM chat
       run: |
         sleep 30
-        docker-compose logs --tail=50 openim-chat
+        docker compose logs --tail=50 openim-chat
 
     - name: Check the OpenIM environment and status
       id: docker_info
@@ -76,9 +76,9 @@ jobs:
 #      env:
 #        GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
 
-    - name: stop docker-compose
+    - name: stop docker compose
       run: |
-        docker-compose down
+        docker compose down
 
     - name: clean all docker containers
       run: |
