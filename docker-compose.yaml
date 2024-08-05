@@ -124,6 +124,13 @@ services:
     container_name: prometheus
     hostname: prometheus
     restart: always
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./config/instance-down-rules.yml:/etc/prometheus/instance-down-rules.yml
+      - ${DATA_DIR}/components/prometheus/data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
     ports:
       - "${PROMETHEUS_PORT}:9090"
     networks:
@@ -134,6 +141,9 @@ services:
     container_name: alertmanager
     hostname: alertmanager
     restart: always
+    volumes:
+      - ${DATA_DIR}/config/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - ${DATA_DIR}/config/email.tmpl:/etc/alertmanager/email.tmpl
     ports:
       - "${ALERT_MANAGER_PORT}:9093"
     networks:
