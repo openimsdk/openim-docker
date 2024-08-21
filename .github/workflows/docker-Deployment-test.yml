@@ -42,6 +42,14 @@ jobs:
           docker compose up -d
           docker compose ps
 
+      - name: Test OpenIM Server
+        run: |
+            docker logs openim-server
+    
+      - name: Test OpenIM chat
+        run: |
+            docker logs openim-chat
+
       - name: stop docker compose
         run: |
           docker compose down
