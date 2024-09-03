@@ -1,0 +1,55 @@
+name: Docker Deployment Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - "**/*.md"
+
+  workflow_dispatch:
+
+jobs:
+  docker-build:
+    name: Test docker deployment on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
+      pull-requests: write
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v3
+
+      - name: Get IP Address
+        id: get-ip
+        run: echo "OPENIM_IP=$(curl -s ifconfig.me)" >> $GITHUB_ENV
+
+      - name: Get OpenIM Data DIR
+        id: get-dir
+        run: echo "DATA_DIR=$(pwd)" >> $GITHUB_ENV
+
+      - name: Run Docker Compose
+        run: |
+          docker compose up -d
+          docker compose ps
+
+      - name: Test OpenIM Server
+        run: |
+            docker logs openim-server
+    
+      - name: Test OpenIM chat
+        run: |
+            docker logs openim-chat
+
+      - name: stop docker compose
+        run: |
+          docker compose down
