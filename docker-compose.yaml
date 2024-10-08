@@ -1,5 +1,3 @@
-version: '3'
-
 networks:
   openim:
     driver: bridge
@@ -181,6 +179,7 @@ services:
   openim-server:
     image: ${OPENIM_SERVER_IMAGE}
     container_name: openim-server
+    init: true
     ports:
       - "${OPENIM_MSG_GATEWAY_PORT}:10001"
       - "${OPENIM_API_PORT}:10002"
@@ -212,6 +211,7 @@ services:
   openim-chat:
     image: ${OPENIM_CHAT_IMAGE}
     container_name: openim-chat
+    init: true
     healthcheck:
       test: [ "CMD", "sh", "-c", "mage check" ]
       interval: 5s
