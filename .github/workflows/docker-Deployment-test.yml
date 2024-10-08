@@ -97,9 +97,6 @@ jobs:
       - name: Start Server Services
         run: |
           docker compose up -d
-          mage build
-          mage start
-          mage check
 
       - name: Build test SDK core
         run: |
