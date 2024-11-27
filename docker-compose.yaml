@@ -6,12 +6,35 @@ services:
   mongo:
     image: "${MONGO_IMAGE}"
     container_name: mongo
-    command: ["/bin/bash", "-c", "/docker-entrypoint-initdb.d/mongo-init.sh; docker-entrypoint.sh mongod --wiredTigerCacheSizeGB 1 --auth"]
+    command: >
+      bash -c '
+      docker-entrypoint.sh mongod --wiredTigerCacheSizeGB $$wiredTigerCacheSizeGB --auth &
+      until mongosh -u $$MONGO_INITDB_ROOT_USERNAME -p $$MONGO_INITDB_ROOT_PASSWORD --authenticationDatabase admin --eval "db.runCommand({ ping: 1 })" &>/dev/null; do
+        echo "Waiting for MongoDB to start..."
+        sleep 1
+      done &&
+      mongosh -u $$MONGO_INITDB_ROOT_USERNAME -p $$MONGO_INITDB_ROOT_PASSWORD --authenticationDatabase admin --eval "
+      db = db.getSiblingDB(\"$$MONGO_INITDB_DATABASE\");
+      if (!db.getUser(\"$$MONGO_OPENIM_USERNAME\")) {
+        db.createUser({
+          user: \"$$MONGO_OPENIM_USERNAME\",
+          pwd: \"$$MONGO_OPENIM_PASSWORD\",
+          roles: [{role: \"readWrite\", db: \"$$MONGO_INITDB_DATABASE\"}]
+        });
+        print(\"User created successfully: \");
+        print(\"Username: $$MONGO_OPENIM_USERNAME\");
+        print(\"Password: $$MONGO_OPENIM_PASSWORD\");
+        print(\"Database: $$MONGO_INITDB_DATABASE\");
+      } else {
+        print(\"User already exists in database: $$MONGO_INITDB_DATABASE, Username: $$MONGO_OPENIM_USERNAME\");
+      }
+      " &&
+      tail -f /dev/null
+      '
     volumes:
       - "${DATA_DIR}/components/mongodb/data/db:/data/db"
       - "${DATA_DIR}/components/mongodb/data/logs:/data/logs"
       - "${DATA_DIR}/components/mongodb/data/conf:/etc/mongo"
-      - "./scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro"
     environment:
       - TZ=Asia/Shanghai
       - wiredTigerCacheSizeGB=1
@@ -65,10 +88,7 @@ services:
     user: root
     restart: always
     volumes:
-      - ./scripts/create-topic.sh:/opt/bitnami/kafka/create-topic.sh
       - "${DATA_DIR}/components/kafka:/bitnami/kafka"
-    command: >
-      bash -c "/opt/bitnami/scripts/kafka/run.sh & /opt/bitnami/kafka/create-topic.sh; wait"
     environment:
       TZ: Asia/Shanghai
       KAFKA_CFG_NODE_ID: 0
@@ -78,6 +98,8 @@ services:
       KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://kafka:9094
       KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
       KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_NUM_PARTITIONS: 8
+      KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: "true"
     networks:
       - openim
 
@@ -205,6 +227,12 @@ services:
       - IMENV_LOG_REMAINLOGLEVEL=${LOG_LEVEL}
       - IMENV_OPENIM_API_PROMETHEUS_GRAFANAURL=${GRAFANA_URL}
     restart: always
+    depends_on:
+      - mongo
+      - redis
+      - etcd
+      - kafka
+      - minio
     networks:
       - openim
 
@@ -232,5 +260,12 @@ services:
       - "${CHAT_API_PORT}:10008"
       - "${ADMIN_API_PORT}:10009"
     restart: always
+    depends_on:
+      - mongo
+      - redis
+      - etcd
+      - kafka
+      - minio
+      - openim-server
     networks:
       - openim
