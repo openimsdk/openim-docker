@@ -144,6 +144,7 @@ services:
     container_name: prometheus
     hostname: prometheus
     restart: always
+    user: root
     volumes:
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
       - ./config/instance-down-rules.yml:/etc/prometheus/instance-down-rules.yml
