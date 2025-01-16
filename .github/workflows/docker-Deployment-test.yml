@@ -29,13 +29,13 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v3.8.0
 
-      - name: Get IP Address
-        id: get-ip
-        run: echo "OPENIM_IP=$(curl -s ifconfig.me)" >> $GITHUB_ENV
+      # - name: Get IP Address
+      #   id: get-ip
+      #   run: echo "OPENIM_IP=$(curl -s ifconfig.me)" >> $GITHUB_ENV
 
-      - name: Get OpenIM Data DIR
-        id: get-dir
-        run: echo "DATA_DIR=$(pwd)" >> $GITHUB_ENV
+      # - name: Get OpenIM Data DIR
+      #   id: get-dir
+      #   run: echo "DATA_DIR=$(pwd)" >> $GITHUB_ENV
 
       - name: Run Docker Compose
         run: |
@@ -152,10 +152,6 @@ jobs:
            }' http://127.0.0.1:10002/msg/send_msg)
            check_error "$send_msg_response"
 
-      - name: stop docker compose
-        run: |
-          docker compose down
-
   go-test:
     name: Benchmark Test with go ${{ matrix.go_version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
@@ -185,11 +181,6 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go_version }}
-
-      # - name: Install yq
-      #   run: |
-      #     sudo wget https://github.com/mikefarah/yq/releases/download/v4.34.1/yq_linux_amd64 -O /usr/bin/yq
-      #     sudo chmod +x /usr/bin/yq
 
       - name: Modify Server Configuration
         run: |
