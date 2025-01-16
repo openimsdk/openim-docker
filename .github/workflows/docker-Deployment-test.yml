@@ -36,7 +36,53 @@ jobs:
 
       - name: Test OpenIM Server
         run: |
-          docker logs openim-server
+          check_error() {
+            echo "Response: $1"
+            errCode=$(echo $1 | jq -r '.errCode')
+            if [ "$errCode" != "0" ]; then
+              errMsg=$(echo $1 | jq -r '.errMsg')
+              echo "Error: $errMsg"
+              exit 1
+            fi
+          }
+
+          wait_for_service() {
+            local url=$1
+            local max_retries=30
+            local retry_count=0
+            local response
+
+            until [ $retry_count -ge $max_retries ]
+            do
+              response=$(curl -s -o /dev/null -w "%{http_code}" $url) || true
+              if [ "$response" != "000" ]; then
+                echo "Service at $url is up"
+                return 0
+              fi
+              retry_count=$((retry_count+1))
+              echo "Waiting for service at $url to be up... ($retry_count/$max_retries)"
+              echo "Response code: $response"
+              sleep 10
+            done
+
+            echo "Service at $url failed to start"
+            exit 1
+          }
+
+          wait_for_service http://127.0.0.1:10002/auth/get_admin_token
+
+          get_admin_token_response=$(curl -X POST -H "Content-Type: application/json" -H "operationID: imAdmin" -d '{
+            "secret": "openIM123",
+            "platformID": 2,
+            "userID": "imAdmin"
+          }' http://127.0.0.1:10002/auth/get_admin_token)
+          check_error "$get_admin_token_response"
+          adminToken=$(echo $get_admin_token_response | jq -r '.data.token')
+          echo "adminToken: $adminToken"
+
+          echo "ADMIN_TOKEN=$adminToken" >> $GITHUB_ENV
+          # docker logs openim-server
+          echo  "${{ secrets.ADMIN_TOKEN }}"
 
       - name: Test OpenIM chat
         run: |
@@ -119,18 +165,18 @@ jobs:
           }' http://localhost:10008/account/login)
           check_error "$login_response"
 
-          # Test get admin token
-          get_admin_token_response=$(curl -X POST -H "Content-Type: application/json" -H "operationID: imAdmin" -d '{
-            "secret": "openIM123",
-            "platformID": 2,
-            "userID": "imAdmin"
-          }' http://127.0.0.1:10002/auth/get_admin_token)
-          check_error "$get_admin_token_response"
-          adminToken=$(echo $get_admin_token_response | jq -r '.data.token')
-          echo "adminToken: $adminToken"
+          # # Test get admin token
+          # get_admin_token_response=$(curl -X POST -H "Content-Type: application/json" -H "operationID: imAdmin" -d '{
+          #   "secret": "openIM123",
+          #   "platformID": 2,
+          #   "userID": "imAdmin"
+          # }' http://127.0.0.1:10002/auth/get_admin_token)
+          # check_error "$get_admin_token_response"
+          # adminToken=$(echo $get_admin_token_response | jq -r '.data.token')
+          # echo "adminToken: $adminToken"
 
           # Test send message
-          send_msg_response=$(curl -X POST -H "Content-Type: application/json" -H "operationID: imAdmin" -H "token: $adminToken" -d '{
+          send_msg_response=$(curl -X POST -H "Content-Type: application/json" -H "operationID: imAdmin" -H "token: ${{ secrets.ADMIN_TOKEN }}" -d '{
             "sendID": "'$userID1'",
             "recvID": "'$userID2'",
             "senderPlatformID": 3,
