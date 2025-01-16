@@ -68,13 +68,14 @@ jobs:
 
             until [ $retry_count -ge $max_retries ]
             do
-              response=$(curl -s -o /dev/null -w "%{http_code}" $url)
+              response=$(curl -s -o /dev/null -w "%{http_code}" $url) || true
               if [ "$response" -eq 200 ]; then
                 echo "Service at $url is up"
                 return 0
               fi
               retry_count=$((retry_count+1))
               echo "Waiting for service at $url to be up... ($retry_count/$max_retries)"
+              echo "Response code: $response"
               sleep 10
             done
 
