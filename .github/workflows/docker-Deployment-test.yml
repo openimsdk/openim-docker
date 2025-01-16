@@ -58,34 +58,35 @@ jobs:
             fi
           }
 
-          sleep 35
+          # sleep 35
 
-          # wait_for_service() {
-          #   local url=$1
-          #   local max_retries=30
-          #   local retry_count=0
-          #   local response
+          wait_for_service() {
+            local url=$1
+            local max_retries=30
+            local retry_count=0
+            local response
 
-          #   until [ $retry_count -ge $max_retries ]
-          #   do
-          #     response=$(curl -s -o /dev/null -w "%{http_code}" $url) || true
-          #     if [ "$response" -eq 200 ]; then
-          #       echo "Service at $url is up"
-          #       return 0
-          #     fi
-          #     retry_count=$((retry_count+1))
-          #     echo "Waiting for service at $url to be up... ($retry_count/$max_retries)"
-          #     echo "Response code: $response"
-          #     sleep 10
-          #   done
+            until [ $retry_count -ge $max_retries ]
+            do
+              response=$(curl -s -o /dev/null -w "%{http_code}" $url) || true
+              # if [ "$response" -eq 200 ]; then
+              if [ "$response" != "000" ]; then
+                echo "Service at $url is up"
+                return 0
+              fi
+              retry_count=$((retry_count+1))
+              echo "Waiting for service at $url to be up... ($retry_count/$max_retries)"
+              echo "Response code: $response"
+              sleep 10
+            done
 
-          #   echo "Service at $url failed to start"
-          #   exit 1
-          # }
+            echo "Service at $url failed to start"
+            exit 1
+          }
 
-          # # Wait all Service
-          # wait_for_service http://127.0.0.1:10008/account/register
-          # wait_for_service http://127.0.0.1:10002/auth/get_admin_token
+          # Wait all Service
+          wait_for_service http://127.0.0.1:10008/account/register
+          wait_for_service http://127.0.0.1:10002/auth/get_admin_token
 
 
           # Test register
