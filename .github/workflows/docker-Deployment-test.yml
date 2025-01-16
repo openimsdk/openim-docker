@@ -82,7 +82,7 @@ jobs:
 
           echo "ADMIN_TOKEN=$adminToken" >> $GITHUB_ENV
           # docker logs openim-server
-          echo  "${{ secrets.ADMIN_TOKEN }}"
+          echo  "echo ${{ env.ADMIN_TOKEN }}"
 
       - name: Test OpenIM chat
         run: |
@@ -176,7 +176,7 @@ jobs:
           # echo "adminToken: $adminToken"
 
           # Test send message
-          send_msg_response=$(curl -X POST -H "Content-Type: application/json" -H "operationID: imAdmin" -H "token: ${{ secrets.ADMIN_TOKEN }}" -d '{
+          send_msg_response=$(curl -X POST -H "Content-Type: application/json" -H "operationID: imAdmin" -H "token: ${{ env.ADMIN_TOKEN }}" -d '{
             "sendID": "'$userID1'",
             "recvID": "'$userID2'",
             "senderPlatformID": 3,
