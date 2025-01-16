@@ -62,7 +62,7 @@ jobs:
               retry_count=$((retry_count+1))
               echo "Waiting for service at $url to be up... ($retry_count/$max_retries)"
               echo "Response code: $response"
-              sleep 10
+              sleep 6
             done
 
             echo "Service at $url failed to start"
@@ -82,7 +82,6 @@ jobs:
 
           echo "ADMIN_TOKEN=$adminToken" >> $GITHUB_ENV
           # docker logs openim-server
-          echo  "echo ${{ env.ADMIN_TOKEN }}"
 
       - name: Test OpenIM chat
         run: |
@@ -95,8 +94,6 @@ jobs:
               exit 1
             fi
           }
-
-          # sleep 35
 
           wait_for_service() {
             local url=$1
@@ -164,16 +161,6 @@ jobs:
             "password":"test123456"
           }' http://localhost:10008/account/login)
           check_error "$login_response"
-
-          # # Test get admin token
-          # get_admin_token_response=$(curl -X POST -H "Content-Type: application/json" -H "operationID: imAdmin" -d '{
-          #   "secret": "openIM123",
-          #   "platformID": 2,
-          #   "userID": "imAdmin"
-          # }' http://127.0.0.1:10002/auth/get_admin_token)
-          # check_error "$get_admin_token_response"
-          # adminToken=$(echo $get_admin_token_response | jq -r '.data.token')
-          # echo "adminToken: $adminToken"
 
           # Test send message
           send_msg_response=$(curl -X POST -H "Content-Type: application/json" -H "operationID: imAdmin" -H "token: ${{ env.ADMIN_TOKEN }}" -d '{
