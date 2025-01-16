@@ -29,14 +29,6 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v3.8.0
 
-      # - name: Get IP Address
-      #   id: get-ip
-      #   run: echo "OPENIM_IP=$(curl -s ifconfig.me)" >> $GITHUB_ENV
-
-      # - name: Get OpenIM Data DIR
-      #   id: get-dir
-      #   run: echo "DATA_DIR=$(pwd)" >> $GITHUB_ENV
-
       - name: Run Docker Compose
         run: |
           docker compose up -d
@@ -69,7 +61,6 @@ jobs:
             until [ $retry_count -ge $max_retries ]
             do
               response=$(curl -s -o /dev/null -w "%{http_code}" $url) || true
-              # if [ "$response" -eq 200 ]; then
               if [ "$response" != "000" ]; then
                 echo "Service at $url is up"
                 return 0
@@ -87,7 +78,6 @@ jobs:
           # Wait all Service
           wait_for_service http://127.0.0.1:10008/account/register
           wait_for_service http://127.0.0.1:10002/auth/get_admin_token
-
 
           # Test register
           response1=$(curl -X POST -H "Content-Type: application/json" -H "operationID: imAdmin" -d '{
@@ -160,7 +150,6 @@ jobs:
     env:
       SDK_DIR: openim-sdk-core
       CONFIG_PATH: docker-compose.yaml
-    #   pull-requests: write
     strategy:
       matrix:
         os: [ubuntu-latest]
