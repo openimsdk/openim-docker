@@ -175,6 +175,14 @@ jobs:
            }' http://127.0.0.1:10002/msg/send_msg)
            check_error "$send_msg_response"
 
+          get_user_response=$(curl -X POST -H "Content-Type: application/json" -H "operationID: imAdmin" -H "token: ${{ env.ADMIN_TOKEN }}" -d '{
+            "pagination": {
+               "pageNumber": 1,
+               "showNumber": 100
+             }
+            }' http://127.0.0.1:10002/user/get_users)
+          check_error "$get_user_response"
+
   go-test:
     name: Benchmark Test with go ${{ matrix.go_version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
