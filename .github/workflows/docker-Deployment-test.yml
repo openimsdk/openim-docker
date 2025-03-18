@@ -92,6 +92,7 @@ jobs:
         run: |
           yq eval '.services.openim-server.environment += ["IMENV_NOTIFICATION_GROUPCREATED_UNREADCOUNT=TRUE"]' -i ${{ env.CONFIG_PATH }}
           yq eval '.services.openim-server.environment += ["IMENV_NOTIFICATION_FRIENDAPPLICATIONAPPROVED_UNREADCOUNT=TRUE"]' -i ${{ env.CONFIG_PATH }}
+          yq eval '.services.openim-server.environment += ["IMENV_SHARE_SECRET=123456"]' -i ${{ env.CONFIG_PATH }}
 
       - name: Start Server Services
         run: |
