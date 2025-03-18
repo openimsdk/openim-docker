@@ -27,15 +27,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up Docker
-        uses: docker/setup-buildx-action@v3
-
-      - name: Get IP Address
-        id: get-ip
-        run: echo "OPENIM_IP=$(curl -s ifconfig.me)" >> $GITHUB_ENV
-
-      - name: Get OpenIM Data DIR
-        id: get-dir
-        run: echo "DATA_DIR=$(pwd)" >> $GITHUB_ENV
+        uses: docker/setup-buildx-action@v3.8.0
 
       - name: Run Docker Compose
         run: |
@@ -44,16 +36,153 @@ jobs:
 
       - name: Test OpenIM Server
         run: |
-            docker logs openim-server
-    
+          check_error() {
+            echo "Response: $1"
+            errCode=$(echo $1 | jq -r '.errCode')
+            if [ "$errCode" != "0" ]; then
+              errMsg=$(echo $1 | jq -r '.errMsg')
+              echo "Error: $errMsg"
+              exit 1
+            fi
+          }
+
+          wait_for_service() {
+            local url=$1
+            local max_retries=30
+            local retry_count=0
+            local response
+
+            until [ $retry_count -ge $max_retries ]
+            do
+              response=$(curl -s -o /dev/null -w "%{http_code}" $url) || true
+              if [ "$response" != "000" ]; then
+                echo "Service at $url is up"
+                return 0
+              fi
+              retry_count=$((retry_count+1))
+              echo "Waiting for service at $url to be up... ($retry_count/$max_retries)"
+              echo "Response code: $response"
+              sleep 6
+            done
+
+            echo "Service at $url failed to start"
+            exit 1
+          }
+
+          wait_for_service http://127.0.0.1:10002/auth/get_admin_token
+
+          get_admin_token_response=$(curl -X POST -H "Content-Type: application/json" -H "operationID: imAdmin" -d '{
+            "secret": "openIM123",
+            "platformID": 2,
+            "userID": "imAdmin"
+          }' http://127.0.0.1:10002/auth/get_admin_token)
+          check_error "$get_admin_token_response"
+          adminToken=$(echo $get_admin_token_response | jq -r '.data.token')
+          echo "adminToken: $adminToken"
+
+          echo "ADMIN_TOKEN=$adminToken" >> $GITHUB_ENV
+          # docker logs openim-server
+
       - name: Test OpenIM chat
         run: |
-            docker logs openim-chat
+          check_error() {
+            echo "Response: $1"
+            errCode=$(echo $1 | jq -r '.errCode')
+            if [ "$errCode" != "0" ]; then
+              errMsg=$(echo $1 | jq -r '.errMsg')
+              echo "Error: $errMsg"
+              exit 1
+            fi
+          }
 
-      - name: stop docker compose
-        run: |
-          docker compose down
-          
+          wait_for_service() {
+            local url=$1
+            local max_retries=30
+            local retry_count=0
+            local response
+
+            until [ $retry_count -ge $max_retries ]
+            do
+              response=$(curl -s -o /dev/null -w "%{http_code}" $url) || true
+              if [ "$response" != "000" ]; then
+                echo "Service at $url is up"
+                return 0
+              fi
+              retry_count=$((retry_count+1))
+              echo "Waiting for service at $url to be up... ($retry_count/$max_retries)"
+              echo "Response code: $response"
+              sleep 10
+            done
+
+            echo "Service at $url failed to start"
+            exit 1
+          }
+
+          # Wait all Service
+          wait_for_service http://127.0.0.1:10008/account/register
+          wait_for_service http://127.0.0.1:10002/auth/get_admin_token
+
+          # Test register
+          response1=$(curl -X POST -H "Content-Type: application/json" -H "operationID: imAdmin" -d '{
+            "verifyCode": "666666",
+            "platform": 3,
+            "autoLogin": true,
+            "user":{
+            "nickname": "test12312",
+            "areaCode":"+86",
+            "phoneNumber": "12345678190",
+            "password":"test123456"
+            }
+          }' http://127.0.0.1:10008/account/register)
+          check_error "$response1"
+          userID1=$(echo $response1 | jq -r '.data.userID')
+          echo "userID1: $userID1"
+
+          response2=$(curl -X POST -H "Content-Type: application/json" -H "operationID: imAdmin" -d '{
+            "verifyCode": "666666",
+            "platform": 3,
+            "autoLogin": true,
+            "user":{
+            "nickname": "test22312",
+            "areaCode":"+86",
+            "phoneNumber": "12345678290",
+            "password":"test123456"
+            }
+          }' http://127.0.0.1:10008/account/register)
+          check_error "$response2"
+          userID2=$(echo $response2 | jq -r '.data.userID')
+          echo "userID2: $userID2"
+
+          # Test login
+          login_response=$(curl -X POST -H "Content-Type: application/json" -H "operationID: imAdmin"  -d '{
+            "platform": 3,
+            "areaCode":"+86",
+            "phoneNumber": "12345678190",
+            "password":"test123456"
+          }' http://localhost:10008/account/login)
+          check_error "$login_response"
+
+          # Test send message
+          send_msg_response=$(curl -X POST -H "Content-Type: application/json" -H "operationID: imAdmin" -H "token: ${{ env.ADMIN_TOKEN }}" -d '{
+            "sendID": "'$userID1'",
+            "recvID": "'$userID2'",
+            "senderPlatformID": 3,
+            "content": {
+              "content": "hello!!"
+            },
+            "contentType": 101,
+            "sessionType": 1
+           }' http://127.0.0.1:10002/msg/send_msg)
+           check_error "$send_msg_response"
+
+          get_user_response=$(curl -X POST -H "Content-Type: application/json" -H "operationID: imAdmin" -H "token: ${{ env.ADMIN_TOKEN }}" -d '{
+            "pagination": {
+               "pageNumber": 1,
+               "showNumber": 100
+             }
+            }' http://127.0.0.1:10002/user/get_users)
+          check_error "$get_user_response"
+
   go-test:
     name: Benchmark Test with go ${{ matrix.go_version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
@@ -62,11 +191,10 @@ jobs:
     env:
       SDK_DIR: openim-sdk-core
       CONFIG_PATH: docker-compose.yaml
-    #   pull-requests: write
     strategy:
       matrix:
-        os: [ ubuntu-latest ]
-        go_version: [ "1.22.x" ]
+        os: [ubuntu-latest]
+        go_version: ["1.22.x"]
 
     steps:
       - name: Checkout Docker repository
@@ -75,18 +203,14 @@ jobs:
       - name: Checkout SDK repository
         uses: actions/checkout@v4
         with:
-          repository: 'openimsdk/openim-sdk-core'
+          repository: "openimsdk/openim-sdk-core"
+          ref: "release-v3.8"
           path: ${{ env.SDK_DIR }}
 
       - name: Set up Go ${{ matrix.go_version }}
         uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go_version }}
-
-      - name: Install yq
-        run: |
-          sudo wget https://github.com/mikefarah/yq/releases/download/v4.34.1/yq_linux_amd64 -O /usr/bin/yq
-          sudo chmod +x /usr/bin/yq
 
       - name: Modify Server Configuration
         run: |
@@ -105,4 +229,3 @@ jobs:
           cd integration_test
           mkdir data
           go run main.go -lgr 0.8 -imf -crg -ckgn -ckcon -sem -ckmsn -u 20 -su 5 -lg 2 -cg 2 -cgm 3 -sm 10 -gm 10 -reg
-
