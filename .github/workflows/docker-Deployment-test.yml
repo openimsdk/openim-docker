@@ -27,7 +27,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up Docker
-        uses: docker/setup-buildx-action@v3.8.0
+        uses: docker/setup-buildx-action@v3.10.0
 
       - name: Run Docker Compose
         run: |
