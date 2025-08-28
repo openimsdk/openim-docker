@@ -262,14 +262,14 @@ services:
     networks:
       - openim
 
-  openim-admin-front:
-    image: ${OPENIM_ADMIN_FRONT_IMAGE}
-    container_name: openim-admin-front
-    restart: always
-    ports:
-      - "${OPENIM_ADMIN_FRONT_PORT}:80"
-    networks:
-      - openim
+  # openim-admin-front:
+  #   image: ${OPENIM_ADMIN_FRONT_IMAGE}
+  #   container_name: openim-admin-front
+  #   restart: always
+  #   ports:
+  #     - "${OPENIM_ADMIN_FRONT_PORT}:80"
+  #   networks:
+  #     - openim
 
   prometheus:
     image: ${PROMETHEUS_IMAGE}
