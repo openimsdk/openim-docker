@@ -24,10 +24,10 @@ jobs:
         os: [ubuntu-latest]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up Docker
-        uses: docker/setup-buildx-action@v3.8.0
+        uses: docker/setup-buildx-action@v3.11.1
 
       - name: Run Docker Compose
         run: |
@@ -198,10 +198,10 @@ jobs:
 
     steps:
       - name: Checkout Docker repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Checkout SDK repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: "openimsdk/openim-sdk-core"
           ref: "main"
