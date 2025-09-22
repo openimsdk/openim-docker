@@ -411,6 +411,5 @@ services:
       - etcd
       - kafka
       - minio
-      - openim-server
     networks:
       - openim
