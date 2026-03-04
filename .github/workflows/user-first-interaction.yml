@@ -11,8 +11,8 @@ jobs:
   check_for_first_interaction:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/first-interaction@v1.3.0
+      - uses: actions/checkout@v6
+      - uses: actions/first-interaction@v3.1.0
         with:
           repo-token: ${{ secrets.BOT_TOKEN }}
           pr-message: |
