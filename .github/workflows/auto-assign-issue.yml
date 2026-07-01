@@ -5,25 +5,32 @@ on:
 jobs:
   assign-issue:
     if: |
-      contains(github.event.comment.body, '/assign') || contains(github.event.comment.body, '/accept') &&
+      (contains(github.event.comment.body, '/assign') || contains(github.event.comment.body, '/accept')) &&
       !contains(github.event.comment.user.login, 'openim-robot')
     runs-on: ubuntu-latest
     permissions:
       issues: write
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Assign the issue
         run: |
-          export LETASE_MILESTONES=$(curl 'https://api.github.com/repos/$OWNER/$PEPO/milestones' | jq -r 'last(.[]).title')
-          gh issue edit ${{ github.event.issue.number }} --add-assignee "${{ github.event.comment.user.login }}"
-          gh issue edit ${{ github.event.issue.number }} --add-label "accepted"
-          gh issue comment $ISSUE --body "@${{ github.event.comment.user.login }} Glad to see you accepted this issue🤲, this issue has been assigned to you. I set the milestones for this issue to [$LETASE_MILESTONES](https://github.com/$OWNER/$PEPO/milestones), We are looking forward to your PR!"
+          set -euo pipefail
+          LATEST_MILESTONE=$(curl -fsSL \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$OWNER/$REPO/milestones" | jq -r '.[-1].title // empty')
+          gh issue edit "$ISSUE_NUMBER" --add-assignee "$COMMENT_AUTHOR"
+          gh issue edit "$ISSUE_NUMBER" --add-label "accepted"
+          MILESTONE_MESSAGE=""
+          if [ -n "$LATEST_MILESTONE" ]; then
+            MILESTONE_MESSAGE=" The latest milestone is [$LATEST_MILESTONE](https://github.com/$OWNER/$REPO/milestones)."
+          fi
+          gh issue comment "$ISSUE_NUMBER" --body "@$COMMENT_AUTHOR Glad to see you accepted this issue, this issue has been assigned to you.$MILESTONE_MESSAGE We are looking forward to your PR!"
 
-        # gh issue edit ${{ github.event.issue.number }} --milestone "$LETASE_MILESTONES"
+        # gh issue edit "$ISSUE_NUMBER" --milestone "$LATEST_MILESTONE"
+
         env:
           GH_TOKEN: ${{ secrets.BOT_TOKEN }}
-          ISSUE: ${{ github.event.issue.html_url }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          COMMENT_AUTHOR: ${{ github.event.comment.user.login }}
           OWNER: ${{ github.repository_owner }}
           REPO: ${{ github.event.repository.name }}
