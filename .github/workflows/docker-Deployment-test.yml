@@ -194,7 +194,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        go_version: ["1.24.x"]
+        go_version: ["stable"]
 
     steps:
       - name: Checkout Docker repository
