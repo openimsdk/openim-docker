@@ -24,10 +24,10 @@ jobs:
         os: [ubuntu-latest]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Docker
-        uses: docker/setup-buildx-action@v3.8.0
+        uses: docker/setup-buildx-action@v4.1.0
 
       - name: Run Docker Compose
         run: |
@@ -187,30 +187,31 @@ jobs:
     name: Benchmark Test with go ${{ matrix.go_version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     permissions:
-      contents: write
+      contents: read
     env:
       SDK_DIR: openim-sdk-core
       CONFIG_PATH: docker-compose.yaml
     strategy:
       matrix:
         os: [ubuntu-latest]
-        go_version: ["1.22.x"]
+        go_version: ["stable"]
 
     steps:
       - name: Checkout Docker repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Checkout SDK repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: "openimsdk/openim-sdk-core"
           ref: "main"
           path: ${{ env.SDK_DIR }}
 
       - name: Set up Go ${{ matrix.go_version }}
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6.5.0
         with:
           go-version: ${{ matrix.go_version }}
+          cache: false
 
       - name: Modify Server Configuration
         run: |

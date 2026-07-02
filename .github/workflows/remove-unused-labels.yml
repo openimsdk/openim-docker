@@ -10,12 +10,9 @@ jobs:
       pull-requests: write
       contents: read
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
       - name: Fetch All Issues and PRs
         id: fetch_issues_prs
-        uses: actions/github-script@v7.0.1
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -38,7 +35,7 @@ jobs:
 
       - name: Fetch All Labels
         id: fetch_labels
-        uses: actions/github-script@v7.0.1
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -52,7 +49,7 @@ jobs:
           result-encoding: string
 
       - name: Remove Unused Labels
-        uses: actions/github-script@v7.0.1
+        uses: actions/github-script@v9.0.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
