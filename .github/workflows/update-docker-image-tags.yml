@@ -29,3 +29,4 @@ jobs:
         env:
           RENOVATE_ONBOARDING: "false"
           RENOVATE_REQUIRE_CONFIG: ignored
+          RENOVATE_REPOSITORIES: ${{ github.repository }}
