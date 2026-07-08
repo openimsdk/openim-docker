@@ -1,0 +1,32 @@
+name: Update OpenIM Image Tags
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * 1"
+
+concurrency:
+  group: update-openim-image-tags
+  cancel-in-progress: true
+
+jobs:
+  renovate:
+    name: Check OpenIM image tags
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Run Renovate
+        uses: renovatebot/github-action@v46.1.17
+        with:
+          configurationFile: .github/renovate-openim.json5
+          token: ${{ github.token }}
+        env:
+          RENOVATE_ONBOARDING: "false"
+          RENOVATE_REQUIRE_CONFIG: ignored
+          RENOVATE_REPOSITORIES: ${{ github.repository }}
