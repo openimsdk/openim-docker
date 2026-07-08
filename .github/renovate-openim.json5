@@ -6,6 +6,7 @@
   "branchPrefix": "renovate-bot/",
   "commitMessagePrefix": "chore(deps):",
   "prConcurrentLimit": 1,
+  "gitIgnoredAuthors": ["41898282+github-actions[bot]@users.noreply.github.com"],
 
   "customManagers": [
     {
