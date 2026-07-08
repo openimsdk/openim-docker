@@ -12,7 +12,7 @@
     {
       "customType": "regex",
       "description": "Update OpenIM Docker image tags in .env",
-      "fileMatch": ["^\\.env$"],
+      "managerFilePatterns": ["/^\\.env$/"],
       "datasourceTemplate": "docker",
       "matchStrings": [
         "(?:^|\\n)OPENIM_WEB_FRONT_IMAGE=(?<depName>openim/openim-web-front):(?<currentValue>[^\\s#]+)",
