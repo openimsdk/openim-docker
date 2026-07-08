@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended"],
+  "extends": ["config:recommended", ":disableDependencyDashboard"],
   "enabledManagers": ["custom.regex"],
   "dependencyDashboard": false,
   "branchPrefix": "renovate-bot/",
@@ -12,7 +12,7 @@
     {
       "customType": "regex",
       "description": "Update OpenIM Docker image tags in .env",
-      "fileMatch": ["^\\.env$"],
+      "managerFilePatterns": ["/^\\.env$/"],
       "datasourceTemplate": "docker",
       "matchStrings": [
         "(?:^|\\n)OPENIM_WEB_FRONT_IMAGE=(?<depName>openim/openim-web-front):(?<currentValue>[^\\s#]+)",
