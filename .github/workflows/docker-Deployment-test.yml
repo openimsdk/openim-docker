@@ -208,7 +208,7 @@ jobs:
           path: ${{ env.SDK_DIR }}
 
       - name: Set up Go ${{ matrix.go_version }}
-        uses: actions/setup-go@v6.5.0
+        uses: actions/setup-go@v7.0.0
         with:
           go-version: ${{ matrix.go_version }}
           cache: false
